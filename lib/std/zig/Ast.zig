@@ -2978,7 +2978,7 @@ pub const Node = struct {
         assign_mul,
         /// `lhs /= rhs`. main_token is op.
         assign_div,
-        /// `lhs *= rhs`. main_token is op.
+        /// `lhs %= rhs`. main_token is op.
         assign_mod,
         /// `lhs += rhs`. main_token is op.
         assign_add,
@@ -3225,7 +3225,7 @@ pub const Node = struct {
         for_simple,
         /// `for (lhs[0..inputs]) lhs[inputs + 1] else lhs[inputs + 2]`. `For[rhs]`.
         @"for",
-        /// `lhs..rhs`.
+        /// `lhs..rhs`. rhs can be omitted.
         for_range,
         /// `if (lhs) rhs`.
         /// `if (lhs) |a| rhs`.

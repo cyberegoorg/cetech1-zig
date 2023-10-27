@@ -499,6 +499,8 @@ fn ChaChaNonVecImpl(comptime rounds_nb: usize) type {
 fn ChaChaImpl(comptime rounds_nb: usize) type {
     switch (builtin.cpu.arch) {
         .x86_64 => {
+            if (builtin.zig_backend == .stage2_x86_64) return ChaChaNonVecImpl(rounds_nb);
+
             const has_avx2 = std.Target.x86.featureSetHas(builtin.cpu.features, .avx2);
             const has_avx512f = std.Target.x86.featureSetHas(builtin.cpu.features, .avx512f);
             if (has_avx512f) return ChaChaVecImpl(rounds_nb, 4);
@@ -1027,6 +1029,8 @@ test "crypto.chacha20 test vector 5" {
 }
 
 test "seal" {
+    if (builtin.zig_backend == .stage2_x86_64) return error.SkipZigTest;
+
     {
         const m = "";
         const ad = "";
@@ -1077,6 +1081,8 @@ test "seal" {
 }
 
 test "open" {
+    if (builtin.zig_backend == .stage2_x86_64) return error.SkipZigTest;
+
     {
         const c = [_]u8{ 0xa0, 0x78, 0x4d, 0x7a, 0x47, 0x16, 0xf3, 0xfe, 0xb4, 0xf6, 0x4e, 0x7f, 0x4b, 0x39, 0xbf, 0x4 };
         const ad = "";
@@ -1141,6 +1147,8 @@ test "open" {
 }
 
 test "crypto.xchacha20" {
+    if (builtin.zig_backend == .stage2_x86_64) return error.SkipZigTest;
+
     const key = [_]u8{69} ** 32;
     const nonce = [_]u8{42} ** 24;
     const m = "Ladies and Gentlemen of the class of '99: If I could offer you only one tip for the future, sunscreen would be it.";
