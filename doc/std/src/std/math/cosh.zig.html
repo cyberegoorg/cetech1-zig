@@ -216,12 +216,12 @@
 <span class="line" id="L86">    <span class="tok-kw">return</span> expo2(ax);</span>
 <span class="line" id="L87">}</span>
 <span class="line" id="L88"></span>
-<span class="line" id="L89"><span class="tok-kw">test</span> <span class="tok-str">&quot;math.cosh&quot;</span> {</span>
+<span class="line" id="L89"><span class="tok-kw">test</span> cosh {</span>
 <span class="line" id="L90">    <span class="tok-kw">try</span> expect(cosh(<span class="tok-builtin">@as</span>(<span class="tok-type">f32</span>, <span class="tok-number">1.5</span>)) == cosh32(<span class="tok-number">1.5</span>));</span>
 <span class="line" id="L91">    <span class="tok-kw">try</span> expect(cosh(<span class="tok-builtin">@as</span>(<span class="tok-type">f64</span>, <span class="tok-number">1.5</span>)) == cosh64(<span class="tok-number">1.5</span>));</span>
 <span class="line" id="L92">}</span>
 <span class="line" id="L93"></span>
-<span class="line" id="L94"><span class="tok-kw">test</span> <span class="tok-str">&quot;math.cosh32&quot;</span> {</span>
+<span class="line" id="L94"><span class="tok-kw">test</span> cosh32 {</span>
 <span class="line" id="L95">    <span class="tok-kw">const</span> epsilon = <span class="tok-number">0.000001</span>;</span>
 <span class="line" id="L96"></span>
 <span class="line" id="L97">    <span class="tok-kw">try</span> expect(math.approxEqAbs(<span class="tok-type">f32</span>, cosh32(<span class="tok-number">0.0</span>), <span class="tok-number">1.0</span>, epsilon));</span>
@@ -234,7 +234,7 @@
 <span class="line" id="L104">    <span class="tok-kw">try</span> expect(math.approxEqAbs(<span class="tok-type">f32</span>, cosh32(-<span class="tok-number">1.5</span>), <span class="tok-number">2.352410</span>, epsilon));</span>
 <span class="line" id="L105">}</span>
 <span class="line" id="L106"></span>
-<span class="line" id="L107"><span class="tok-kw">test</span> <span class="tok-str">&quot;math.cosh64&quot;</span> {</span>
+<span class="line" id="L107"><span class="tok-kw">test</span> cosh64 {</span>
 <span class="line" id="L108">    <span class="tok-kw">const</span> epsilon = <span class="tok-number">0.000001</span>;</span>
 <span class="line" id="L109"></span>
 <span class="line" id="L110">    <span class="tok-kw">try</span> expect(math.approxEqAbs(<span class="tok-type">f64</span>, cosh64(<span class="tok-number">0.0</span>), <span class="tok-number">1.0</span>, epsilon));</span>
@@ -247,7 +247,7 @@
 <span class="line" id="L117">    <span class="tok-kw">try</span> expect(math.approxEqAbs(<span class="tok-type">f64</span>, cosh64(-<span class="tok-number">1.5</span>), <span class="tok-number">2.352410</span>, epsilon));</span>
 <span class="line" id="L118">}</span>
 <span class="line" id="L119"></span>
-<span class="line" id="L120"><span class="tok-kw">test</span> <span class="tok-str">&quot;math.cosh32.special&quot;</span> {</span>
+<span class="line" id="L120"><span class="tok-kw">test</span> <span class="tok-str">&quot;cosh32.special&quot;</span> {</span>
 <span class="line" id="L121">    <span class="tok-kw">try</span> expect(cosh32(<span class="tok-number">0.0</span>) == <span class="tok-number">1.0</span>);</span>
 <span class="line" id="L122">    <span class="tok-kw">try</span> expect(cosh32(-<span class="tok-number">0.0</span>) == <span class="tok-number">1.0</span>);</span>
 <span class="line" id="L123">    <span class="tok-kw">try</span> expect(math.isPositiveInf(cosh32(math.inf(<span class="tok-type">f32</span>))));</span>
@@ -255,7 +255,7 @@
 <span class="line" id="L125">    <span class="tok-kw">try</span> expect(math.isNan(cosh32(math.nan(<span class="tok-type">f32</span>))));</span>
 <span class="line" id="L126">}</span>
 <span class="line" id="L127"></span>
-<span class="line" id="L128"><span class="tok-kw">test</span> <span class="tok-str">&quot;math.cosh64.special&quot;</span> {</span>
+<span class="line" id="L128"><span class="tok-kw">test</span> <span class="tok-str">&quot;cosh64.special&quot;</span> {</span>
 <span class="line" id="L129">    <span class="tok-kw">try</span> expect(cosh64(<span class="tok-number">0.0</span>) == <span class="tok-number">1.0</span>);</span>
 <span class="line" id="L130">    <span class="tok-kw">try</span> expect(cosh64(-<span class="tok-number">0.0</span>) == <span class="tok-number">1.0</span>);</span>
 <span class="line" id="L131">    <span class="tok-kw">try</span> expect(math.isPositiveInf(cosh64(math.inf(<span class="tok-type">f64</span>))));</span>

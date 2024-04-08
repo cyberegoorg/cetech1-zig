@@ -134,7 +134,7 @@
 <span class="line" id="L20">    <span class="tok-kw">return</span> x == -math.inf(<span class="tok-builtin">@TypeOf</span>(x));</span>
 <span class="line" id="L21">}</span>
 <span class="line" id="L22"></span>
-<span class="line" id="L23"><span class="tok-kw">test</span> <span class="tok-str">&quot;math.isInf&quot;</span> {</span>
+<span class="line" id="L23"><span class="tok-kw">test</span> isInf {</span>
 <span class="line" id="L24">    <span class="tok-kw">inline</span> <span class="tok-kw">for</span> ([_]<span class="tok-type">type</span>{ <span class="tok-type">f16</span>, <span class="tok-type">f32</span>, <span class="tok-type">f64</span>, <span class="tok-type">f80</span>, <span class="tok-type">f128</span> }) |T| {</span>
 <span class="line" id="L25">        <span class="tok-kw">try</span> expect(!isInf(<span class="tok-builtin">@as</span>(T, <span class="tok-number">0.0</span>)));</span>
 <span class="line" id="L26">        <span class="tok-kw">try</span> expect(!isInf(<span class="tok-builtin">@as</span>(T, -<span class="tok-number">0.0</span>)));</span>
@@ -145,7 +145,7 @@
 <span class="line" id="L31">    }</span>
 <span class="line" id="L32">}</span>
 <span class="line" id="L33"></span>
-<span class="line" id="L34"><span class="tok-kw">test</span> <span class="tok-str">&quot;math.isPositiveInf&quot;</span> {</span>
+<span class="line" id="L34"><span class="tok-kw">test</span> isPositiveInf {</span>
 <span class="line" id="L35">    <span class="tok-kw">inline</span> <span class="tok-kw">for</span> ([_]<span class="tok-type">type</span>{ <span class="tok-type">f16</span>, <span class="tok-type">f32</span>, <span class="tok-type">f64</span>, <span class="tok-type">f80</span>, <span class="tok-type">f128</span> }) |T| {</span>
 <span class="line" id="L36">        <span class="tok-kw">try</span> expect(!isPositiveInf(<span class="tok-builtin">@as</span>(T, <span class="tok-number">0.0</span>)));</span>
 <span class="line" id="L37">        <span class="tok-kw">try</span> expect(!isPositiveInf(<span class="tok-builtin">@as</span>(T, -<span class="tok-number">0.0</span>)));</span>
@@ -156,7 +156,7 @@
 <span class="line" id="L42">    }</span>
 <span class="line" id="L43">}</span>
 <span class="line" id="L44"></span>
-<span class="line" id="L45"><span class="tok-kw">test</span> <span class="tok-str">&quot;math.isNegativeInf&quot;</span> {</span>
+<span class="line" id="L45"><span class="tok-kw">test</span> isNegativeInf {</span>
 <span class="line" id="L46">    <span class="tok-kw">inline</span> <span class="tok-kw">for</span> ([_]<span class="tok-type">type</span>{ <span class="tok-type">f16</span>, <span class="tok-type">f32</span>, <span class="tok-type">f64</span>, <span class="tok-type">f80</span>, <span class="tok-type">f128</span> }) |T| {</span>
 <span class="line" id="L47">        <span class="tok-kw">try</span> expect(!isNegativeInf(<span class="tok-builtin">@as</span>(T, <span class="tok-number">0.0</span>)));</span>
 <span class="line" id="L48">        <span class="tok-kw">try</span> expect(!isNegativeInf(<span class="tok-builtin">@as</span>(T, -<span class="tok-number">0.0</span>)));</span>

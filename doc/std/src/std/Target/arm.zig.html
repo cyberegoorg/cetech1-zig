@@ -2318,404 +2318,396 @@
 <span class="line" id="L2204">        .name = <span class="tok-str">&quot;cortex_m33&quot;</span>,</span>
 <span class="line" id="L2205">        .llvm_name = <span class="tok-str">&quot;cortex-m33&quot;</span>,</span>
 <span class="line" id="L2206">        .features = featureSet(&amp;[_]Feature{</span>
-<span class="line" id="L2207">            .dsp,</span>
-<span class="line" id="L2208">            .fix_cmse_cve_2021_35465,</span>
-<span class="line" id="L2209">            .fp_armv8d16sp,</span>
-<span class="line" id="L2210">            .loop_align,</span>
-<span class="line" id="L2211">            .no_branch_predictor,</span>
-<span class="line" id="L2212">            .slowfpvfmx,</span>
-<span class="line" id="L2213">            .slowfpvmlx,</span>
-<span class="line" id="L2214">            .use_misched,</span>
-<span class="line" id="L2215">            .v8m_main,</span>
-<span class="line" id="L2216">        }),</span>
-<span class="line" id="L2217">    };</span>
-<span class="line" id="L2218">    <span class="tok-kw">pub</span> <span class="tok-kw">const</span> cortex_m35p = CpuModel{</span>
-<span class="line" id="L2219">        .name = <span class="tok-str">&quot;cortex_m35p&quot;</span>,</span>
-<span class="line" id="L2220">        .llvm_name = <span class="tok-str">&quot;cortex-m35p&quot;</span>,</span>
-<span class="line" id="L2221">        .features = featureSet(&amp;[_]Feature{</span>
-<span class="line" id="L2222">            .dsp,</span>
-<span class="line" id="L2223">            .fix_cmse_cve_2021_35465,</span>
-<span class="line" id="L2224">            .fp_armv8d16sp,</span>
-<span class="line" id="L2225">            .loop_align,</span>
-<span class="line" id="L2226">            .no_branch_predictor,</span>
-<span class="line" id="L2227">            .slowfpvfmx,</span>
-<span class="line" id="L2228">            .slowfpvmlx,</span>
-<span class="line" id="L2229">            .use_misched,</span>
-<span class="line" id="L2230">            .v8m_main,</span>
-<span class="line" id="L2231">        }),</span>
-<span class="line" id="L2232">    };</span>
-<span class="line" id="L2233">    <span class="tok-kw">pub</span> <span class="tok-kw">const</span> cortex_m4 = CpuModel{</span>
-<span class="line" id="L2234">        .name = <span class="tok-str">&quot;cortex_m4&quot;</span>,</span>
-<span class="line" id="L2235">        .llvm_name = <span class="tok-str">&quot;cortex-m4&quot;</span>,</span>
-<span class="line" id="L2236">        .features = featureSet(&amp;[_]Feature{</span>
-<span class="line" id="L2237">            .loop_align,</span>
-<span class="line" id="L2238">            .no_branch_predictor,</span>
-<span class="line" id="L2239">            .slowfpvfmx,</span>
-<span class="line" id="L2240">            .slowfpvmlx,</span>
-<span class="line" id="L2241">            .use_misched,</span>
-<span class="line" id="L2242">            .v7em,</span>
-<span class="line" id="L2243">            .vfp4d16sp,</span>
-<span class="line" id="L2244">        }),</span>
-<span class="line" id="L2245">    };</span>
-<span class="line" id="L2246">    <span class="tok-kw">pub</span> <span class="tok-kw">const</span> cortex_m55 = CpuModel{</span>
-<span class="line" id="L2247">        .name = <span class="tok-str">&quot;cortex_m55&quot;</span>,</span>
-<span class="line" id="L2248">        .llvm_name = <span class="tok-str">&quot;cortex-m55&quot;</span>,</span>
-<span class="line" id="L2249">        .features = featureSet(&amp;[_]Feature{</span>
-<span class="line" id="L2250">            .fix_cmse_cve_2021_35465,</span>
-<span class="line" id="L2251">            .fp_armv8d16,</span>
-<span class="line" id="L2252">            .loop_align,</span>
-<span class="line" id="L2253">            .mve_fp,</span>
-<span class="line" id="L2254">            .no_branch_predictor,</span>
-<span class="line" id="L2255">            .slowfpvmlx,</span>
-<span class="line" id="L2256">            .use_misched,</span>
-<span class="line" id="L2257">            .v8_1m_main,</span>
-<span class="line" id="L2258">        }),</span>
-<span class="line" id="L2259">    };</span>
-<span class="line" id="L2260">    <span class="tok-kw">pub</span> <span class="tok-kw">const</span> cortex_m7 = CpuModel{</span>
-<span class="line" id="L2261">        .name = <span class="tok-str">&quot;cortex_m7&quot;</span>,</span>
-<span class="line" id="L2262">        .llvm_name = <span class="tok-str">&quot;cortex-m7&quot;</span>,</span>
-<span class="line" id="L2263">        .features = featureSet(&amp;[_]Feature{</span>
-<span class="line" id="L2264">            .fp_armv8d16,</span>
-<span class="line" id="L2265">            .use_mipipeliner,</span>
-<span class="line" id="L2266">            .use_misched,</span>
-<span class="line" id="L2267">            .v7em,</span>
-<span class="line" id="L2268">        }),</span>
-<span class="line" id="L2269">    };</span>
-<span class="line" id="L2270">    <span class="tok-kw">pub</span> <span class="tok-kw">const</span> cortex_m85 = CpuModel{</span>
-<span class="line" id="L2271">        .name = <span class="tok-str">&quot;cortex_m85&quot;</span>,</span>
-<span class="line" id="L2272">        .llvm_name = <span class="tok-str">&quot;cortex-m85&quot;</span>,</span>
-<span class="line" id="L2273">        .features = featureSet(&amp;[_]Feature{</span>
-<span class="line" id="L2274">            .fp_armv8d16,</span>
-<span class="line" id="L2275">            .mve_fp,</span>
-<span class="line" id="L2276">            .pacbti,</span>
-<span class="line" id="L2277">            .use_misched,</span>
-<span class="line" id="L2278">            .v8_1m_main,</span>
-<span class="line" id="L2279">        }),</span>
-<span class="line" id="L2280">    };</span>
-<span class="line" id="L2281">    <span class="tok-kw">pub</span> <span class="tok-kw">const</span> cortex_r4 = CpuModel{</span>
-<span class="line" id="L2282">        .name = <span class="tok-str">&quot;cortex_r4&quot;</span>,</span>
-<span class="line" id="L2283">        .llvm_name = <span class="tok-str">&quot;cortex-r4&quot;</span>,</span>
-<span class="line" id="L2284">        .features = featureSet(&amp;[_]Feature{</span>
-<span class="line" id="L2285">            .avoid_partial_cpsr,</span>
-<span class="line" id="L2286">            .r4,</span>
-<span class="line" id="L2287">            .ret_addr_stack,</span>
-<span class="line" id="L2288">            .v7r,</span>
-<span class="line" id="L2289">        }),</span>
-<span class="line" id="L2290">    };</span>
-<span class="line" id="L2291">    <span class="tok-kw">pub</span> <span class="tok-kw">const</span> cortex_r4f = CpuModel{</span>
-<span class="line" id="L2292">        .name = <span class="tok-str">&quot;cortex_r4f&quot;</span>,</span>
-<span class="line" id="L2293">        .llvm_name = <span class="tok-str">&quot;cortex-r4f&quot;</span>,</span>
-<span class="line" id="L2294">        .features = featureSet(&amp;[_]Feature{</span>
-<span class="line" id="L2295">            .avoid_partial_cpsr,</span>
-<span class="line" id="L2296">            .r4,</span>
-<span class="line" id="L2297">            .ret_addr_stack,</span>
-<span class="line" id="L2298">            .slow_fp_brcc,</span>
-<span class="line" id="L2299">            .slowfpvfmx,</span>
-<span class="line" id="L2300">            .slowfpvmlx,</span>
-<span class="line" id="L2301">            .v7r,</span>
-<span class="line" id="L2302">            .vfp3d16,</span>
-<span class="line" id="L2303">        }),</span>
-<span class="line" id="L2304">    };</span>
-<span class="line" id="L2305">    <span class="tok-kw">pub</span> <span class="tok-kw">const</span> cortex_r5 = CpuModel{</span>
-<span class="line" id="L2306">        .name = <span class="tok-str">&quot;cortex_r5&quot;</span>,</span>
-<span class="line" id="L2307">        .llvm_name = <span class="tok-str">&quot;cortex-r5&quot;</span>,</span>
-<span class="line" id="L2308">        .features = featureSet(&amp;[_]Feature{</span>
-<span class="line" id="L2309">            .avoid_partial_cpsr,</span>
-<span class="line" id="L2310">            .hwdiv_arm,</span>
-<span class="line" id="L2311">            .ret_addr_stack,</span>
-<span class="line" id="L2312">            .slow_fp_brcc,</span>
-<span class="line" id="L2313">            .slowfpvfmx,</span>
-<span class="line" id="L2314">            .slowfpvmlx,</span>
-<span class="line" id="L2315">            .v7r,</span>
-<span class="line" id="L2316">            .vfp3d16,</span>
-<span class="line" id="L2317">        }),</span>
-<span class="line" id="L2318">    };</span>
-<span class="line" id="L2319">    <span class="tok-kw">pub</span> <span class="tok-kw">const</span> cortex_r52 = CpuModel{</span>
-<span class="line" id="L2320">        .name = <span class="tok-str">&quot;cortex_r52&quot;</span>,</span>
-<span class="line" id="L2321">        .llvm_name = <span class="tok-str">&quot;cortex-r52&quot;</span>,</span>
-<span class="line" id="L2322">        .features = featureSet(&amp;[_]Feature{</span>
-<span class="line" id="L2323">            .fpao,</span>
-<span class="line" id="L2324">            .use_misched,</span>
-<span class="line" id="L2325">            .v8r,</span>
-<span class="line" id="L2326">        }),</span>
-<span class="line" id="L2327">    };</span>
-<span class="line" id="L2328">    <span class="tok-kw">pub</span> <span class="tok-kw">const</span> cortex_r7 = CpuModel{</span>
-<span class="line" id="L2329">        .name = <span class="tok-str">&quot;cortex_r7&quot;</span>,</span>
-<span class="line" id="L2330">        .llvm_name = <span class="tok-str">&quot;cortex-r7&quot;</span>,</span>
-<span class="line" id="L2331">        .features = featureSet(&amp;[_]Feature{</span>
-<span class="line" id="L2332">            .avoid_partial_cpsr,</span>
-<span class="line" id="L2333">            .fp16,</span>
-<span class="line" id="L2334">            .hwdiv_arm,</span>
-<span class="line" id="L2335">            .mp,</span>
-<span class="line" id="L2336">            .ret_addr_stack,</span>
-<span class="line" id="L2337">            .slow_fp_brcc,</span>
-<span class="line" id="L2338">            .slowfpvfmx,</span>
-<span class="line" id="L2339">            .slowfpvmlx,</span>
-<span class="line" id="L2340">            .v7r,</span>
-<span class="line" id="L2341">            .vfp3d16,</span>
-<span class="line" id="L2342">        }),</span>
-<span class="line" id="L2343">    };</span>
-<span class="line" id="L2344">    <span class="tok-kw">pub</span> <span class="tok-kw">const</span> cortex_r8 = CpuModel{</span>
-<span class="line" id="L2345">        .name = <span class="tok-str">&quot;cortex_r8&quot;</span>,</span>
-<span class="line" id="L2346">        .llvm_name = <span class="tok-str">&quot;cortex-r8&quot;</span>,</span>
-<span class="line" id="L2347">        .features = featureSet(&amp;[_]Feature{</span>
-<span class="line" id="L2348">            .avoid_partial_cpsr,</span>
-<span class="line" id="L2349">            .fp16,</span>
-<span class="line" id="L2350">            .hwdiv_arm,</span>
-<span class="line" id="L2351">            .mp,</span>
-<span class="line" id="L2352">            .ret_addr_stack,</span>
-<span class="line" id="L2353">            .slow_fp_brcc,</span>
-<span class="line" id="L2354">            .slowfpvfmx,</span>
-<span class="line" id="L2355">            .slowfpvmlx,</span>
-<span class="line" id="L2356">            .v7r,</span>
-<span class="line" id="L2357">            .vfp3d16,</span>
-<span class="line" id="L2358">        }),</span>
-<span class="line" id="L2359">    };</span>
-<span class="line" id="L2360">    <span class="tok-kw">pub</span> <span class="tok-kw">const</span> cortex_x1 = CpuModel{</span>
-<span class="line" id="L2361">        .name = <span class="tok-str">&quot;cortex_x1&quot;</span>,</span>
-<span class="line" id="L2362">        .llvm_name = <span class="tok-str">&quot;cortex-x1&quot;</span>,</span>
-<span class="line" id="L2363">        .features = featureSet(&amp;[_]Feature{</span>
-<span class="line" id="L2364">            .dotprod,</span>
-<span class="line" id="L2365">            .fullfp16,</span>
-<span class="line" id="L2366">            .v8_2a,</span>
-<span class="line" id="L2367">        }),</span>
-<span class="line" id="L2368">    };</span>
-<span class="line" id="L2369">    <span class="tok-kw">pub</span> <span class="tok-kw">const</span> cortex_x1c = CpuModel{</span>
-<span class="line" id="L2370">        .name = <span class="tok-str">&quot;cortex_x1c&quot;</span>,</span>
-<span class="line" id="L2371">        .llvm_name = <span class="tok-str">&quot;cortex-x1c&quot;</span>,</span>
-<span class="line" id="L2372">        .features = featureSet(&amp;[_]Feature{</span>
-<span class="line" id="L2373">            .dotprod,</span>
-<span class="line" id="L2374">            .fullfp16,</span>
-<span class="line" id="L2375">            .v8_2a,</span>
-<span class="line" id="L2376">        }),</span>
-<span class="line" id="L2377">    };</span>
-<span class="line" id="L2378">    <span class="tok-kw">pub</span> <span class="tok-kw">const</span> cyclone = CpuModel{</span>
-<span class="line" id="L2379">        .name = <span class="tok-str">&quot;cyclone&quot;</span>,</span>
-<span class="line" id="L2380">        .llvm_name = <span class="tok-str">&quot;cyclone&quot;</span>,</span>
-<span class="line" id="L2381">        .features = featureSet(&amp;[_]Feature{</span>
-<span class="line" id="L2382">            .avoid_movs_shop,</span>
-<span class="line" id="L2383">            .avoid_partial_cpsr,</span>
-<span class="line" id="L2384">            .disable_postra_scheduler,</span>
-<span class="line" id="L2385">            .neonfp,</span>
-<span class="line" id="L2386">            .ret_addr_stack,</span>
-<span class="line" id="L2387">            .slowfpvfmx,</span>
-<span class="line" id="L2388">            .slowfpvmlx,</span>
-<span class="line" id="L2389">            .swift,</span>
-<span class="line" id="L2390">            .use_misched,</span>
-<span class="line" id="L2391">            .v8a,</span>
-<span class="line" id="L2392">            .zcz,</span>
-<span class="line" id="L2393">        }),</span>
-<span class="line" id="L2394">    };</span>
-<span class="line" id="L2395">    <span class="tok-kw">pub</span> <span class="tok-kw">const</span> ep9312 = CpuModel{</span>
-<span class="line" id="L2396">        .name = <span class="tok-str">&quot;ep9312&quot;</span>,</span>
-<span class="line" id="L2397">        .llvm_name = <span class="tok-str">&quot;ep9312&quot;</span>,</span>
-<span class="line" id="L2398">        .features = featureSet(&amp;[_]Feature{</span>
-<span class="line" id="L2399">            .v4t,</span>
+<span class="line" id="L2207">            .fix_cmse_cve_2021_35465,</span>
+<span class="line" id="L2208">            .loop_align,</span>
+<span class="line" id="L2209">            .no_branch_predictor,</span>
+<span class="line" id="L2210">            .slowfpvfmx,</span>
+<span class="line" id="L2211">            .slowfpvmlx,</span>
+<span class="line" id="L2212">            .use_misched,</span>
+<span class="line" id="L2213">            .v8m_main,</span>
+<span class="line" id="L2214">        }),</span>
+<span class="line" id="L2215">    };</span>
+<span class="line" id="L2216">    <span class="tok-kw">pub</span> <span class="tok-kw">const</span> cortex_m35p = CpuModel{</span>
+<span class="line" id="L2217">        .name = <span class="tok-str">&quot;cortex_m35p&quot;</span>,</span>
+<span class="line" id="L2218">        .llvm_name = <span class="tok-str">&quot;cortex-m35p&quot;</span>,</span>
+<span class="line" id="L2219">        .features = featureSet(&amp;[_]Feature{</span>
+<span class="line" id="L2220">            .fix_cmse_cve_2021_35465,</span>
+<span class="line" id="L2221">            .loop_align,</span>
+<span class="line" id="L2222">            .no_branch_predictor,</span>
+<span class="line" id="L2223">            .slowfpvfmx,</span>
+<span class="line" id="L2224">            .slowfpvmlx,</span>
+<span class="line" id="L2225">            .use_misched,</span>
+<span class="line" id="L2226">            .v8m_main,</span>
+<span class="line" id="L2227">        }),</span>
+<span class="line" id="L2228">    };</span>
+<span class="line" id="L2229">    <span class="tok-kw">pub</span> <span class="tok-kw">const</span> cortex_m4 = CpuModel{</span>
+<span class="line" id="L2230">        .name = <span class="tok-str">&quot;cortex_m4&quot;</span>,</span>
+<span class="line" id="L2231">        .llvm_name = <span class="tok-str">&quot;cortex-m4&quot;</span>,</span>
+<span class="line" id="L2232">        .features = featureSet(&amp;[_]Feature{</span>
+<span class="line" id="L2233">            .loop_align,</span>
+<span class="line" id="L2234">            .no_branch_predictor,</span>
+<span class="line" id="L2235">            .slowfpvfmx,</span>
+<span class="line" id="L2236">            .slowfpvmlx,</span>
+<span class="line" id="L2237">            .use_misched,</span>
+<span class="line" id="L2238">            .v7em,</span>
+<span class="line" id="L2239">        }),</span>
+<span class="line" id="L2240">    };</span>
+<span class="line" id="L2241">    <span class="tok-kw">pub</span> <span class="tok-kw">const</span> cortex_m55 = CpuModel{</span>
+<span class="line" id="L2242">        .name = <span class="tok-str">&quot;cortex_m55&quot;</span>,</span>
+<span class="line" id="L2243">        .llvm_name = <span class="tok-str">&quot;cortex-m55&quot;</span>,</span>
+<span class="line" id="L2244">        .features = featureSet(&amp;[_]Feature{</span>
+<span class="line" id="L2245">            .dsp,</span>
+<span class="line" id="L2246">            .fix_cmse_cve_2021_35465,</span>
+<span class="line" id="L2247">            .loop_align,</span>
+<span class="line" id="L2248">            .no_branch_predictor,</span>
+<span class="line" id="L2249">            .slowfpvmlx,</span>
+<span class="line" id="L2250">            .use_misched,</span>
+<span class="line" id="L2251">            .v8_1m_main,</span>
+<span class="line" id="L2252">        }),</span>
+<span class="line" id="L2253">    };</span>
+<span class="line" id="L2254">    <span class="tok-kw">pub</span> <span class="tok-kw">const</span> cortex_m7 = CpuModel{</span>
+<span class="line" id="L2255">        .name = <span class="tok-str">&quot;cortex_m7&quot;</span>,</span>
+<span class="line" id="L2256">        .llvm_name = <span class="tok-str">&quot;cortex-m7&quot;</span>,</span>
+<span class="line" id="L2257">        .features = featureSet(&amp;[_]Feature{</span>
+<span class="line" id="L2258">            .use_mipipeliner,</span>
+<span class="line" id="L2259">            .use_misched,</span>
+<span class="line" id="L2260">            .v7em,</span>
+<span class="line" id="L2261">        }),</span>
+<span class="line" id="L2262">    };</span>
+<span class="line" id="L2263">    <span class="tok-kw">pub</span> <span class="tok-kw">const</span> cortex_m85 = CpuModel{</span>
+<span class="line" id="L2264">        .name = <span class="tok-str">&quot;cortex_m85&quot;</span>,</span>
+<span class="line" id="L2265">        .llvm_name = <span class="tok-str">&quot;cortex-m85&quot;</span>,</span>
+<span class="line" id="L2266">        .features = featureSet(&amp;[_]Feature{</span>
+<span class="line" id="L2267">            .dsp,</span>
+<span class="line" id="L2268">            .trustzone,</span>
+<span class="line" id="L2269">            .use_misched,</span>
+<span class="line" id="L2270">            .v8_1m_main,</span>
+<span class="line" id="L2271">        }),</span>
+<span class="line" id="L2272">    };</span>
+<span class="line" id="L2273">    <span class="tok-kw">pub</span> <span class="tok-kw">const</span> cortex_r4 = CpuModel{</span>
+<span class="line" id="L2274">        .name = <span class="tok-str">&quot;cortex_r4&quot;</span>,</span>
+<span class="line" id="L2275">        .llvm_name = <span class="tok-str">&quot;cortex-r4&quot;</span>,</span>
+<span class="line" id="L2276">        .features = featureSet(&amp;[_]Feature{</span>
+<span class="line" id="L2277">            .avoid_partial_cpsr,</span>
+<span class="line" id="L2278">            .r4,</span>
+<span class="line" id="L2279">            .ret_addr_stack,</span>
+<span class="line" id="L2280">            .v7r,</span>
+<span class="line" id="L2281">        }),</span>
+<span class="line" id="L2282">    };</span>
+<span class="line" id="L2283">    <span class="tok-kw">pub</span> <span class="tok-kw">const</span> cortex_r4f = CpuModel{</span>
+<span class="line" id="L2284">        .name = <span class="tok-str">&quot;cortex_r4f&quot;</span>,</span>
+<span class="line" id="L2285">        .llvm_name = <span class="tok-str">&quot;cortex-r4f&quot;</span>,</span>
+<span class="line" id="L2286">        .features = featureSet(&amp;[_]Feature{</span>
+<span class="line" id="L2287">            .avoid_partial_cpsr,</span>
+<span class="line" id="L2288">            .r4,</span>
+<span class="line" id="L2289">            .ret_addr_stack,</span>
+<span class="line" id="L2290">            .slow_fp_brcc,</span>
+<span class="line" id="L2291">            .slowfpvfmx,</span>
+<span class="line" id="L2292">            .slowfpvmlx,</span>
+<span class="line" id="L2293">            .v7r,</span>
+<span class="line" id="L2294">            .vfp3d16,</span>
+<span class="line" id="L2295">        }),</span>
+<span class="line" id="L2296">    };</span>
+<span class="line" id="L2297">    <span class="tok-kw">pub</span> <span class="tok-kw">const</span> cortex_r5 = CpuModel{</span>
+<span class="line" id="L2298">        .name = <span class="tok-str">&quot;cortex_r5&quot;</span>,</span>
+<span class="line" id="L2299">        .llvm_name = <span class="tok-str">&quot;cortex-r5&quot;</span>,</span>
+<span class="line" id="L2300">        .features = featureSet(&amp;[_]Feature{</span>
+<span class="line" id="L2301">            .avoid_partial_cpsr,</span>
+<span class="line" id="L2302">            .hwdiv_arm,</span>
+<span class="line" id="L2303">            .ret_addr_stack,</span>
+<span class="line" id="L2304">            .slow_fp_brcc,</span>
+<span class="line" id="L2305">            .slowfpvfmx,</span>
+<span class="line" id="L2306">            .slowfpvmlx,</span>
+<span class="line" id="L2307">            .v7r,</span>
+<span class="line" id="L2308">            .vfp3d16,</span>
+<span class="line" id="L2309">        }),</span>
+<span class="line" id="L2310">    };</span>
+<span class="line" id="L2311">    <span class="tok-kw">pub</span> <span class="tok-kw">const</span> cortex_r52 = CpuModel{</span>
+<span class="line" id="L2312">        .name = <span class="tok-str">&quot;cortex_r52&quot;</span>,</span>
+<span class="line" id="L2313">        .llvm_name = <span class="tok-str">&quot;cortex-r52&quot;</span>,</span>
+<span class="line" id="L2314">        .features = featureSet(&amp;[_]Feature{</span>
+<span class="line" id="L2315">            .fpao,</span>
+<span class="line" id="L2316">            .use_misched,</span>
+<span class="line" id="L2317">            .v8r,</span>
+<span class="line" id="L2318">        }),</span>
+<span class="line" id="L2319">    };</span>
+<span class="line" id="L2320">    <span class="tok-kw">pub</span> <span class="tok-kw">const</span> cortex_r7 = CpuModel{</span>
+<span class="line" id="L2321">        .name = <span class="tok-str">&quot;cortex_r7&quot;</span>,</span>
+<span class="line" id="L2322">        .llvm_name = <span class="tok-str">&quot;cortex-r7&quot;</span>,</span>
+<span class="line" id="L2323">        .features = featureSet(&amp;[_]Feature{</span>
+<span class="line" id="L2324">            .avoid_partial_cpsr,</span>
+<span class="line" id="L2325">            .fp16,</span>
+<span class="line" id="L2326">            .hwdiv_arm,</span>
+<span class="line" id="L2327">            .mp,</span>
+<span class="line" id="L2328">            .ret_addr_stack,</span>
+<span class="line" id="L2329">            .slow_fp_brcc,</span>
+<span class="line" id="L2330">            .slowfpvfmx,</span>
+<span class="line" id="L2331">            .slowfpvmlx,</span>
+<span class="line" id="L2332">            .v7r,</span>
+<span class="line" id="L2333">            .vfp3d16,</span>
+<span class="line" id="L2334">        }),</span>
+<span class="line" id="L2335">    };</span>
+<span class="line" id="L2336">    <span class="tok-kw">pub</span> <span class="tok-kw">const</span> cortex_r8 = CpuModel{</span>
+<span class="line" id="L2337">        .name = <span class="tok-str">&quot;cortex_r8&quot;</span>,</span>
+<span class="line" id="L2338">        .llvm_name = <span class="tok-str">&quot;cortex-r8&quot;</span>,</span>
+<span class="line" id="L2339">        .features = featureSet(&amp;[_]Feature{</span>
+<span class="line" id="L2340">            .avoid_partial_cpsr,</span>
+<span class="line" id="L2341">            .fp16,</span>
+<span class="line" id="L2342">            .hwdiv_arm,</span>
+<span class="line" id="L2343">            .mp,</span>
+<span class="line" id="L2344">            .ret_addr_stack,</span>
+<span class="line" id="L2345">            .slow_fp_brcc,</span>
+<span class="line" id="L2346">            .slowfpvfmx,</span>
+<span class="line" id="L2347">            .slowfpvmlx,</span>
+<span class="line" id="L2348">            .v7r,</span>
+<span class="line" id="L2349">            .vfp3d16,</span>
+<span class="line" id="L2350">        }),</span>
+<span class="line" id="L2351">    };</span>
+<span class="line" id="L2352">    <span class="tok-kw">pub</span> <span class="tok-kw">const</span> cortex_x1 = CpuModel{</span>
+<span class="line" id="L2353">        .name = <span class="tok-str">&quot;cortex_x1&quot;</span>,</span>
+<span class="line" id="L2354">        .llvm_name = <span class="tok-str">&quot;cortex-x1&quot;</span>,</span>
+<span class="line" id="L2355">        .features = featureSet(&amp;[_]Feature{</span>
+<span class="line" id="L2356">            .dotprod,</span>
+<span class="line" id="L2357">            .fullfp16,</span>
+<span class="line" id="L2358">            .v8_2a,</span>
+<span class="line" id="L2359">        }),</span>
+<span class="line" id="L2360">    };</span>
+<span class="line" id="L2361">    <span class="tok-kw">pub</span> <span class="tok-kw">const</span> cortex_x1c = CpuModel{</span>
+<span class="line" id="L2362">        .name = <span class="tok-str">&quot;cortex_x1c&quot;</span>,</span>
+<span class="line" id="L2363">        .llvm_name = <span class="tok-str">&quot;cortex-x1c&quot;</span>,</span>
+<span class="line" id="L2364">        .features = featureSet(&amp;[_]Feature{</span>
+<span class="line" id="L2365">            .dotprod,</span>
+<span class="line" id="L2366">            .fullfp16,</span>
+<span class="line" id="L2367">            .v8_2a,</span>
+<span class="line" id="L2368">        }),</span>
+<span class="line" id="L2369">    };</span>
+<span class="line" id="L2370">    <span class="tok-kw">pub</span> <span class="tok-kw">const</span> cyclone = CpuModel{</span>
+<span class="line" id="L2371">        .name = <span class="tok-str">&quot;cyclone&quot;</span>,</span>
+<span class="line" id="L2372">        .llvm_name = <span class="tok-str">&quot;cyclone&quot;</span>,</span>
+<span class="line" id="L2373">        .features = featureSet(&amp;[_]Feature{</span>
+<span class="line" id="L2374">            .avoid_movs_shop,</span>
+<span class="line" id="L2375">            .avoid_partial_cpsr,</span>
+<span class="line" id="L2376">            .disable_postra_scheduler,</span>
+<span class="line" id="L2377">            .neonfp,</span>
+<span class="line" id="L2378">            .ret_addr_stack,</span>
+<span class="line" id="L2379">            .slowfpvfmx,</span>
+<span class="line" id="L2380">            .slowfpvmlx,</span>
+<span class="line" id="L2381">            .swift,</span>
+<span class="line" id="L2382">            .use_misched,</span>
+<span class="line" id="L2383">            .v8a,</span>
+<span class="line" id="L2384">            .zcz,</span>
+<span class="line" id="L2385">        }),</span>
+<span class="line" id="L2386">    };</span>
+<span class="line" id="L2387">    <span class="tok-kw">pub</span> <span class="tok-kw">const</span> ep9312 = CpuModel{</span>
+<span class="line" id="L2388">        .name = <span class="tok-str">&quot;ep9312&quot;</span>,</span>
+<span class="line" id="L2389">        .llvm_name = <span class="tok-str">&quot;ep9312&quot;</span>,</span>
+<span class="line" id="L2390">        .features = featureSet(&amp;[_]Feature{</span>
+<span class="line" id="L2391">            .v4t,</span>
+<span class="line" id="L2392">        }),</span>
+<span class="line" id="L2393">    };</span>
+<span class="line" id="L2394">    <span class="tok-kw">pub</span> <span class="tok-kw">const</span> exynos_m1 = CpuModel{</span>
+<span class="line" id="L2395">        .name = <span class="tok-str">&quot;exynos_m1&quot;</span>,</span>
+<span class="line" id="L2396">        .llvm_name = <span class="tok-null">null</span>,</span>
+<span class="line" id="L2397">        .features = featureSet(&amp;[_]Feature{</span>
+<span class="line" id="L2398">            .exynos,</span>
+<span class="line" id="L2399">            .v8a,</span>
 <span class="line" id="L2400">        }),</span>
 <span class="line" id="L2401">    };</span>
-<span class="line" id="L2402">    <span class="tok-kw">pub</span> <span class="tok-kw">const</span> exynos_m1 = CpuModel{</span>
-<span class="line" id="L2403">        .name = <span class="tok-str">&quot;exynos_m1&quot;</span>,</span>
+<span class="line" id="L2402">    <span class="tok-kw">pub</span> <span class="tok-kw">const</span> exynos_m2 = CpuModel{</span>
+<span class="line" id="L2403">        .name = <span class="tok-str">&quot;exynos_m2&quot;</span>,</span>
 <span class="line" id="L2404">        .llvm_name = <span class="tok-null">null</span>,</span>
 <span class="line" id="L2405">        .features = featureSet(&amp;[_]Feature{</span>
 <span class="line" id="L2406">            .exynos,</span>
 <span class="line" id="L2407">            .v8a,</span>
 <span class="line" id="L2408">        }),</span>
 <span class="line" id="L2409">    };</span>
-<span class="line" id="L2410">    <span class="tok-kw">pub</span> <span class="tok-kw">const</span> exynos_m2 = CpuModel{</span>
-<span class="line" id="L2411">        .name = <span class="tok-str">&quot;exynos_m2&quot;</span>,</span>
-<span class="line" id="L2412">        .llvm_name = <span class="tok-null">null</span>,</span>
+<span class="line" id="L2410">    <span class="tok-kw">pub</span> <span class="tok-kw">const</span> exynos_m3 = CpuModel{</span>
+<span class="line" id="L2411">        .name = <span class="tok-str">&quot;exynos_m3&quot;</span>,</span>
+<span class="line" id="L2412">        .llvm_name = <span class="tok-str">&quot;exynos-m3&quot;</span>,</span>
 <span class="line" id="L2413">        .features = featureSet(&amp;[_]Feature{</span>
 <span class="line" id="L2414">            .exynos,</span>
 <span class="line" id="L2415">            .v8a,</span>
 <span class="line" id="L2416">        }),</span>
 <span class="line" id="L2417">    };</span>
-<span class="line" id="L2418">    <span class="tok-kw">pub</span> <span class="tok-kw">const</span> exynos_m3 = CpuModel{</span>
-<span class="line" id="L2419">        .name = <span class="tok-str">&quot;exynos_m3&quot;</span>,</span>
-<span class="line" id="L2420">        .llvm_name = <span class="tok-str">&quot;exynos-m3&quot;</span>,</span>
+<span class="line" id="L2418">    <span class="tok-kw">pub</span> <span class="tok-kw">const</span> exynos_m4 = CpuModel{</span>
+<span class="line" id="L2419">        .name = <span class="tok-str">&quot;exynos_m4&quot;</span>,</span>
+<span class="line" id="L2420">        .llvm_name = <span class="tok-str">&quot;exynos-m4&quot;</span>,</span>
 <span class="line" id="L2421">        .features = featureSet(&amp;[_]Feature{</span>
-<span class="line" id="L2422">            .exynos,</span>
-<span class="line" id="L2423">            .v8a,</span>
-<span class="line" id="L2424">        }),</span>
-<span class="line" id="L2425">    };</span>
-<span class="line" id="L2426">    <span class="tok-kw">pub</span> <span class="tok-kw">const</span> exynos_m4 = CpuModel{</span>
-<span class="line" id="L2427">        .name = <span class="tok-str">&quot;exynos_m4&quot;</span>,</span>
-<span class="line" id="L2428">        .llvm_name = <span class="tok-str">&quot;exynos-m4&quot;</span>,</span>
-<span class="line" id="L2429">        .features = featureSet(&amp;[_]Feature{</span>
-<span class="line" id="L2430">            .dotprod,</span>
-<span class="line" id="L2431">            .exynos,</span>
-<span class="line" id="L2432">            .fullfp16,</span>
-<span class="line" id="L2433">            .v8_2a,</span>
-<span class="line" id="L2434">        }),</span>
-<span class="line" id="L2435">    };</span>
-<span class="line" id="L2436">    <span class="tok-kw">pub</span> <span class="tok-kw">const</span> exynos_m5 = CpuModel{</span>
-<span class="line" id="L2437">        .name = <span class="tok-str">&quot;exynos_m5&quot;</span>,</span>
-<span class="line" id="L2438">        .llvm_name = <span class="tok-str">&quot;exynos-m5&quot;</span>,</span>
-<span class="line" id="L2439">        .features = featureSet(&amp;[_]Feature{</span>
-<span class="line" id="L2440">            .dotprod,</span>
-<span class="line" id="L2441">            .exynos,</span>
-<span class="line" id="L2442">            .fullfp16,</span>
-<span class="line" id="L2443">            .v8_2a,</span>
-<span class="line" id="L2444">        }),</span>
-<span class="line" id="L2445">    };</span>
-<span class="line" id="L2446">    <span class="tok-kw">pub</span> <span class="tok-kw">const</span> generic = CpuModel{</span>
-<span class="line" id="L2447">        .name = <span class="tok-str">&quot;generic&quot;</span>,</span>
-<span class="line" id="L2448">        .llvm_name = <span class="tok-str">&quot;generic&quot;</span>,</span>
-<span class="line" id="L2449">        .features = featureSet(&amp;[_]Feature{}),</span>
-<span class="line" id="L2450">    };</span>
-<span class="line" id="L2451">    <span class="tok-kw">pub</span> <span class="tok-kw">const</span> iwmmxt = CpuModel{</span>
-<span class="line" id="L2452">        .name = <span class="tok-str">&quot;iwmmxt&quot;</span>,</span>
-<span class="line" id="L2453">        .llvm_name = <span class="tok-str">&quot;iwmmxt&quot;</span>,</span>
-<span class="line" id="L2454">        .features = featureSet(&amp;[_]Feature{</span>
-<span class="line" id="L2455">            .v5te,</span>
-<span class="line" id="L2456">        }),</span>
-<span class="line" id="L2457">    };</span>
-<span class="line" id="L2458">    <span class="tok-kw">pub</span> <span class="tok-kw">const</span> krait = CpuModel{</span>
-<span class="line" id="L2459">        .name = <span class="tok-str">&quot;krait&quot;</span>,</span>
-<span class="line" id="L2460">        .llvm_name = <span class="tok-str">&quot;krait&quot;</span>,</span>
-<span class="line" id="L2461">        .features = featureSet(&amp;[_]Feature{</span>
-<span class="line" id="L2462">            .avoid_partial_cpsr,</span>
-<span class="line" id="L2463">            .hwdiv,</span>
-<span class="line" id="L2464">            .hwdiv_arm,</span>
-<span class="line" id="L2465">            .muxed_units,</span>
-<span class="line" id="L2466">            .ret_addr_stack,</span>
-<span class="line" id="L2467">            .v7a,</span>
-<span class="line" id="L2468">            .vfp4,</span>
-<span class="line" id="L2469">            .vldn_align,</span>
-<span class="line" id="L2470">            .vmlx_forwarding,</span>
-<span class="line" id="L2471">        }),</span>
-<span class="line" id="L2472">    };</span>
-<span class="line" id="L2473">    <span class="tok-kw">pub</span> <span class="tok-kw">const</span> kryo = CpuModel{</span>
-<span class="line" id="L2474">        .name = <span class="tok-str">&quot;kryo&quot;</span>,</span>
-<span class="line" id="L2475">        .llvm_name = <span class="tok-str">&quot;kryo&quot;</span>,</span>
-<span class="line" id="L2476">        .features = featureSet(&amp;[_]Feature{</span>
-<span class="line" id="L2477">            .v8a,</span>
-<span class="line" id="L2478">        }),</span>
-<span class="line" id="L2479">    };</span>
-<span class="line" id="L2480">    <span class="tok-kw">pub</span> <span class="tok-kw">const</span> mpcore = CpuModel{</span>
-<span class="line" id="L2481">        .name = <span class="tok-str">&quot;mpcore&quot;</span>,</span>
-<span class="line" id="L2482">        .llvm_name = <span class="tok-str">&quot;mpcore&quot;</span>,</span>
-<span class="line" id="L2483">        .features = featureSet(&amp;[_]Feature{</span>
-<span class="line" id="L2484">            .slowfpvmlx,</span>
+<span class="line" id="L2422">            .dotprod,</span>
+<span class="line" id="L2423">            .exynos,</span>
+<span class="line" id="L2424">            .fullfp16,</span>
+<span class="line" id="L2425">            .v8_2a,</span>
+<span class="line" id="L2426">        }),</span>
+<span class="line" id="L2427">    };</span>
+<span class="line" id="L2428">    <span class="tok-kw">pub</span> <span class="tok-kw">const</span> exynos_m5 = CpuModel{</span>
+<span class="line" id="L2429">        .name = <span class="tok-str">&quot;exynos_m5&quot;</span>,</span>
+<span class="line" id="L2430">        .llvm_name = <span class="tok-str">&quot;exynos-m5&quot;</span>,</span>
+<span class="line" id="L2431">        .features = featureSet(&amp;[_]Feature{</span>
+<span class="line" id="L2432">            .dotprod,</span>
+<span class="line" id="L2433">            .exynos,</span>
+<span class="line" id="L2434">            .fullfp16,</span>
+<span class="line" id="L2435">            .v8_2a,</span>
+<span class="line" id="L2436">        }),</span>
+<span class="line" id="L2437">    };</span>
+<span class="line" id="L2438">    <span class="tok-kw">pub</span> <span class="tok-kw">const</span> generic = CpuModel{</span>
+<span class="line" id="L2439">        .name = <span class="tok-str">&quot;generic&quot;</span>,</span>
+<span class="line" id="L2440">        .llvm_name = <span class="tok-str">&quot;generic&quot;</span>,</span>
+<span class="line" id="L2441">        .features = featureSet(&amp;[_]Feature{}),</span>
+<span class="line" id="L2442">    };</span>
+<span class="line" id="L2443">    <span class="tok-kw">pub</span> <span class="tok-kw">const</span> iwmmxt = CpuModel{</span>
+<span class="line" id="L2444">        .name = <span class="tok-str">&quot;iwmmxt&quot;</span>,</span>
+<span class="line" id="L2445">        .llvm_name = <span class="tok-str">&quot;iwmmxt&quot;</span>,</span>
+<span class="line" id="L2446">        .features = featureSet(&amp;[_]Feature{</span>
+<span class="line" id="L2447">            .v5te,</span>
+<span class="line" id="L2448">        }),</span>
+<span class="line" id="L2449">    };</span>
+<span class="line" id="L2450">    <span class="tok-kw">pub</span> <span class="tok-kw">const</span> krait = CpuModel{</span>
+<span class="line" id="L2451">        .name = <span class="tok-str">&quot;krait&quot;</span>,</span>
+<span class="line" id="L2452">        .llvm_name = <span class="tok-str">&quot;krait&quot;</span>,</span>
+<span class="line" id="L2453">        .features = featureSet(&amp;[_]Feature{</span>
+<span class="line" id="L2454">            .avoid_partial_cpsr,</span>
+<span class="line" id="L2455">            .hwdiv,</span>
+<span class="line" id="L2456">            .hwdiv_arm,</span>
+<span class="line" id="L2457">            .muxed_units,</span>
+<span class="line" id="L2458">            .ret_addr_stack,</span>
+<span class="line" id="L2459">            .v7a,</span>
+<span class="line" id="L2460">            .vfp4,</span>
+<span class="line" id="L2461">            .vldn_align,</span>
+<span class="line" id="L2462">            .vmlx_forwarding,</span>
+<span class="line" id="L2463">        }),</span>
+<span class="line" id="L2464">    };</span>
+<span class="line" id="L2465">    <span class="tok-kw">pub</span> <span class="tok-kw">const</span> kryo = CpuModel{</span>
+<span class="line" id="L2466">        .name = <span class="tok-str">&quot;kryo&quot;</span>,</span>
+<span class="line" id="L2467">        .llvm_name = <span class="tok-str">&quot;kryo&quot;</span>,</span>
+<span class="line" id="L2468">        .features = featureSet(&amp;[_]Feature{</span>
+<span class="line" id="L2469">            .v8a,</span>
+<span class="line" id="L2470">        }),</span>
+<span class="line" id="L2471">    };</span>
+<span class="line" id="L2472">    <span class="tok-kw">pub</span> <span class="tok-kw">const</span> mpcore = CpuModel{</span>
+<span class="line" id="L2473">        .name = <span class="tok-str">&quot;mpcore&quot;</span>,</span>
+<span class="line" id="L2474">        .llvm_name = <span class="tok-str">&quot;mpcore&quot;</span>,</span>
+<span class="line" id="L2475">        .features = featureSet(&amp;[_]Feature{</span>
+<span class="line" id="L2476">            .slowfpvmlx,</span>
+<span class="line" id="L2477">            .v6k,</span>
+<span class="line" id="L2478">            .vfp2,</span>
+<span class="line" id="L2479">        }),</span>
+<span class="line" id="L2480">    };</span>
+<span class="line" id="L2481">    <span class="tok-kw">pub</span> <span class="tok-kw">const</span> mpcorenovfp = CpuModel{</span>
+<span class="line" id="L2482">        .name = <span class="tok-str">&quot;mpcorenovfp&quot;</span>,</span>
+<span class="line" id="L2483">        .llvm_name = <span class="tok-str">&quot;mpcorenovfp&quot;</span>,</span>
+<span class="line" id="L2484">        .features = featureSet(&amp;[_]Feature{</span>
 <span class="line" id="L2485">            .v6k,</span>
-<span class="line" id="L2486">            .vfp2,</span>
-<span class="line" id="L2487">        }),</span>
-<span class="line" id="L2488">    };</span>
-<span class="line" id="L2489">    <span class="tok-kw">pub</span> <span class="tok-kw">const</span> mpcorenovfp = CpuModel{</span>
-<span class="line" id="L2490">        .name = <span class="tok-str">&quot;mpcorenovfp&quot;</span>,</span>
-<span class="line" id="L2491">        .llvm_name = <span class="tok-str">&quot;mpcorenovfp&quot;</span>,</span>
-<span class="line" id="L2492">        .features = featureSet(&amp;[_]Feature{</span>
-<span class="line" id="L2493">            .v6k,</span>
+<span class="line" id="L2486">        }),</span>
+<span class="line" id="L2487">    };</span>
+<span class="line" id="L2488">    <span class="tok-kw">pub</span> <span class="tok-kw">const</span> neoverse_n1 = CpuModel{</span>
+<span class="line" id="L2489">        .name = <span class="tok-str">&quot;neoverse_n1&quot;</span>,</span>
+<span class="line" id="L2490">        .llvm_name = <span class="tok-str">&quot;neoverse-n1&quot;</span>,</span>
+<span class="line" id="L2491">        .features = featureSet(&amp;[_]Feature{</span>
+<span class="line" id="L2492">            .dotprod,</span>
+<span class="line" id="L2493">            .v8_2a,</span>
 <span class="line" id="L2494">        }),</span>
 <span class="line" id="L2495">    };</span>
-<span class="line" id="L2496">    <span class="tok-kw">pub</span> <span class="tok-kw">const</span> neoverse_n1 = CpuModel{</span>
-<span class="line" id="L2497">        .name = <span class="tok-str">&quot;neoverse_n1&quot;</span>,</span>
-<span class="line" id="L2498">        .llvm_name = <span class="tok-str">&quot;neoverse-n1&quot;</span>,</span>
+<span class="line" id="L2496">    <span class="tok-kw">pub</span> <span class="tok-kw">const</span> neoverse_n2 = CpuModel{</span>
+<span class="line" id="L2497">        .name = <span class="tok-str">&quot;neoverse_n2&quot;</span>,</span>
+<span class="line" id="L2498">        .llvm_name = <span class="tok-str">&quot;neoverse-n2&quot;</span>,</span>
 <span class="line" id="L2499">        .features = featureSet(&amp;[_]Feature{</span>
-<span class="line" id="L2500">            .dotprod,</span>
-<span class="line" id="L2501">            .v8_2a,</span>
-<span class="line" id="L2502">        }),</span>
-<span class="line" id="L2503">    };</span>
-<span class="line" id="L2504">    <span class="tok-kw">pub</span> <span class="tok-kw">const</span> neoverse_n2 = CpuModel{</span>
-<span class="line" id="L2505">        .name = <span class="tok-str">&quot;neoverse_n2&quot;</span>,</span>
-<span class="line" id="L2506">        .llvm_name = <span class="tok-str">&quot;neoverse-n2&quot;</span>,</span>
-<span class="line" id="L2507">        .features = featureSet(&amp;[_]Feature{</span>
-<span class="line" id="L2508">            .bf16,</span>
-<span class="line" id="L2509">            .i8mm,</span>
-<span class="line" id="L2510">            .v8_5a,</span>
-<span class="line" id="L2511">        }),</span>
-<span class="line" id="L2512">    };</span>
-<span class="line" id="L2513">    <span class="tok-kw">pub</span> <span class="tok-kw">const</span> neoverse_v1 = CpuModel{</span>
-<span class="line" id="L2514">        .name = <span class="tok-str">&quot;neoverse_v1&quot;</span>,</span>
-<span class="line" id="L2515">        .llvm_name = <span class="tok-str">&quot;neoverse-v1&quot;</span>,</span>
-<span class="line" id="L2516">        .features = featureSet(&amp;[_]Feature{</span>
-<span class="line" id="L2517">            .bf16,</span>
-<span class="line" id="L2518">            .fullfp16,</span>
-<span class="line" id="L2519">            .i8mm,</span>
-<span class="line" id="L2520">            .v8_4a,</span>
+<span class="line" id="L2500">            .bf16,</span>
+<span class="line" id="L2501">            .i8mm,</span>
+<span class="line" id="L2502">            .v8_5a,</span>
+<span class="line" id="L2503">        }),</span>
+<span class="line" id="L2504">    };</span>
+<span class="line" id="L2505">    <span class="tok-kw">pub</span> <span class="tok-kw">const</span> neoverse_v1 = CpuModel{</span>
+<span class="line" id="L2506">        .name = <span class="tok-str">&quot;neoverse_v1&quot;</span>,</span>
+<span class="line" id="L2507">        .llvm_name = <span class="tok-str">&quot;neoverse-v1&quot;</span>,</span>
+<span class="line" id="L2508">        .features = featureSet(&amp;[_]Feature{</span>
+<span class="line" id="L2509">            .bf16,</span>
+<span class="line" id="L2510">            .fullfp16,</span>
+<span class="line" id="L2511">            .i8mm,</span>
+<span class="line" id="L2512">            .v8_4a,</span>
+<span class="line" id="L2513">        }),</span>
+<span class="line" id="L2514">    };</span>
+<span class="line" id="L2515">    <span class="tok-kw">pub</span> <span class="tok-kw">const</span> sc000 = CpuModel{</span>
+<span class="line" id="L2516">        .name = <span class="tok-str">&quot;sc000&quot;</span>,</span>
+<span class="line" id="L2517">        .llvm_name = <span class="tok-str">&quot;sc000&quot;</span>,</span>
+<span class="line" id="L2518">        .features = featureSet(&amp;[_]Feature{</span>
+<span class="line" id="L2519">            .no_branch_predictor,</span>
+<span class="line" id="L2520">            .v6m,</span>
 <span class="line" id="L2521">        }),</span>
 <span class="line" id="L2522">    };</span>
-<span class="line" id="L2523">    <span class="tok-kw">pub</span> <span class="tok-kw">const</span> sc000 = CpuModel{</span>
-<span class="line" id="L2524">        .name = <span class="tok-str">&quot;sc000&quot;</span>,</span>
-<span class="line" id="L2525">        .llvm_name = <span class="tok-str">&quot;sc000&quot;</span>,</span>
+<span class="line" id="L2523">    <span class="tok-kw">pub</span> <span class="tok-kw">const</span> sc300 = CpuModel{</span>
+<span class="line" id="L2524">        .name = <span class="tok-str">&quot;sc300&quot;</span>,</span>
+<span class="line" id="L2525">        .llvm_name = <span class="tok-str">&quot;sc300&quot;</span>,</span>
 <span class="line" id="L2526">        .features = featureSet(&amp;[_]Feature{</span>
-<span class="line" id="L2527">            .no_branch_predictor,</span>
-<span class="line" id="L2528">            .v6m,</span>
-<span class="line" id="L2529">        }),</span>
-<span class="line" id="L2530">    };</span>
-<span class="line" id="L2531">    <span class="tok-kw">pub</span> <span class="tok-kw">const</span> sc300 = CpuModel{</span>
-<span class="line" id="L2532">        .name = <span class="tok-str">&quot;sc300&quot;</span>,</span>
-<span class="line" id="L2533">        .llvm_name = <span class="tok-str">&quot;sc300&quot;</span>,</span>
-<span class="line" id="L2534">        .features = featureSet(&amp;[_]Feature{</span>
-<span class="line" id="L2535">            .m3,</span>
-<span class="line" id="L2536">            .no_branch_predictor,</span>
-<span class="line" id="L2537">            .use_misched,</span>
-<span class="line" id="L2538">            .v7m,</span>
-<span class="line" id="L2539">        }),</span>
-<span class="line" id="L2540">    };</span>
-<span class="line" id="L2541">    <span class="tok-kw">pub</span> <span class="tok-kw">const</span> strongarm = CpuModel{</span>
-<span class="line" id="L2542">        .name = <span class="tok-str">&quot;strongarm&quot;</span>,</span>
-<span class="line" id="L2543">        .llvm_name = <span class="tok-str">&quot;strongarm&quot;</span>,</span>
-<span class="line" id="L2544">        .features = featureSet(&amp;[_]Feature{</span>
-<span class="line" id="L2545">            .v4,</span>
-<span class="line" id="L2546">        }),</span>
-<span class="line" id="L2547">    };</span>
-<span class="line" id="L2548">    <span class="tok-kw">pub</span> <span class="tok-kw">const</span> strongarm110 = CpuModel{</span>
-<span class="line" id="L2549">        .name = <span class="tok-str">&quot;strongarm110&quot;</span>,</span>
-<span class="line" id="L2550">        .llvm_name = <span class="tok-str">&quot;strongarm110&quot;</span>,</span>
-<span class="line" id="L2551">        .features = featureSet(&amp;[_]Feature{</span>
-<span class="line" id="L2552">            .v4,</span>
-<span class="line" id="L2553">        }),</span>
-<span class="line" id="L2554">    };</span>
-<span class="line" id="L2555">    <span class="tok-kw">pub</span> <span class="tok-kw">const</span> strongarm1100 = CpuModel{</span>
-<span class="line" id="L2556">        .name = <span class="tok-str">&quot;strongarm1100&quot;</span>,</span>
-<span class="line" id="L2557">        .llvm_name = <span class="tok-str">&quot;strongarm1100&quot;</span>,</span>
-<span class="line" id="L2558">        .features = featureSet(&amp;[_]Feature{</span>
-<span class="line" id="L2559">            .v4,</span>
-<span class="line" id="L2560">        }),</span>
-<span class="line" id="L2561">    };</span>
-<span class="line" id="L2562">    <span class="tok-kw">pub</span> <span class="tok-kw">const</span> strongarm1110 = CpuModel{</span>
-<span class="line" id="L2563">        .name = <span class="tok-str">&quot;strongarm1110&quot;</span>,</span>
-<span class="line" id="L2564">        .llvm_name = <span class="tok-str">&quot;strongarm1110&quot;</span>,</span>
-<span class="line" id="L2565">        .features = featureSet(&amp;[_]Feature{</span>
-<span class="line" id="L2566">            .v4,</span>
-<span class="line" id="L2567">        }),</span>
-<span class="line" id="L2568">    };</span>
-<span class="line" id="L2569">    <span class="tok-kw">pub</span> <span class="tok-kw">const</span> swift = CpuModel{</span>
-<span class="line" id="L2570">        .name = <span class="tok-str">&quot;swift&quot;</span>,</span>
-<span class="line" id="L2571">        .llvm_name = <span class="tok-str">&quot;swift&quot;</span>,</span>
-<span class="line" id="L2572">        .features = featureSet(&amp;[_]Feature{</span>
-<span class="line" id="L2573">            .avoid_movs_shop,</span>
-<span class="line" id="L2574">            .avoid_partial_cpsr,</span>
-<span class="line" id="L2575">            .disable_postra_scheduler,</span>
-<span class="line" id="L2576">            .hwdiv,</span>
-<span class="line" id="L2577">            .hwdiv_arm,</span>
-<span class="line" id="L2578">            .mp,</span>
-<span class="line" id="L2579">            .neonfp,</span>
-<span class="line" id="L2580">            .prefer_ishst,</span>
-<span class="line" id="L2581">            .prof_unpr,</span>
-<span class="line" id="L2582">            .ret_addr_stack,</span>
-<span class="line" id="L2583">            .slow_load_D_subreg,</span>
-<span class="line" id="L2584">            .slow_odd_reg,</span>
-<span class="line" id="L2585">            .slow_vdup32,</span>
-<span class="line" id="L2586">            .slow_vgetlni32,</span>
-<span class="line" id="L2587">            .slowfpvfmx,</span>
-<span class="line" id="L2588">            .slowfpvmlx,</span>
-<span class="line" id="L2589">            .swift,</span>
-<span class="line" id="L2590">            .use_misched,</span>
-<span class="line" id="L2591">            .v7a,</span>
-<span class="line" id="L2592">            .vfp4,</span>
-<span class="line" id="L2593">            .vmlx_hazards,</span>
-<span class="line" id="L2594">            .wide_stride_vfp,</span>
-<span class="line" id="L2595">        }),</span>
-<span class="line" id="L2596">    };</span>
-<span class="line" id="L2597">    <span class="tok-kw">pub</span> <span class="tok-kw">const</span> xscale = CpuModel{</span>
-<span class="line" id="L2598">        .name = <span class="tok-str">&quot;xscale&quot;</span>,</span>
-<span class="line" id="L2599">        .llvm_name = <span class="tok-str">&quot;xscale&quot;</span>,</span>
-<span class="line" id="L2600">        .features = featureSet(&amp;[_]Feature{</span>
-<span class="line" id="L2601">            .v5te,</span>
-<span class="line" id="L2602">        }),</span>
-<span class="line" id="L2603">    };</span>
-<span class="line" id="L2604">};</span>
-<span class="line" id="L2605"></span>
+<span class="line" id="L2527">            .m3,</span>
+<span class="line" id="L2528">            .no_branch_predictor,</span>
+<span class="line" id="L2529">            .use_misched,</span>
+<span class="line" id="L2530">            .v7m,</span>
+<span class="line" id="L2531">        }),</span>
+<span class="line" id="L2532">    };</span>
+<span class="line" id="L2533">    <span class="tok-kw">pub</span> <span class="tok-kw">const</span> strongarm = CpuModel{</span>
+<span class="line" id="L2534">        .name = <span class="tok-str">&quot;strongarm&quot;</span>,</span>
+<span class="line" id="L2535">        .llvm_name = <span class="tok-str">&quot;strongarm&quot;</span>,</span>
+<span class="line" id="L2536">        .features = featureSet(&amp;[_]Feature{</span>
+<span class="line" id="L2537">            .v4,</span>
+<span class="line" id="L2538">        }),</span>
+<span class="line" id="L2539">    };</span>
+<span class="line" id="L2540">    <span class="tok-kw">pub</span> <span class="tok-kw">const</span> strongarm110 = CpuModel{</span>
+<span class="line" id="L2541">        .name = <span class="tok-str">&quot;strongarm110&quot;</span>,</span>
+<span class="line" id="L2542">        .llvm_name = <span class="tok-str">&quot;strongarm110&quot;</span>,</span>
+<span class="line" id="L2543">        .features = featureSet(&amp;[_]Feature{</span>
+<span class="line" id="L2544">            .v4,</span>
+<span class="line" id="L2545">        }),</span>
+<span class="line" id="L2546">    };</span>
+<span class="line" id="L2547">    <span class="tok-kw">pub</span> <span class="tok-kw">const</span> strongarm1100 = CpuModel{</span>
+<span class="line" id="L2548">        .name = <span class="tok-str">&quot;strongarm1100&quot;</span>,</span>
+<span class="line" id="L2549">        .llvm_name = <span class="tok-str">&quot;strongarm1100&quot;</span>,</span>
+<span class="line" id="L2550">        .features = featureSet(&amp;[_]Feature{</span>
+<span class="line" id="L2551">            .v4,</span>
+<span class="line" id="L2552">        }),</span>
+<span class="line" id="L2553">    };</span>
+<span class="line" id="L2554">    <span class="tok-kw">pub</span> <span class="tok-kw">const</span> strongarm1110 = CpuModel{</span>
+<span class="line" id="L2555">        .name = <span class="tok-str">&quot;strongarm1110&quot;</span>,</span>
+<span class="line" id="L2556">        .llvm_name = <span class="tok-str">&quot;strongarm1110&quot;</span>,</span>
+<span class="line" id="L2557">        .features = featureSet(&amp;[_]Feature{</span>
+<span class="line" id="L2558">            .v4,</span>
+<span class="line" id="L2559">        }),</span>
+<span class="line" id="L2560">    };</span>
+<span class="line" id="L2561">    <span class="tok-kw">pub</span> <span class="tok-kw">const</span> swift = CpuModel{</span>
+<span class="line" id="L2562">        .name = <span class="tok-str">&quot;swift&quot;</span>,</span>
+<span class="line" id="L2563">        .llvm_name = <span class="tok-str">&quot;swift&quot;</span>,</span>
+<span class="line" id="L2564">        .features = featureSet(&amp;[_]Feature{</span>
+<span class="line" id="L2565">            .avoid_movs_shop,</span>
+<span class="line" id="L2566">            .avoid_partial_cpsr,</span>
+<span class="line" id="L2567">            .disable_postra_scheduler,</span>
+<span class="line" id="L2568">            .hwdiv,</span>
+<span class="line" id="L2569">            .hwdiv_arm,</span>
+<span class="line" id="L2570">            .mp,</span>
+<span class="line" id="L2571">            .neonfp,</span>
+<span class="line" id="L2572">            .prefer_ishst,</span>
+<span class="line" id="L2573">            .prof_unpr,</span>
+<span class="line" id="L2574">            .ret_addr_stack,</span>
+<span class="line" id="L2575">            .slow_load_D_subreg,</span>
+<span class="line" id="L2576">            .slow_odd_reg,</span>
+<span class="line" id="L2577">            .slow_vdup32,</span>
+<span class="line" id="L2578">            .slow_vgetlni32,</span>
+<span class="line" id="L2579">            .slowfpvfmx,</span>
+<span class="line" id="L2580">            .slowfpvmlx,</span>
+<span class="line" id="L2581">            .swift,</span>
+<span class="line" id="L2582">            .use_misched,</span>
+<span class="line" id="L2583">            .v7a,</span>
+<span class="line" id="L2584">            .vfp4,</span>
+<span class="line" id="L2585">            .vmlx_hazards,</span>
+<span class="line" id="L2586">            .wide_stride_vfp,</span>
+<span class="line" id="L2587">        }),</span>
+<span class="line" id="L2588">    };</span>
+<span class="line" id="L2589">    <span class="tok-kw">pub</span> <span class="tok-kw">const</span> xscale = CpuModel{</span>
+<span class="line" id="L2590">        .name = <span class="tok-str">&quot;xscale&quot;</span>,</span>
+<span class="line" id="L2591">        .llvm_name = <span class="tok-str">&quot;xscale&quot;</span>,</span>
+<span class="line" id="L2592">        .features = featureSet(&amp;[_]Feature{</span>
+<span class="line" id="L2593">            .v5te,</span>
+<span class="line" id="L2594">        }),</span>
+<span class="line" id="L2595">    };</span>
+<span class="line" id="L2596">};</span>
+<span class="line" id="L2597"></span>
 </code></pre></body>
 </html>

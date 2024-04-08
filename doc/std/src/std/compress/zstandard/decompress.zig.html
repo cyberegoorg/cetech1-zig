@@ -523,7 +523,7 @@
 <span class="line" id="L409">            .hasher_opt = <span class="tok-kw">if</span> (should_compute_checksum) std.hash.XxHash64.init(<span class="tok-number">0</span>) <span class="tok-kw">else</span> <span class="tok-null">null</span>,</span>
 <span class="line" id="L410">            .window_size = window_size,</span>
 <span class="line" id="L411">            .has_checksum = frame_header.descriptor.content_checksum_flag,</span>
-<span class="line" id="L412">            .block_size_max = <span class="tok-builtin">@min</span>(<span class="tok-number">1</span> &lt;&lt; <span class="tok-number">17</span>, window_size),</span>
+<span class="line" id="L412">            .block_size_max = <span class="tok-builtin">@min</span>(types.block_size_max, window_size),</span>
 <span class="line" id="L413">            .content_size = content_size,</span>
 <span class="line" id="L414">        };</span>
 <span class="line" id="L415">    }</span>

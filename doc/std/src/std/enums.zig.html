@@ -128,7 +128,7 @@
 <span class="line" id="L14">    <span class="tok-kw">var</span> fields: []<span class="tok-kw">const</span> StructField = &amp;[_]StructField{};</span>
 <span class="line" id="L15">    <span class="tok-kw">for</span> (std.meta.fields(E)) |field| {</span>
 <span class="line" id="L16">        fields = fields ++ &amp;[_]StructField{.{</span>
-<span class="line" id="L17">            .name = field.name,</span>
+<span class="line" id="L17">            .name = field.name ++ <span class="tok-str">&quot;&quot;</span>,</span>
 <span class="line" id="L18">            .<span class="tok-type">type</span> = Data,</span>
 <span class="line" id="L19">            .default_value = <span class="tok-kw">if</span> (field_default) |d| <span class="tok-builtin">@as</span>(?*<span class="tok-kw">const</span> <span class="tok-type">anyopaque</span>, <span class="tok-builtin">@ptrCast</span>(&amp;d)) <span class="tok-kw">else</span> <span class="tok-null">null</span>,</span>
 <span class="line" id="L20">            .is_comptime = <span class="tok-null">false</span>,</span>
@@ -234,7 +234,7 @@
 <span class="line" id="L120">    <span class="tok-kw">return</span> directEnumArrayDefault(E, Data, <span class="tok-null">null</span>, max_unused_slots, init_values);</span>
 <span class="line" id="L121">}</span>
 <span class="line" id="L122"></span>
-<span class="line" id="L123"><span class="tok-kw">test</span> <span class="tok-str">&quot;std.enums.directEnumArray&quot;</span> {</span>
+<span class="line" id="L123"><span class="tok-kw">test</span> directEnumArray {</span>
 <span class="line" id="L124">    <span class="tok-kw">const</span> E = <span class="tok-kw">enum</span>(<span class="tok-type">i4</span>) { a = <span class="tok-number">4</span>, b = <span class="tok-number">6</span>, c = <span class="tok-number">2</span> };</span>
 <span class="line" id="L125">    <span class="tok-kw">var</span> runtime_false: <span class="tok-type">bool</span> = <span class="tok-null">false</span>;</span>
 <span class="line" id="L126">    _ = &amp;runtime_false;</span>
@@ -277,7 +277,7 @@
 <span class="line" id="L163">    <span class="tok-kw">return</span> result;</span>
 <span class="line" id="L164">}</span>
 <span class="line" id="L165"></span>
-<span class="line" id="L166"><span class="tok-kw">test</span> <span class="tok-str">&quot;std.enums.directEnumArrayDefault&quot;</span> {</span>
+<span class="line" id="L166"><span class="tok-kw">test</span> directEnumArrayDefault {</span>
 <span class="line" id="L167">    <span class="tok-kw">const</span> E = <span class="tok-kw">enum</span>(<span class="tok-type">i4</span>) { a = <span class="tok-number">4</span>, b = <span class="tok-number">6</span>, c = <span class="tok-number">2</span> };</span>
 <span class="line" id="L168">    <span class="tok-kw">var</span> runtime_false: <span class="tok-type">bool</span> = <span class="tok-null">false</span>;</span>
 <span class="line" id="L169">    _ = &amp;runtime_false;</span>
@@ -292,7 +292,7 @@
 <span class="line" id="L178">    <span class="tok-kw">try</span> testing.expectEqual(<span class="tok-null">false</span>, array[<span class="tok-number">2</span>]);</span>
 <span class="line" id="L179">}</span>
 <span class="line" id="L180"></span>
-<span class="line" id="L181"><span class="tok-kw">test</span> <span class="tok-str">&quot;std.enums.directEnumArrayDefault slice&quot;</span> {</span>
+<span class="line" id="L181"><span class="tok-kw">test</span> <span class="tok-str">&quot;directEnumArrayDefault slice&quot;</span> {</span>
 <span class="line" id="L182">    <span class="tok-kw">const</span> E = <span class="tok-kw">enum</span>(<span class="tok-type">i4</span>) { a = <span class="tok-number">4</span>, b = <span class="tok-number">6</span>, c = <span class="tok-number">2</span> };</span>
 <span class="line" id="L183">    <span class="tok-kw">var</span> runtime_b = <span class="tok-str">&quot;b&quot;</span>;</span>
 <span class="line" id="L184">    _ = &amp;runtime_b;</span>
@@ -328,7 +328,7 @@
 <span class="line" id="L214">    };</span>
 <span class="line" id="L215">}</span>
 <span class="line" id="L216"></span>
-<span class="line" id="L217"><span class="tok-kw">test</span> <span class="tok-str">&quot;std.enums.nameCast&quot;</span> {</span>
+<span class="line" id="L217"><span class="tok-kw">test</span> nameCast {</span>
 <span class="line" id="L218">    <span class="tok-kw">const</span> A = <span class="tok-kw">enum</span>(<span class="tok-type">u1</span>) { a = <span class="tok-number">0</span>, b = <span class="tok-number">1</span> };</span>
 <span class="line" id="L219">    <span class="tok-kw">const</span> B = <span class="tok-kw">enum</span>(<span class="tok-type">u1</span>) { a = <span class="tok-number">1</span>, b = <span class="tok-number">0</span> };</span>
 <span class="line" id="L220">    <span class="tok-kw">try</span> testing.expectEqual(A.a, nameCast(A, .a));</span>
@@ -629,7 +629,7 @@
 <span class="line" id="L515">    };</span>
 <span class="line" id="L516">}</span>
 <span class="line" id="L517"></span>
-<span class="line" id="L518"><span class="tok-kw">test</span> <span class="tok-str">&quot;EnumMultiset&quot;</span> {</span>
+<span class="line" id="L518"><span class="tok-kw">test</span> EnumMultiset {</span>
 <span class="line" id="L519">    <span class="tok-kw">const</span> Ball = <span class="tok-kw">enum</span> { red, green, blue };</span>
 <span class="line" id="L520"></span>
 <span class="line" id="L521">    <span class="tok-kw">const</span> empty = EnumMultiset(Ball).initEmpty();</span>
@@ -1102,7 +1102,7 @@
 <span class="line" id="L983">    <span class="tok-kw">try</span> testing.expect(full.differenceWith(black).eql(red));</span>
 <span class="line" id="L984">}</span>
 <span class="line" id="L985"></span>
-<span class="line" id="L986"><span class="tok-kw">test</span> <span class="tok-str">&quot;std.enums.EnumSet empty&quot;</span> {</span>
+<span class="line" id="L986"><span class="tok-kw">test</span> <span class="tok-str">&quot;EnumSet empty&quot;</span> {</span>
 <span class="line" id="L987">    <span class="tok-kw">const</span> E = <span class="tok-kw">enum</span> {};</span>
 <span class="line" id="L988">    <span class="tok-kw">const</span> empty = EnumSet(E).initEmpty();</span>
 <span class="line" id="L989">    <span class="tok-kw">const</span> full = EnumSet(E).initFull();</span>
@@ -1113,7 +1113,7 @@
 <span class="line" id="L994">    <span class="tok-kw">try</span> std.testing.expect(empty.eql(full.complement()));</span>
 <span class="line" id="L995">}</span>
 <span class="line" id="L996"></span>
-<span class="line" id="L997"><span class="tok-kw">test</span> <span class="tok-str">&quot;std.enums.EnumSet const iterator&quot;</span> {</span>
+<span class="line" id="L997"><span class="tok-kw">test</span> <span class="tok-str">&quot;EnumSet const iterator&quot;</span> {</span>
 <span class="line" id="L998">    <span class="tok-kw">const</span> Direction = <span class="tok-kw">enum</span> { up, down, left, right };</span>
 <span class="line" id="L999">    <span class="tok-kw">const</span> diag_move = init: {</span>
 <span class="line" id="L1000">        <span class="tok-kw">var</span> move = EnumSet(Direction).initEmpty();</span>
@@ -1417,7 +1417,7 @@
 <span class="line" id="L1298">    }</span>
 <span class="line" id="L1299">}</span>
 <span class="line" id="L1300"></span>
-<span class="line" id="L1301"><span class="tok-kw">test</span> <span class="tok-str">&quot;std.enums.ensureIndexer&quot;</span> {</span>
+<span class="line" id="L1301"><span class="tok-kw">test</span> ensureIndexer {</span>
 <span class="line" id="L1302">    ensureIndexer(<span class="tok-kw">struct</span> {</span>
 <span class="line" id="L1303">        <span class="tok-kw">pub</span> <span class="tok-kw">const</span> Key = <span class="tok-type">u32</span>;</span>
 <span class="line" id="L1304">        <span class="tok-kw">pub</span> <span class="tok-kw">const</span> count: <span class="tok-type">comptime_int</span> = <span class="tok-number">8</span>;</span>
@@ -1585,7 +1585,7 @@
 <span class="line" id="L1463">    }</span>
 <span class="line" id="L1464">}</span>
 <span class="line" id="L1465"></span>
-<span class="line" id="L1466"><span class="tok-kw">test</span> <span class="tok-str">&quot;std.enums.EnumIndexer dense zeroed&quot;</span> {</span>
+<span class="line" id="L1466"><span class="tok-kw">test</span> <span class="tok-str">&quot;EnumIndexer dense zeroed&quot;</span> {</span>
 <span class="line" id="L1467">    <span class="tok-kw">const</span> E = <span class="tok-kw">enum</span>(<span class="tok-type">u2</span>) { b = <span class="tok-number">1</span>, a = <span class="tok-number">0</span>, c = <span class="tok-number">2</span> };</span>
 <span class="line" id="L1468">    <span class="tok-kw">const</span> Indexer = EnumIndexer(E);</span>
 <span class="line" id="L1469">    ensureIndexer(Indexer);</span>
@@ -1601,7 +1601,7 @@
 <span class="line" id="L1479">    <span class="tok-kw">try</span> testing.expectEqual(E.c, Indexer.keyForIndex(<span class="tok-number">2</span>));</span>
 <span class="line" id="L1480">}</span>
 <span class="line" id="L1481"></span>
-<span class="line" id="L1482"><span class="tok-kw">test</span> <span class="tok-str">&quot;std.enums.EnumIndexer dense positive&quot;</span> {</span>
+<span class="line" id="L1482"><span class="tok-kw">test</span> <span class="tok-str">&quot;EnumIndexer dense positive&quot;</span> {</span>
 <span class="line" id="L1483">    <span class="tok-kw">const</span> E = <span class="tok-kw">enum</span>(<span class="tok-type">u4</span>) { c = <span class="tok-number">6</span>, a = <span class="tok-number">4</span>, b = <span class="tok-number">5</span> };</span>
 <span class="line" id="L1484">    <span class="tok-kw">const</span> Indexer = EnumIndexer(E);</span>
 <span class="line" id="L1485">    ensureIndexer(Indexer);</span>
@@ -1617,7 +1617,7 @@
 <span class="line" id="L1495">    <span class="tok-kw">try</span> testing.expectEqual(E.c, Indexer.keyForIndex(<span class="tok-number">2</span>));</span>
 <span class="line" id="L1496">}</span>
 <span class="line" id="L1497"></span>
-<span class="line" id="L1498"><span class="tok-kw">test</span> <span class="tok-str">&quot;std.enums.EnumIndexer dense negative&quot;</span> {</span>
+<span class="line" id="L1498"><span class="tok-kw">test</span> <span class="tok-str">&quot;EnumIndexer dense negative&quot;</span> {</span>
 <span class="line" id="L1499">    <span class="tok-kw">const</span> E = <span class="tok-kw">enum</span>(<span class="tok-type">i4</span>) { a = -<span class="tok-number">6</span>, c = -<span class="tok-number">4</span>, b = -<span class="tok-number">5</span> };</span>
 <span class="line" id="L1500">    <span class="tok-kw">const</span> Indexer = EnumIndexer(E);</span>
 <span class="line" id="L1501">    ensureIndexer(Indexer);</span>
@@ -1633,7 +1633,7 @@
 <span class="line" id="L1511">    <span class="tok-kw">try</span> testing.expectEqual(E.c, Indexer.keyForIndex(<span class="tok-number">2</span>));</span>
 <span class="line" id="L1512">}</span>
 <span class="line" id="L1513"></span>
-<span class="line" id="L1514"><span class="tok-kw">test</span> <span class="tok-str">&quot;std.enums.EnumIndexer sparse&quot;</span> {</span>
+<span class="line" id="L1514"><span class="tok-kw">test</span> <span class="tok-str">&quot;EnumIndexer sparse&quot;</span> {</span>
 <span class="line" id="L1515">    <span class="tok-kw">const</span> E = <span class="tok-kw">enum</span>(<span class="tok-type">i4</span>) { a = -<span class="tok-number">2</span>, c = <span class="tok-number">6</span>, b = <span class="tok-number">4</span> };</span>
 <span class="line" id="L1516">    <span class="tok-kw">const</span> Indexer = EnumIndexer(E);</span>
 <span class="line" id="L1517">    ensureIndexer(Indexer);</span>
@@ -1649,7 +1649,7 @@
 <span class="line" id="L1527">    <span class="tok-kw">try</span> testing.expectEqual(E.c, Indexer.keyForIndex(<span class="tok-number">2</span>));</span>
 <span class="line" id="L1528">}</span>
 <span class="line" id="L1529"></span>
-<span class="line" id="L1530"><span class="tok-kw">test</span> <span class="tok-str">&quot;std.enums.EnumIndexer empty&quot;</span> {</span>
+<span class="line" id="L1530"><span class="tok-kw">test</span> <span class="tok-str">&quot;EnumIndexer empty&quot;</span> {</span>
 <span class="line" id="L1531">    <span class="tok-kw">const</span> E = <span class="tok-kw">enum</span> {};</span>
 <span class="line" id="L1532">    <span class="tok-kw">const</span> Indexer = EnumIndexer(E);</span>
 <span class="line" id="L1533">    ensureIndexer(Indexer);</span>
@@ -1657,7 +1657,7 @@
 <span class="line" id="L1535">    <span class="tok-kw">try</span> testing.expectEqual(<span class="tok-number">0</span>, Indexer.count);</span>
 <span class="line" id="L1536">}</span>
 <span class="line" id="L1537"></span>
-<span class="line" id="L1538"><span class="tok-kw">test</span> <span class="tok-str">&quot;enumValues&quot;</span> {</span>
+<span class="line" id="L1538"><span class="tok-kw">test</span> values {</span>
 <span class="line" id="L1539">    <span class="tok-kw">const</span> E = <span class="tok-kw">enum</span> {</span>
 <span class="line" id="L1540">        X,</span>
 <span class="line" id="L1541">        Y,</span>

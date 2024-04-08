@@ -314,7 +314,7 @@
 <span class="line" id="L191">    <span class="tok-comment">// files, then two WriteFiles executing in parallel might clobber each other.</span>
 </span>
 <span class="line" id="L192"></span>
-<span class="line" id="L193">    <span class="tok-kw">var</span> man = b.cache.obtain();</span>
+<span class="line" id="L193">    <span class="tok-kw">var</span> man = b.graph.cache.obtain();</span>
 <span class="line" id="L194">    <span class="tok-kw">defer</span> man.deinit();</span>
 <span class="line" id="L195"></span>
 <span class="line" id="L196">    <span class="tok-comment">// Random bytes to make WriteFile unique. Refresh this with</span>

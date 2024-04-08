@@ -587,7 +587,7 @@
 <span class="line" id="L408">    };</span>
 <span class="line" id="L409">}</span>
 <span class="line" id="L410"></span>
-<span class="line" id="L411"><span class="tok-kw">test</span> <span class="tok-str">&quot;SegmentedList basic usage&quot;</span> {</span>
+<span class="line" id="L411"><span class="tok-kw">test</span> <span class="tok-str">&quot;basic usage&quot;</span> {</span>
 <span class="line" id="L412">    <span class="tok-kw">try</span> testSegmentedList(<span class="tok-number">0</span>);</span>
 <span class="line" id="L413">    <span class="tok-kw">try</span> testSegmentedList(<span class="tok-number">1</span>);</span>
 <span class="line" id="L414">    <span class="tok-kw">try</span> testSegmentedList(<span class="tok-number">2</span>);</span>
@@ -686,7 +686,7 @@
 <span class="line" id="L507">    <span class="tok-kw">try</span> list.setCapacity(testing.allocator, <span class="tok-number">0</span>);</span>
 <span class="line" id="L508">}</span>
 <span class="line" id="L509"></span>
-<span class="line" id="L510"><span class="tok-kw">test</span> <span class="tok-str">&quot;std.segmented_list clearRetainingCapacity&quot;</span> {</span>
+<span class="line" id="L510"><span class="tok-kw">test</span> <span class="tok-str">&quot;clearRetainingCapacity&quot;</span> {</span>
 <span class="line" id="L511">    <span class="tok-kw">var</span> list = SegmentedList(<span class="tok-type">i32</span>, <span class="tok-number">1</span>){};</span>
 <span class="line" id="L512">    <span class="tok-kw">defer</span> list.deinit(testing.allocator);</span>
 <span class="line" id="L513"></span>

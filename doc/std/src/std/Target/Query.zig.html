@@ -588,7 +588,7 @@
 <span class="line" id="L468">    }</span>
 <span class="line" id="L469"></span>
 <span class="line" id="L470">    <span class="tok-kw">if</span> (self.glibc_version) |v| {</span>
-<span class="line" id="L471">        <span class="tok-kw">const</span> name = <span class="tok-builtin">@tagName</span>(self.abi <span class="tok-kw">orelse</span> builtin.target.abi);</span>
+<span class="line" id="L471">        <span class="tok-kw">const</span> name = <span class="tok-kw">if</span> (self.abi) |abi| <span class="tok-builtin">@tagName</span>(abi) <span class="tok-kw">else</span> <span class="tok-str">&quot;gnu&quot;</span>;</span>
 <span class="line" id="L472">        <span class="tok-kw">try</span> result.ensureUnusedCapacity(name.len + <span class="tok-number">2</span>);</span>
 <span class="line" id="L473">        result.appendAssumeCapacity(<span class="tok-str">'-'</span>);</span>
 <span class="line" id="L474">        result.appendSliceAssumeCapacity(name);</span>

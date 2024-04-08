@@ -234,7 +234,7 @@
 <span class="line" id="L120"></span>
 <span class="line" id="L121"><span class="tok-kw">const</span> epsilon = <span class="tok-number">0.0001</span>;</span>
 <span class="line" id="L122"></span>
-<span class="line" id="L123"><span class="tok-kw">test</span> <span class="tok-str">&quot;complex.add&quot;</span> {</span>
+<span class="line" id="L123"><span class="tok-kw">test</span> <span class="tok-str">&quot;add&quot;</span> {</span>
 <span class="line" id="L124">    <span class="tok-kw">const</span> a = Complex(<span class="tok-type">f32</span>).init(<span class="tok-number">5</span>, <span class="tok-number">3</span>);</span>
 <span class="line" id="L125">    <span class="tok-kw">const</span> b = Complex(<span class="tok-type">f32</span>).init(<span class="tok-number">2</span>, <span class="tok-number">7</span>);</span>
 <span class="line" id="L126">    <span class="tok-kw">const</span> c = a.add(b);</span>
@@ -242,7 +242,7 @@
 <span class="line" id="L128">    <span class="tok-kw">try</span> testing.expect(c.re == <span class="tok-number">7</span> <span class="tok-kw">and</span> c.im == <span class="tok-number">10</span>);</span>
 <span class="line" id="L129">}</span>
 <span class="line" id="L130"></span>
-<span class="line" id="L131"><span class="tok-kw">test</span> <span class="tok-str">&quot;complex.sub&quot;</span> {</span>
+<span class="line" id="L131"><span class="tok-kw">test</span> <span class="tok-str">&quot;sub&quot;</span> {</span>
 <span class="line" id="L132">    <span class="tok-kw">const</span> a = Complex(<span class="tok-type">f32</span>).init(<span class="tok-number">5</span>, <span class="tok-number">3</span>);</span>
 <span class="line" id="L133">    <span class="tok-kw">const</span> b = Complex(<span class="tok-type">f32</span>).init(<span class="tok-number">2</span>, <span class="tok-number">7</span>);</span>
 <span class="line" id="L134">    <span class="tok-kw">const</span> c = a.sub(b);</span>
@@ -250,7 +250,7 @@
 <span class="line" id="L136">    <span class="tok-kw">try</span> testing.expect(c.re == <span class="tok-number">3</span> <span class="tok-kw">and</span> c.im == -<span class="tok-number">4</span>);</span>
 <span class="line" id="L137">}</span>
 <span class="line" id="L138"></span>
-<span class="line" id="L139"><span class="tok-kw">test</span> <span class="tok-str">&quot;complex.mul&quot;</span> {</span>
+<span class="line" id="L139"><span class="tok-kw">test</span> <span class="tok-str">&quot;mul&quot;</span> {</span>
 <span class="line" id="L140">    <span class="tok-kw">const</span> a = Complex(<span class="tok-type">f32</span>).init(<span class="tok-number">5</span>, <span class="tok-number">3</span>);</span>
 <span class="line" id="L141">    <span class="tok-kw">const</span> b = Complex(<span class="tok-type">f32</span>).init(<span class="tok-number">2</span>, <span class="tok-number">7</span>);</span>
 <span class="line" id="L142">    <span class="tok-kw">const</span> c = a.mul(b);</span>
@@ -258,7 +258,7 @@
 <span class="line" id="L144">    <span class="tok-kw">try</span> testing.expect(c.re == -<span class="tok-number">11</span> <span class="tok-kw">and</span> c.im == <span class="tok-number">41</span>);</span>
 <span class="line" id="L145">}</span>
 <span class="line" id="L146"></span>
-<span class="line" id="L147"><span class="tok-kw">test</span> <span class="tok-str">&quot;complex.div&quot;</span> {</span>
+<span class="line" id="L147"><span class="tok-kw">test</span> <span class="tok-str">&quot;div&quot;</span> {</span>
 <span class="line" id="L148">    <span class="tok-kw">const</span> a = Complex(<span class="tok-type">f32</span>).init(<span class="tok-number">5</span>, <span class="tok-number">3</span>);</span>
 <span class="line" id="L149">    <span class="tok-kw">const</span> b = Complex(<span class="tok-type">f32</span>).init(<span class="tok-number">2</span>, <span class="tok-number">7</span>);</span>
 <span class="line" id="L150">    <span class="tok-kw">const</span> c = a.div(b);</span>
@@ -267,28 +267,28 @@
 <span class="line" id="L153">        math.approxEqAbs(<span class="tok-type">f32</span>, c.im, <span class="tok-builtin">@as</span>(<span class="tok-type">f32</span>, -<span class="tok-number">29</span>) / <span class="tok-number">53</span>, epsilon));</span>
 <span class="line" id="L154">}</span>
 <span class="line" id="L155"></span>
-<span class="line" id="L156"><span class="tok-kw">test</span> <span class="tok-str">&quot;complex.conjugate&quot;</span> {</span>
+<span class="line" id="L156"><span class="tok-kw">test</span> <span class="tok-str">&quot;conjugate&quot;</span> {</span>
 <span class="line" id="L157">    <span class="tok-kw">const</span> a = Complex(<span class="tok-type">f32</span>).init(<span class="tok-number">5</span>, <span class="tok-number">3</span>);</span>
 <span class="line" id="L158">    <span class="tok-kw">const</span> c = a.conjugate();</span>
 <span class="line" id="L159"></span>
 <span class="line" id="L160">    <span class="tok-kw">try</span> testing.expect(c.re == <span class="tok-number">5</span> <span class="tok-kw">and</span> c.im == -<span class="tok-number">3</span>);</span>
 <span class="line" id="L161">}</span>
 <span class="line" id="L162"></span>
-<span class="line" id="L163"><span class="tok-kw">test</span> <span class="tok-str">&quot;complex.neg&quot;</span> {</span>
+<span class="line" id="L163"><span class="tok-kw">test</span> <span class="tok-str">&quot;neg&quot;</span> {</span>
 <span class="line" id="L164">    <span class="tok-kw">const</span> a = Complex(<span class="tok-type">f32</span>).init(<span class="tok-number">5</span>, <span class="tok-number">3</span>);</span>
 <span class="line" id="L165">    <span class="tok-kw">const</span> c = a.neg();</span>
 <span class="line" id="L166"></span>
 <span class="line" id="L167">    <span class="tok-kw">try</span> testing.expect(c.re == -<span class="tok-number">5</span> <span class="tok-kw">and</span> c.im == -<span class="tok-number">3</span>);</span>
 <span class="line" id="L168">}</span>
 <span class="line" id="L169"></span>
-<span class="line" id="L170"><span class="tok-kw">test</span> <span class="tok-str">&quot;complex.mulbyi&quot;</span> {</span>
+<span class="line" id="L170"><span class="tok-kw">test</span> <span class="tok-str">&quot;mulbyi&quot;</span> {</span>
 <span class="line" id="L171">    <span class="tok-kw">const</span> a = Complex(<span class="tok-type">f32</span>).init(<span class="tok-number">5</span>, <span class="tok-number">3</span>);</span>
 <span class="line" id="L172">    <span class="tok-kw">const</span> c = a.mulbyi();</span>
 <span class="line" id="L173"></span>
 <span class="line" id="L174">    <span class="tok-kw">try</span> testing.expect(c.re == -<span class="tok-number">3</span> <span class="tok-kw">and</span> c.im == <span class="tok-number">5</span>);</span>
 <span class="line" id="L175">}</span>
 <span class="line" id="L176"></span>
-<span class="line" id="L177"><span class="tok-kw">test</span> <span class="tok-str">&quot;complex.reciprocal&quot;</span> {</span>
+<span class="line" id="L177"><span class="tok-kw">test</span> <span class="tok-str">&quot;reciprocal&quot;</span> {</span>
 <span class="line" id="L178">    <span class="tok-kw">const</span> a = Complex(<span class="tok-type">f32</span>).init(<span class="tok-number">5</span>, <span class="tok-number">3</span>);</span>
 <span class="line" id="L179">    <span class="tok-kw">const</span> c = a.reciprocal();</span>
 <span class="line" id="L180"></span>
@@ -296,7 +296,7 @@
 <span class="line" id="L182">        math.approxEqAbs(<span class="tok-type">f32</span>, c.im, <span class="tok-builtin">@as</span>(<span class="tok-type">f32</span>, -<span class="tok-number">3</span>) / <span class="tok-number">34</span>, epsilon));</span>
 <span class="line" id="L183">}</span>
 <span class="line" id="L184"></span>
-<span class="line" id="L185"><span class="tok-kw">test</span> <span class="tok-str">&quot;complex.magnitude&quot;</span> {</span>
+<span class="line" id="L185"><span class="tok-kw">test</span> <span class="tok-str">&quot;magnitude&quot;</span> {</span>
 <span class="line" id="L186">    <span class="tok-kw">const</span> a = Complex(<span class="tok-type">f32</span>).init(<span class="tok-number">5</span>, <span class="tok-number">3</span>);</span>
 <span class="line" id="L187">    <span class="tok-kw">const</span> c = a.magnitude();</span>
 <span class="line" id="L188"></span>

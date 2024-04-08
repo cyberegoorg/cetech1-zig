@@ -506,7 +506,7 @@
 <span class="line" id="L379">}</span>
 <span class="line" id="L380"></span>
 <span class="line" id="L381"><span class="tok-kw">test</span> <span class="tok-str">&quot;sort fuzz testing&quot;</span> {</span>
-<span class="line" id="L382">    <span class="tok-kw">var</span> prng = std.rand.DefaultPrng.init(<span class="tok-number">0x12345678</span>);</span>
+<span class="line" id="L382">    <span class="tok-kw">var</span> prng = std.Random.DefaultPrng.init(<span class="tok-number">0x12345678</span>);</span>
 <span class="line" id="L383">    <span class="tok-kw">const</span> random = prng.random();</span>
 <span class="line" id="L384">    <span class="tok-kw">const</span> test_case_count = <span class="tok-number">10</span>;</span>
 <span class="line" id="L385"></span>
@@ -527,257 +527,525 @@
 <span class="line" id="L399">    }</span>
 <span class="line" id="L400">}</span>
 <span class="line" id="L401"></span>
-<span class="line" id="L402"><span class="tok-kw">pub</span> <span class="tok-kw">fn</span> <span class="tok-fn">binarySearch</span>(</span>
-<span class="line" id="L403">    <span class="tok-kw">comptime</span> T: <span class="tok-type">type</span>,</span>
-<span class="line" id="L404">    key: <span class="tok-kw">anytype</span>,</span>
-<span class="line" id="L405">    items: []<span class="tok-kw">const</span> T,</span>
-<span class="line" id="L406">    context: <span class="tok-kw">anytype</span>,</span>
-<span class="line" id="L407">    <span class="tok-kw">comptime</span> compareFn: <span class="tok-kw">fn</span> (context: <span class="tok-builtin">@TypeOf</span>(context), key: <span class="tok-builtin">@TypeOf</span>(key), mid_item: T) math.Order,</span>
-<span class="line" id="L408">) ?<span class="tok-type">usize</span> {</span>
-<span class="line" id="L409">    <span class="tok-kw">var</span> left: <span class="tok-type">usize</span> = <span class="tok-number">0</span>;</span>
-<span class="line" id="L410">    <span class="tok-kw">var</span> right: <span class="tok-type">usize</span> = items.len;</span>
-<span class="line" id="L411"></span>
-<span class="line" id="L412">    <span class="tok-kw">while</span> (left &lt; right) {</span>
-<span class="line" id="L413">        <span class="tok-comment">// Avoid overflowing in the midpoint calculation</span>
+<span class="line" id="L402"><span class="tok-comment">/// Returns the index of an element in `items` equal to `key`.</span></span>
+<span class="line" id="L403"><span class="tok-comment">/// If there are multiple such elements, returns the index of any one of them.</span></span>
+<span class="line" id="L404"><span class="tok-comment">/// If there are no such elements, returns `null`.</span></span>
+<span class="line" id="L405"><span class="tok-comment">///</span></span>
+<span class="line" id="L406"><span class="tok-comment">/// `items` must be sorted in ascending order with respect to `compareFn`.</span></span>
+<span class="line" id="L407"><span class="tok-comment">///</span></span>
+<span class="line" id="L408"><span class="tok-comment">/// O(log n) complexity.</span></span>
+<span class="line" id="L409"><span class="tok-kw">pub</span> <span class="tok-kw">fn</span> <span class="tok-fn">binarySearch</span>(</span>
+<span class="line" id="L410">    <span class="tok-kw">comptime</span> T: <span class="tok-type">type</span>,</span>
+<span class="line" id="L411">    key: <span class="tok-kw">anytype</span>,</span>
+<span class="line" id="L412">    items: []<span class="tok-kw">const</span> T,</span>
+<span class="line" id="L413">    context: <span class="tok-kw">anytype</span>,</span>
+<span class="line" id="L414">    <span class="tok-kw">comptime</span> compareFn: <span class="tok-kw">fn</span> (context: <span class="tok-builtin">@TypeOf</span>(context), key: <span class="tok-builtin">@TypeOf</span>(key), mid_item: T) math.Order,</span>
+<span class="line" id="L415">) ?<span class="tok-type">usize</span> {</span>
+<span class="line" id="L416">    <span class="tok-kw">var</span> left: <span class="tok-type">usize</span> = <span class="tok-number">0</span>;</span>
+<span class="line" id="L417">    <span class="tok-kw">var</span> right: <span class="tok-type">usize</span> = items.len;</span>
+<span class="line" id="L418"></span>
+<span class="line" id="L419">    <span class="tok-kw">while</span> (left &lt; right) {</span>
+<span class="line" id="L420">        <span class="tok-comment">// Avoid overflowing in the midpoint calculation</span>
 </span>
-<span class="line" id="L414">        <span class="tok-kw">const</span> mid = left + (right - left) / <span class="tok-number">2</span>;</span>
-<span class="line" id="L415">        <span class="tok-comment">// Compare the key with the midpoint element</span>
+<span class="line" id="L421">        <span class="tok-kw">const</span> mid = left + (right - left) / <span class="tok-number">2</span>;</span>
+<span class="line" id="L422">        <span class="tok-comment">// Compare the key with the midpoint element</span>
 </span>
-<span class="line" id="L416">        <span class="tok-kw">switch</span> (compareFn(context, key, items[mid])) {</span>
-<span class="line" id="L417">            .eq =&gt; <span class="tok-kw">return</span> mid,</span>
-<span class="line" id="L418">            .gt =&gt; left = mid + <span class="tok-number">1</span>,</span>
-<span class="line" id="L419">            .lt =&gt; right = mid,</span>
-<span class="line" id="L420">        }</span>
-<span class="line" id="L421">    }</span>
-<span class="line" id="L422"></span>
-<span class="line" id="L423">    <span class="tok-kw">return</span> <span class="tok-null">null</span>;</span>
-<span class="line" id="L424">}</span>
-<span class="line" id="L425"></span>
-<span class="line" id="L426"><span class="tok-kw">test</span> <span class="tok-str">&quot;binarySearch&quot;</span> {</span>
-<span class="line" id="L427">    <span class="tok-kw">const</span> S = <span class="tok-kw">struct</span> {</span>
-<span class="line" id="L428">        <span class="tok-kw">fn</span> <span class="tok-fn">order_u32</span>(context: <span class="tok-type">void</span>, lhs: <span class="tok-type">u32</span>, rhs: <span class="tok-type">u32</span>) math.Order {</span>
-<span class="line" id="L429">            _ = context;</span>
-<span class="line" id="L430">            <span class="tok-kw">return</span> math.order(lhs, rhs);</span>
-<span class="line" id="L431">        }</span>
-<span class="line" id="L432">        <span class="tok-kw">fn</span> <span class="tok-fn">order_i32</span>(context: <span class="tok-type">void</span>, lhs: <span class="tok-type">i32</span>, rhs: <span class="tok-type">i32</span>) math.Order {</span>
-<span class="line" id="L433">            _ = context;</span>
-<span class="line" id="L434">            <span class="tok-kw">return</span> math.order(lhs, rhs);</span>
-<span class="line" id="L435">        }</span>
-<span class="line" id="L436">    };</span>
-<span class="line" id="L437">    <span class="tok-kw">try</span> testing.expectEqual(</span>
-<span class="line" id="L438">        <span class="tok-builtin">@as</span>(?<span class="tok-type">usize</span>, <span class="tok-null">null</span>),</span>
-<span class="line" id="L439">        binarySearch(<span class="tok-type">u32</span>, <span class="tok-builtin">@as</span>(<span class="tok-type">u32</span>, <span class="tok-number">1</span>), &amp;[_]<span class="tok-type">u32</span>{}, {}, S.order_u32),</span>
-<span class="line" id="L440">    );</span>
-<span class="line" id="L441">    <span class="tok-kw">try</span> testing.expectEqual(</span>
-<span class="line" id="L442">        <span class="tok-builtin">@as</span>(?<span class="tok-type">usize</span>, <span class="tok-number">0</span>),</span>
-<span class="line" id="L443">        binarySearch(<span class="tok-type">u32</span>, <span class="tok-builtin">@as</span>(<span class="tok-type">u32</span>, <span class="tok-number">1</span>), &amp;[_]<span class="tok-type">u32</span>{<span class="tok-number">1</span>}, {}, S.order_u32),</span>
-<span class="line" id="L444">    );</span>
-<span class="line" id="L445">    <span class="tok-kw">try</span> testing.expectEqual(</span>
-<span class="line" id="L446">        <span class="tok-builtin">@as</span>(?<span class="tok-type">usize</span>, <span class="tok-null">null</span>),</span>
-<span class="line" id="L447">        binarySearch(<span class="tok-type">u32</span>, <span class="tok-builtin">@as</span>(<span class="tok-type">u32</span>, <span class="tok-number">1</span>), &amp;[_]<span class="tok-type">u32</span>{<span class="tok-number">0</span>}, {}, S.order_u32),</span>
-<span class="line" id="L448">    );</span>
-<span class="line" id="L449">    <span class="tok-kw">try</span> testing.expectEqual(</span>
-<span class="line" id="L450">        <span class="tok-builtin">@as</span>(?<span class="tok-type">usize</span>, <span class="tok-null">null</span>),</span>
-<span class="line" id="L451">        binarySearch(<span class="tok-type">u32</span>, <span class="tok-builtin">@as</span>(<span class="tok-type">u32</span>, <span class="tok-number">0</span>), &amp;[_]<span class="tok-type">u32</span>{<span class="tok-number">1</span>}, {}, S.order_u32),</span>
-<span class="line" id="L452">    );</span>
-<span class="line" id="L453">    <span class="tok-kw">try</span> testing.expectEqual(</span>
-<span class="line" id="L454">        <span class="tok-builtin">@as</span>(?<span class="tok-type">usize</span>, <span class="tok-number">4</span>),</span>
-<span class="line" id="L455">        binarySearch(<span class="tok-type">u32</span>, <span class="tok-builtin">@as</span>(<span class="tok-type">u32</span>, <span class="tok-number">5</span>), &amp;[_]<span class="tok-type">u32</span>{ <span class="tok-number">1</span>, <span class="tok-number">2</span>, <span class="tok-number">3</span>, <span class="tok-number">4</span>, <span class="tok-number">5</span> }, {}, S.order_u32),</span>
-<span class="line" id="L456">    );</span>
-<span class="line" id="L457">    <span class="tok-kw">try</span> testing.expectEqual(</span>
-<span class="line" id="L458">        <span class="tok-builtin">@as</span>(?<span class="tok-type">usize</span>, <span class="tok-number">0</span>),</span>
-<span class="line" id="L459">        binarySearch(<span class="tok-type">u32</span>, <span class="tok-builtin">@as</span>(<span class="tok-type">u32</span>, <span class="tok-number">2</span>), &amp;[_]<span class="tok-type">u32</span>{ <span class="tok-number">2</span>, <span class="tok-number">4</span>, <span class="tok-number">8</span>, <span class="tok-number">16</span>, <span class="tok-number">32</span>, <span class="tok-number">64</span> }, {}, S.order_u32),</span>
-<span class="line" id="L460">    );</span>
-<span class="line" id="L461">    <span class="tok-kw">try</span> testing.expectEqual(</span>
-<span class="line" id="L462">        <span class="tok-builtin">@as</span>(?<span class="tok-type">usize</span>, <span class="tok-number">1</span>),</span>
-<span class="line" id="L463">        binarySearch(<span class="tok-type">i32</span>, <span class="tok-builtin">@as</span>(<span class="tok-type">i32</span>, -<span class="tok-number">4</span>), &amp;[_]<span class="tok-type">i32</span>{ -<span class="tok-number">7</span>, -<span class="tok-number">4</span>, <span class="tok-number">0</span>, <span class="tok-number">9</span>, <span class="tok-number">10</span> }, {}, S.order_i32),</span>
-<span class="line" id="L464">    );</span>
-<span class="line" id="L465">    <span class="tok-kw">try</span> testing.expectEqual(</span>
-<span class="line" id="L466">        <span class="tok-builtin">@as</span>(?<span class="tok-type">usize</span>, <span class="tok-number">3</span>),</span>
-<span class="line" id="L467">        binarySearch(<span class="tok-type">i32</span>, <span class="tok-builtin">@as</span>(<span class="tok-type">i32</span>, <span class="tok-number">98</span>), &amp;[_]<span class="tok-type">i32</span>{ -<span class="tok-number">100</span>, -<span class="tok-number">25</span>, <span class="tok-number">2</span>, <span class="tok-number">98</span>, <span class="tok-number">99</span>, <span class="tok-number">100</span> }, {}, S.order_i32),</span>
-<span class="line" id="L468">    );</span>
-<span class="line" id="L469">    <span class="tok-kw">const</span> R = <span class="tok-kw">struct</span> {</span>
-<span class="line" id="L470">        b: <span class="tok-type">i32</span>,</span>
-<span class="line" id="L471">        e: <span class="tok-type">i32</span>,</span>
-<span class="line" id="L472"></span>
-<span class="line" id="L473">        <span class="tok-kw">fn</span> <span class="tok-fn">r</span>(b: <span class="tok-type">i32</span>, e: <span class="tok-type">i32</span>) <span class="tok-builtin">@This</span>() {</span>
-<span class="line" id="L474">            <span class="tok-kw">return</span> <span class="tok-builtin">@This</span>(){ .b = b, .e = e };</span>
-<span class="line" id="L475">        }</span>
-<span class="line" id="L476"></span>
-<span class="line" id="L477">        <span class="tok-kw">fn</span> <span class="tok-fn">order</span>(context: <span class="tok-type">void</span>, key: <span class="tok-type">i32</span>, mid_item: <span class="tok-builtin">@This</span>()) math.Order {</span>
-<span class="line" id="L478">            _ = context;</span>
+<span class="line" id="L423">        <span class="tok-kw">switch</span> (compareFn(context, key, items[mid])) {</span>
+<span class="line" id="L424">            .eq =&gt; <span class="tok-kw">return</span> mid,</span>
+<span class="line" id="L425">            .gt =&gt; left = mid + <span class="tok-number">1</span>,</span>
+<span class="line" id="L426">            .lt =&gt; right = mid,</span>
+<span class="line" id="L427">        }</span>
+<span class="line" id="L428">    }</span>
+<span class="line" id="L429"></span>
+<span class="line" id="L430">    <span class="tok-kw">return</span> <span class="tok-null">null</span>;</span>
+<span class="line" id="L431">}</span>
+<span class="line" id="L432"></span>
+<span class="line" id="L433"><span class="tok-kw">test</span> <span class="tok-str">&quot;binarySearch&quot;</span> {</span>
+<span class="line" id="L434">    <span class="tok-kw">const</span> S = <span class="tok-kw">struct</span> {</span>
+<span class="line" id="L435">        <span class="tok-kw">fn</span> <span class="tok-fn">order_u32</span>(context: <span class="tok-type">void</span>, lhs: <span class="tok-type">u32</span>, rhs: <span class="tok-type">u32</span>) math.Order {</span>
+<span class="line" id="L436">            _ = context;</span>
+<span class="line" id="L437">            <span class="tok-kw">return</span> math.order(lhs, rhs);</span>
+<span class="line" id="L438">        }</span>
+<span class="line" id="L439">        <span class="tok-kw">fn</span> <span class="tok-fn">order_i32</span>(context: <span class="tok-type">void</span>, lhs: <span class="tok-type">i32</span>, rhs: <span class="tok-type">i32</span>) math.Order {</span>
+<span class="line" id="L440">            _ = context;</span>
+<span class="line" id="L441">            <span class="tok-kw">return</span> math.order(lhs, rhs);</span>
+<span class="line" id="L442">        }</span>
+<span class="line" id="L443">    };</span>
+<span class="line" id="L444">    <span class="tok-kw">try</span> testing.expectEqual(</span>
+<span class="line" id="L445">        <span class="tok-builtin">@as</span>(?<span class="tok-type">usize</span>, <span class="tok-null">null</span>),</span>
+<span class="line" id="L446">        binarySearch(<span class="tok-type">u32</span>, <span class="tok-builtin">@as</span>(<span class="tok-type">u32</span>, <span class="tok-number">1</span>), &amp;[_]<span class="tok-type">u32</span>{}, {}, S.order_u32),</span>
+<span class="line" id="L447">    );</span>
+<span class="line" id="L448">    <span class="tok-kw">try</span> testing.expectEqual(</span>
+<span class="line" id="L449">        <span class="tok-builtin">@as</span>(?<span class="tok-type">usize</span>, <span class="tok-number">0</span>),</span>
+<span class="line" id="L450">        binarySearch(<span class="tok-type">u32</span>, <span class="tok-builtin">@as</span>(<span class="tok-type">u32</span>, <span class="tok-number">1</span>), &amp;[_]<span class="tok-type">u32</span>{<span class="tok-number">1</span>}, {}, S.order_u32),</span>
+<span class="line" id="L451">    );</span>
+<span class="line" id="L452">    <span class="tok-kw">try</span> testing.expectEqual(</span>
+<span class="line" id="L453">        <span class="tok-builtin">@as</span>(?<span class="tok-type">usize</span>, <span class="tok-null">null</span>),</span>
+<span class="line" id="L454">        binarySearch(<span class="tok-type">u32</span>, <span class="tok-builtin">@as</span>(<span class="tok-type">u32</span>, <span class="tok-number">1</span>), &amp;[_]<span class="tok-type">u32</span>{<span class="tok-number">0</span>}, {}, S.order_u32),</span>
+<span class="line" id="L455">    );</span>
+<span class="line" id="L456">    <span class="tok-kw">try</span> testing.expectEqual(</span>
+<span class="line" id="L457">        <span class="tok-builtin">@as</span>(?<span class="tok-type">usize</span>, <span class="tok-null">null</span>),</span>
+<span class="line" id="L458">        binarySearch(<span class="tok-type">u32</span>, <span class="tok-builtin">@as</span>(<span class="tok-type">u32</span>, <span class="tok-number">0</span>), &amp;[_]<span class="tok-type">u32</span>{<span class="tok-number">1</span>}, {}, S.order_u32),</span>
+<span class="line" id="L459">    );</span>
+<span class="line" id="L460">    <span class="tok-kw">try</span> testing.expectEqual(</span>
+<span class="line" id="L461">        <span class="tok-builtin">@as</span>(?<span class="tok-type">usize</span>, <span class="tok-number">4</span>),</span>
+<span class="line" id="L462">        binarySearch(<span class="tok-type">u32</span>, <span class="tok-builtin">@as</span>(<span class="tok-type">u32</span>, <span class="tok-number">5</span>), &amp;[_]<span class="tok-type">u32</span>{ <span class="tok-number">1</span>, <span class="tok-number">2</span>, <span class="tok-number">3</span>, <span class="tok-number">4</span>, <span class="tok-number">5</span> }, {}, S.order_u32),</span>
+<span class="line" id="L463">    );</span>
+<span class="line" id="L464">    <span class="tok-kw">try</span> testing.expectEqual(</span>
+<span class="line" id="L465">        <span class="tok-builtin">@as</span>(?<span class="tok-type">usize</span>, <span class="tok-number">0</span>),</span>
+<span class="line" id="L466">        binarySearch(<span class="tok-type">u32</span>, <span class="tok-builtin">@as</span>(<span class="tok-type">u32</span>, <span class="tok-number">2</span>), &amp;[_]<span class="tok-type">u32</span>{ <span class="tok-number">2</span>, <span class="tok-number">4</span>, <span class="tok-number">8</span>, <span class="tok-number">16</span>, <span class="tok-number">32</span>, <span class="tok-number">64</span> }, {}, S.order_u32),</span>
+<span class="line" id="L467">    );</span>
+<span class="line" id="L468">    <span class="tok-kw">try</span> testing.expectEqual(</span>
+<span class="line" id="L469">        <span class="tok-builtin">@as</span>(?<span class="tok-type">usize</span>, <span class="tok-number">1</span>),</span>
+<span class="line" id="L470">        binarySearch(<span class="tok-type">i32</span>, <span class="tok-builtin">@as</span>(<span class="tok-type">i32</span>, -<span class="tok-number">4</span>), &amp;[_]<span class="tok-type">i32</span>{ -<span class="tok-number">7</span>, -<span class="tok-number">4</span>, <span class="tok-number">0</span>, <span class="tok-number">9</span>, <span class="tok-number">10</span> }, {}, S.order_i32),</span>
+<span class="line" id="L471">    );</span>
+<span class="line" id="L472">    <span class="tok-kw">try</span> testing.expectEqual(</span>
+<span class="line" id="L473">        <span class="tok-builtin">@as</span>(?<span class="tok-type">usize</span>, <span class="tok-number">3</span>),</span>
+<span class="line" id="L474">        binarySearch(<span class="tok-type">i32</span>, <span class="tok-builtin">@as</span>(<span class="tok-type">i32</span>, <span class="tok-number">98</span>), &amp;[_]<span class="tok-type">i32</span>{ -<span class="tok-number">100</span>, -<span class="tok-number">25</span>, <span class="tok-number">2</span>, <span class="tok-number">98</span>, <span class="tok-number">99</span>, <span class="tok-number">100</span> }, {}, S.order_i32),</span>
+<span class="line" id="L475">    );</span>
+<span class="line" id="L476">    <span class="tok-kw">const</span> R = <span class="tok-kw">struct</span> {</span>
+<span class="line" id="L477">        b: <span class="tok-type">i32</span>,</span>
+<span class="line" id="L478">        e: <span class="tok-type">i32</span>,</span>
 <span class="line" id="L479"></span>
-<span class="line" id="L480">            <span class="tok-kw">if</span> (key &lt; mid_item.b) {</span>
-<span class="line" id="L481">                <span class="tok-kw">return</span> .lt;</span>
-<span class="line" id="L482">            }</span>
+<span class="line" id="L480">        <span class="tok-kw">fn</span> <span class="tok-fn">r</span>(b: <span class="tok-type">i32</span>, e: <span class="tok-type">i32</span>) <span class="tok-builtin">@This</span>() {</span>
+<span class="line" id="L481">            <span class="tok-kw">return</span> <span class="tok-builtin">@This</span>(){ .b = b, .e = e };</span>
+<span class="line" id="L482">        }</span>
 <span class="line" id="L483"></span>
-<span class="line" id="L484">            <span class="tok-kw">if</span> (key &gt; mid_item.e) {</span>
-<span class="line" id="L485">                <span class="tok-kw">return</span> .gt;</span>
-<span class="line" id="L486">            }</span>
-<span class="line" id="L487"></span>
-<span class="line" id="L488">            <span class="tok-kw">return</span> .eq;</span>
-<span class="line" id="L489">        }</span>
-<span class="line" id="L490">    };</span>
-<span class="line" id="L491">    <span class="tok-kw">try</span> testing.expectEqual(</span>
-<span class="line" id="L492">        <span class="tok-builtin">@as</span>(?<span class="tok-type">usize</span>, <span class="tok-null">null</span>),</span>
-<span class="line" id="L493">        binarySearch(R, <span class="tok-builtin">@as</span>(<span class="tok-type">i32</span>, -<span class="tok-number">45</span>), &amp;[_]R{ R.r(-<span class="tok-number">100</span>, -<span class="tok-number">50</span>), R.r(-<span class="tok-number">40</span>, -<span class="tok-number">20</span>), R.r(-<span class="tok-number">10</span>, <span class="tok-number">20</span>), R.r(<span class="tok-number">30</span>, <span class="tok-number">40</span>) }, {}, R.order),</span>
-<span class="line" id="L494">    );</span>
-<span class="line" id="L495">    <span class="tok-kw">try</span> testing.expectEqual(</span>
-<span class="line" id="L496">        <span class="tok-builtin">@as</span>(?<span class="tok-type">usize</span>, <span class="tok-number">2</span>),</span>
-<span class="line" id="L497">        binarySearch(R, <span class="tok-builtin">@as</span>(<span class="tok-type">i32</span>, <span class="tok-number">10</span>), &amp;[_]R{ R.r(-<span class="tok-number">100</span>, -<span class="tok-number">50</span>), R.r(-<span class="tok-number">40</span>, -<span class="tok-number">20</span>), R.r(-<span class="tok-number">10</span>, <span class="tok-number">20</span>), R.r(<span class="tok-number">30</span>, <span class="tok-number">40</span>) }, {}, R.order),</span>
-<span class="line" id="L498">    );</span>
-<span class="line" id="L499">    <span class="tok-kw">try</span> testing.expectEqual(</span>
-<span class="line" id="L500">        <span class="tok-builtin">@as</span>(?<span class="tok-type">usize</span>, <span class="tok-number">1</span>),</span>
-<span class="line" id="L501">        binarySearch(R, <span class="tok-builtin">@as</span>(<span class="tok-type">i32</span>, -<span class="tok-number">20</span>), &amp;[_]R{ R.r(-<span class="tok-number">100</span>, -<span class="tok-number">50</span>), R.r(-<span class="tok-number">40</span>, -<span class="tok-number">20</span>), R.r(-<span class="tok-number">10</span>, <span class="tok-number">20</span>), R.r(<span class="tok-number">30</span>, <span class="tok-number">40</span>) }, {}, R.order),</span>
-<span class="line" id="L502">    );</span>
-<span class="line" id="L503">}</span>
-<span class="line" id="L504"></span>
-<span class="line" id="L505"><span class="tok-kw">pub</span> <span class="tok-kw">fn</span> <span class="tok-fn">argMin</span>(</span>
-<span class="line" id="L506">    <span class="tok-kw">comptime</span> T: <span class="tok-type">type</span>,</span>
-<span class="line" id="L507">    items: []<span class="tok-kw">const</span> T,</span>
-<span class="line" id="L508">    context: <span class="tok-kw">anytype</span>,</span>
-<span class="line" id="L509">    <span class="tok-kw">comptime</span> lessThan: <span class="tok-kw">fn</span> (<span class="tok-builtin">@TypeOf</span>(context), lhs: T, rhs: T) <span class="tok-type">bool</span>,</span>
-<span class="line" id="L510">) ?<span class="tok-type">usize</span> {</span>
-<span class="line" id="L511">    <span class="tok-kw">if</span> (items.len == <span class="tok-number">0</span>) {</span>
-<span class="line" id="L512">        <span class="tok-kw">return</span> <span class="tok-null">null</span>;</span>
-<span class="line" id="L513">    }</span>
-<span class="line" id="L514"></span>
-<span class="line" id="L515">    <span class="tok-kw">var</span> smallest = items[<span class="tok-number">0</span>];</span>
-<span class="line" id="L516">    <span class="tok-kw">var</span> smallest_index: <span class="tok-type">usize</span> = <span class="tok-number">0</span>;</span>
-<span class="line" id="L517">    <span class="tok-kw">for</span> (items[<span class="tok-number">1</span>..], <span class="tok-number">0</span>..) |item, i| {</span>
-<span class="line" id="L518">        <span class="tok-kw">if</span> (lessThan(context, item, smallest)) {</span>
-<span class="line" id="L519">            smallest = item;</span>
-<span class="line" id="L520">            smallest_index = i + <span class="tok-number">1</span>;</span>
-<span class="line" id="L521">        }</span>
-<span class="line" id="L522">    }</span>
-<span class="line" id="L523"></span>
-<span class="line" id="L524">    <span class="tok-kw">return</span> smallest_index;</span>
-<span class="line" id="L525">}</span>
-<span class="line" id="L526"></span>
-<span class="line" id="L527"><span class="tok-kw">test</span> <span class="tok-str">&quot;argMin&quot;</span> {</span>
-<span class="line" id="L528">    <span class="tok-kw">try</span> testing.expectEqual(<span class="tok-builtin">@as</span>(?<span class="tok-type">usize</span>, <span class="tok-null">null</span>), argMin(<span class="tok-type">i32</span>, &amp;[_]<span class="tok-type">i32</span>{}, {}, asc_i32));</span>
-<span class="line" id="L529">    <span class="tok-kw">try</span> testing.expectEqual(<span class="tok-builtin">@as</span>(?<span class="tok-type">usize</span>, <span class="tok-number">0</span>), argMin(<span class="tok-type">i32</span>, &amp;[_]<span class="tok-type">i32</span>{<span class="tok-number">1</span>}, {}, asc_i32));</span>
-<span class="line" id="L530">    <span class="tok-kw">try</span> testing.expectEqual(<span class="tok-builtin">@as</span>(?<span class="tok-type">usize</span>, <span class="tok-number">0</span>), argMin(<span class="tok-type">i32</span>, &amp;[_]<span class="tok-type">i32</span>{ <span class="tok-number">1</span>, <span class="tok-number">2</span>, <span class="tok-number">3</span>, <span class="tok-number">4</span>, <span class="tok-number">5</span> }, {}, asc_i32));</span>
-<span class="line" id="L531">    <span class="tok-kw">try</span> testing.expectEqual(<span class="tok-builtin">@as</span>(?<span class="tok-type">usize</span>, <span class="tok-number">3</span>), argMin(<span class="tok-type">i32</span>, &amp;[_]<span class="tok-type">i32</span>{ <span class="tok-number">9</span>, <span class="tok-number">3</span>, <span class="tok-number">8</span>, <span class="tok-number">2</span>, <span class="tok-number">5</span> }, {}, asc_i32));</span>
-<span class="line" id="L532">    <span class="tok-kw">try</span> testing.expectEqual(<span class="tok-builtin">@as</span>(?<span class="tok-type">usize</span>, <span class="tok-number">0</span>), argMin(<span class="tok-type">i32</span>, &amp;[_]<span class="tok-type">i32</span>{ <span class="tok-number">1</span>, <span class="tok-number">1</span>, <span class="tok-number">1</span>, <span class="tok-number">1</span>, <span class="tok-number">1</span> }, {}, asc_i32));</span>
-<span class="line" id="L533">    <span class="tok-kw">try</span> testing.expectEqual(<span class="tok-builtin">@as</span>(?<span class="tok-type">usize</span>, <span class="tok-number">0</span>), argMin(<span class="tok-type">i32</span>, &amp;[_]<span class="tok-type">i32</span>{ -<span class="tok-number">10</span>, <span class="tok-number">1</span>, <span class="tok-number">10</span> }, {}, asc_i32));</span>
-<span class="line" id="L534">    <span class="tok-kw">try</span> testing.expectEqual(<span class="tok-builtin">@as</span>(?<span class="tok-type">usize</span>, <span class="tok-number">3</span>), argMin(<span class="tok-type">i32</span>, &amp;[_]<span class="tok-type">i32</span>{ <span class="tok-number">6</span>, <span class="tok-number">3</span>, <span class="tok-number">5</span>, <span class="tok-number">7</span>, <span class="tok-number">6</span> }, {}, desc_i32));</span>
-<span class="line" id="L535">}</span>
+<span class="line" id="L484">        <span class="tok-kw">fn</span> <span class="tok-fn">order</span>(context: <span class="tok-type">void</span>, key: <span class="tok-type">i32</span>, mid_item: <span class="tok-builtin">@This</span>()) math.Order {</span>
+<span class="line" id="L485">            _ = context;</span>
+<span class="line" id="L486"></span>
+<span class="line" id="L487">            <span class="tok-kw">if</span> (key &lt; mid_item.b) {</span>
+<span class="line" id="L488">                <span class="tok-kw">return</span> .lt;</span>
+<span class="line" id="L489">            }</span>
+<span class="line" id="L490"></span>
+<span class="line" id="L491">            <span class="tok-kw">if</span> (key &gt; mid_item.e) {</span>
+<span class="line" id="L492">                <span class="tok-kw">return</span> .gt;</span>
+<span class="line" id="L493">            }</span>
+<span class="line" id="L494"></span>
+<span class="line" id="L495">            <span class="tok-kw">return</span> .eq;</span>
+<span class="line" id="L496">        }</span>
+<span class="line" id="L497">    };</span>
+<span class="line" id="L498">    <span class="tok-kw">try</span> testing.expectEqual(</span>
+<span class="line" id="L499">        <span class="tok-builtin">@as</span>(?<span class="tok-type">usize</span>, <span class="tok-null">null</span>),</span>
+<span class="line" id="L500">        binarySearch(R, <span class="tok-builtin">@as</span>(<span class="tok-type">i32</span>, -<span class="tok-number">45</span>), &amp;[_]R{ R.r(-<span class="tok-number">100</span>, -<span class="tok-number">50</span>), R.r(-<span class="tok-number">40</span>, -<span class="tok-number">20</span>), R.r(-<span class="tok-number">10</span>, <span class="tok-number">20</span>), R.r(<span class="tok-number">30</span>, <span class="tok-number">40</span>) }, {}, R.order),</span>
+<span class="line" id="L501">    );</span>
+<span class="line" id="L502">    <span class="tok-kw">try</span> testing.expectEqual(</span>
+<span class="line" id="L503">        <span class="tok-builtin">@as</span>(?<span class="tok-type">usize</span>, <span class="tok-number">2</span>),</span>
+<span class="line" id="L504">        binarySearch(R, <span class="tok-builtin">@as</span>(<span class="tok-type">i32</span>, <span class="tok-number">10</span>), &amp;[_]R{ R.r(-<span class="tok-number">100</span>, -<span class="tok-number">50</span>), R.r(-<span class="tok-number">40</span>, -<span class="tok-number">20</span>), R.r(-<span class="tok-number">10</span>, <span class="tok-number">20</span>), R.r(<span class="tok-number">30</span>, <span class="tok-number">40</span>) }, {}, R.order),</span>
+<span class="line" id="L505">    );</span>
+<span class="line" id="L506">    <span class="tok-kw">try</span> testing.expectEqual(</span>
+<span class="line" id="L507">        <span class="tok-builtin">@as</span>(?<span class="tok-type">usize</span>, <span class="tok-number">1</span>),</span>
+<span class="line" id="L508">        binarySearch(R, <span class="tok-builtin">@as</span>(<span class="tok-type">i32</span>, -<span class="tok-number">20</span>), &amp;[_]R{ R.r(-<span class="tok-number">100</span>, -<span class="tok-number">50</span>), R.r(-<span class="tok-number">40</span>, -<span class="tok-number">20</span>), R.r(-<span class="tok-number">10</span>, <span class="tok-number">20</span>), R.r(<span class="tok-number">30</span>, <span class="tok-number">40</span>) }, {}, R.order),</span>
+<span class="line" id="L509">    );</span>
+<span class="line" id="L510">}</span>
+<span class="line" id="L511"></span>
+<span class="line" id="L512"><span class="tok-comment">/// Returns the index of the first element in `items` greater than or equal to `key`,</span></span>
+<span class="line" id="L513"><span class="tok-comment">/// or `items.len` if all elements are less than `key`.</span></span>
+<span class="line" id="L514"><span class="tok-comment">///</span></span>
+<span class="line" id="L515"><span class="tok-comment">/// `items` must be sorted in ascending order with respect to `compareFn`.</span></span>
+<span class="line" id="L516"><span class="tok-comment">///</span></span>
+<span class="line" id="L517"><span class="tok-comment">/// O(log n) complexity.</span></span>
+<span class="line" id="L518"><span class="tok-kw">pub</span> <span class="tok-kw">fn</span> <span class="tok-fn">lowerBound</span>(</span>
+<span class="line" id="L519">    <span class="tok-kw">comptime</span> T: <span class="tok-type">type</span>,</span>
+<span class="line" id="L520">    key: <span class="tok-kw">anytype</span>,</span>
+<span class="line" id="L521">    items: []<span class="tok-kw">const</span> T,</span>
+<span class="line" id="L522">    context: <span class="tok-kw">anytype</span>,</span>
+<span class="line" id="L523">    <span class="tok-kw">comptime</span> lessThan: <span class="tok-kw">fn</span> (context: <span class="tok-builtin">@TypeOf</span>(context), lhs: <span class="tok-builtin">@TypeOf</span>(key), rhs: T) <span class="tok-type">bool</span>,</span>
+<span class="line" id="L524">) <span class="tok-type">usize</span> {</span>
+<span class="line" id="L525">    <span class="tok-kw">var</span> left: <span class="tok-type">usize</span> = <span class="tok-number">0</span>;</span>
+<span class="line" id="L526">    <span class="tok-kw">var</span> right: <span class="tok-type">usize</span> = items.len;</span>
+<span class="line" id="L527"></span>
+<span class="line" id="L528">    <span class="tok-kw">while</span> (left &lt; right) {</span>
+<span class="line" id="L529">        <span class="tok-kw">const</span> mid = left + (right - left) / <span class="tok-number">2</span>;</span>
+<span class="line" id="L530">        <span class="tok-kw">if</span> (lessThan(context, items[mid], key)) {</span>
+<span class="line" id="L531">            left = mid + <span class="tok-number">1</span>;</span>
+<span class="line" id="L532">        } <span class="tok-kw">else</span> {</span>
+<span class="line" id="L533">            right = mid;</span>
+<span class="line" id="L534">        }</span>
+<span class="line" id="L535">    }</span>
 <span class="line" id="L536"></span>
-<span class="line" id="L537"><span class="tok-kw">pub</span> <span class="tok-kw">fn</span> <span class="tok-fn">min</span>(</span>
-<span class="line" id="L538">    <span class="tok-kw">comptime</span> T: <span class="tok-type">type</span>,</span>
-<span class="line" id="L539">    items: []<span class="tok-kw">const</span> T,</span>
-<span class="line" id="L540">    context: <span class="tok-kw">anytype</span>,</span>
-<span class="line" id="L541">    <span class="tok-kw">comptime</span> lessThan: <span class="tok-kw">fn</span> (context: <span class="tok-builtin">@TypeOf</span>(context), lhs: T, rhs: T) <span class="tok-type">bool</span>,</span>
-<span class="line" id="L542">) ?T {</span>
-<span class="line" id="L543">    <span class="tok-kw">const</span> i = argMin(T, items, context, lessThan) <span class="tok-kw">orelse</span> <span class="tok-kw">return</span> <span class="tok-null">null</span>;</span>
-<span class="line" id="L544">    <span class="tok-kw">return</span> items[i];</span>
-<span class="line" id="L545">}</span>
-<span class="line" id="L546"></span>
-<span class="line" id="L547"><span class="tok-kw">test</span> <span class="tok-str">&quot;min&quot;</span> {</span>
-<span class="line" id="L548">    <span class="tok-kw">try</span> testing.expectEqual(<span class="tok-builtin">@as</span>(?<span class="tok-type">i32</span>, <span class="tok-null">null</span>), min(<span class="tok-type">i32</span>, &amp;[_]<span class="tok-type">i32</span>{}, {}, asc_i32));</span>
-<span class="line" id="L549">    <span class="tok-kw">try</span> testing.expectEqual(<span class="tok-builtin">@as</span>(?<span class="tok-type">i32</span>, <span class="tok-number">1</span>), min(<span class="tok-type">i32</span>, &amp;[_]<span class="tok-type">i32</span>{<span class="tok-number">1</span>}, {}, asc_i32));</span>
-<span class="line" id="L550">    <span class="tok-kw">try</span> testing.expectEqual(<span class="tok-builtin">@as</span>(?<span class="tok-type">i32</span>, <span class="tok-number">1</span>), min(<span class="tok-type">i32</span>, &amp;[_]<span class="tok-type">i32</span>{ <span class="tok-number">1</span>, <span class="tok-number">2</span>, <span class="tok-number">3</span>, <span class="tok-number">4</span>, <span class="tok-number">5</span> }, {}, asc_i32));</span>
-<span class="line" id="L551">    <span class="tok-kw">try</span> testing.expectEqual(<span class="tok-builtin">@as</span>(?<span class="tok-type">i32</span>, <span class="tok-number">2</span>), min(<span class="tok-type">i32</span>, &amp;[_]<span class="tok-type">i32</span>{ <span class="tok-number">9</span>, <span class="tok-number">3</span>, <span class="tok-number">8</span>, <span class="tok-number">2</span>, <span class="tok-number">5</span> }, {}, asc_i32));</span>
-<span class="line" id="L552">    <span class="tok-kw">try</span> testing.expectEqual(<span class="tok-builtin">@as</span>(?<span class="tok-type">i32</span>, <span class="tok-number">1</span>), min(<span class="tok-type">i32</span>, &amp;[_]<span class="tok-type">i32</span>{ <span class="tok-number">1</span>, <span class="tok-number">1</span>, <span class="tok-number">1</span>, <span class="tok-number">1</span>, <span class="tok-number">1</span> }, {}, asc_i32));</span>
-<span class="line" id="L553">    <span class="tok-kw">try</span> testing.expectEqual(<span class="tok-builtin">@as</span>(?<span class="tok-type">i32</span>, -<span class="tok-number">10</span>), min(<span class="tok-type">i32</span>, &amp;[_]<span class="tok-type">i32</span>{ -<span class="tok-number">10</span>, <span class="tok-number">1</span>, <span class="tok-number">10</span> }, {}, asc_i32));</span>
-<span class="line" id="L554">    <span class="tok-kw">try</span> testing.expectEqual(<span class="tok-builtin">@as</span>(?<span class="tok-type">i32</span>, <span class="tok-number">7</span>), min(<span class="tok-type">i32</span>, &amp;[_]<span class="tok-type">i32</span>{ <span class="tok-number">6</span>, <span class="tok-number">3</span>, <span class="tok-number">5</span>, <span class="tok-number">7</span>, <span class="tok-number">6</span> }, {}, desc_i32));</span>
-<span class="line" id="L555">}</span>
-<span class="line" id="L556"></span>
-<span class="line" id="L557"><span class="tok-kw">pub</span> <span class="tok-kw">fn</span> <span class="tok-fn">argMax</span>(</span>
-<span class="line" id="L558">    <span class="tok-kw">comptime</span> T: <span class="tok-type">type</span>,</span>
-<span class="line" id="L559">    items: []<span class="tok-kw">const</span> T,</span>
-<span class="line" id="L560">    context: <span class="tok-kw">anytype</span>,</span>
-<span class="line" id="L561">    <span class="tok-kw">comptime</span> lessThan: <span class="tok-kw">fn</span> (context: <span class="tok-builtin">@TypeOf</span>(context), lhs: T, rhs: T) <span class="tok-type">bool</span>,</span>
-<span class="line" id="L562">) ?<span class="tok-type">usize</span> {</span>
-<span class="line" id="L563">    <span class="tok-kw">if</span> (items.len == <span class="tok-number">0</span>) {</span>
-<span class="line" id="L564">        <span class="tok-kw">return</span> <span class="tok-null">null</span>;</span>
-<span class="line" id="L565">    }</span>
-<span class="line" id="L566"></span>
-<span class="line" id="L567">    <span class="tok-kw">var</span> biggest = items[<span class="tok-number">0</span>];</span>
-<span class="line" id="L568">    <span class="tok-kw">var</span> biggest_index: <span class="tok-type">usize</span> = <span class="tok-number">0</span>;</span>
-<span class="line" id="L569">    <span class="tok-kw">for</span> (items[<span class="tok-number">1</span>..], <span class="tok-number">0</span>..) |item, i| {</span>
-<span class="line" id="L570">        <span class="tok-kw">if</span> (lessThan(context, biggest, item)) {</span>
-<span class="line" id="L571">            biggest = item;</span>
-<span class="line" id="L572">            biggest_index = i + <span class="tok-number">1</span>;</span>
-<span class="line" id="L573">        }</span>
-<span class="line" id="L574">    }</span>
-<span class="line" id="L575"></span>
-<span class="line" id="L576">    <span class="tok-kw">return</span> biggest_index;</span>
-<span class="line" id="L577">}</span>
-<span class="line" id="L578"></span>
-<span class="line" id="L579"><span class="tok-kw">test</span> <span class="tok-str">&quot;argMax&quot;</span> {</span>
-<span class="line" id="L580">    <span class="tok-kw">try</span> testing.expectEqual(<span class="tok-builtin">@as</span>(?<span class="tok-type">usize</span>, <span class="tok-null">null</span>), argMax(<span class="tok-type">i32</span>, &amp;[_]<span class="tok-type">i32</span>{}, {}, asc_i32));</span>
-<span class="line" id="L581">    <span class="tok-kw">try</span> testing.expectEqual(<span class="tok-builtin">@as</span>(?<span class="tok-type">usize</span>, <span class="tok-number">0</span>), argMax(<span class="tok-type">i32</span>, &amp;[_]<span class="tok-type">i32</span>{<span class="tok-number">1</span>}, {}, asc_i32));</span>
-<span class="line" id="L582">    <span class="tok-kw">try</span> testing.expectEqual(<span class="tok-builtin">@as</span>(?<span class="tok-type">usize</span>, <span class="tok-number">4</span>), argMax(<span class="tok-type">i32</span>, &amp;[_]<span class="tok-type">i32</span>{ <span class="tok-number">1</span>, <span class="tok-number">2</span>, <span class="tok-number">3</span>, <span class="tok-number">4</span>, <span class="tok-number">5</span> }, {}, asc_i32));</span>
-<span class="line" id="L583">    <span class="tok-kw">try</span> testing.expectEqual(<span class="tok-builtin">@as</span>(?<span class="tok-type">usize</span>, <span class="tok-number">0</span>), argMax(<span class="tok-type">i32</span>, &amp;[_]<span class="tok-type">i32</span>{ <span class="tok-number">9</span>, <span class="tok-number">3</span>, <span class="tok-number">8</span>, <span class="tok-number">2</span>, <span class="tok-number">5</span> }, {}, asc_i32));</span>
-<span class="line" id="L584">    <span class="tok-kw">try</span> testing.expectEqual(<span class="tok-builtin">@as</span>(?<span class="tok-type">usize</span>, <span class="tok-number">0</span>), argMax(<span class="tok-type">i32</span>, &amp;[_]<span class="tok-type">i32</span>{ <span class="tok-number">1</span>, <span class="tok-number">1</span>, <span class="tok-number">1</span>, <span class="tok-number">1</span>, <span class="tok-number">1</span> }, {}, asc_i32));</span>
-<span class="line" id="L585">    <span class="tok-kw">try</span> testing.expectEqual(<span class="tok-builtin">@as</span>(?<span class="tok-type">usize</span>, <span class="tok-number">2</span>), argMax(<span class="tok-type">i32</span>, &amp;[_]<span class="tok-type">i32</span>{ -<span class="tok-number">10</span>, <span class="tok-number">1</span>, <span class="tok-number">10</span> }, {}, asc_i32));</span>
-<span class="line" id="L586">    <span class="tok-kw">try</span> testing.expectEqual(<span class="tok-builtin">@as</span>(?<span class="tok-type">usize</span>, <span class="tok-number">1</span>), argMax(<span class="tok-type">i32</span>, &amp;[_]<span class="tok-type">i32</span>{ <span class="tok-number">6</span>, <span class="tok-number">3</span>, <span class="tok-number">5</span>, <span class="tok-number">7</span>, <span class="tok-number">6</span> }, {}, desc_i32));</span>
-<span class="line" id="L587">}</span>
-<span class="line" id="L588"></span>
-<span class="line" id="L589"><span class="tok-kw">pub</span> <span class="tok-kw">fn</span> <span class="tok-fn">max</span>(</span>
-<span class="line" id="L590">    <span class="tok-kw">comptime</span> T: <span class="tok-type">type</span>,</span>
-<span class="line" id="L591">    items: []<span class="tok-kw">const</span> T,</span>
-<span class="line" id="L592">    context: <span class="tok-kw">anytype</span>,</span>
-<span class="line" id="L593">    <span class="tok-kw">comptime</span> lessThan: <span class="tok-kw">fn</span> (context: <span class="tok-builtin">@TypeOf</span>(context), lhs: T, rhs: T) <span class="tok-type">bool</span>,</span>
-<span class="line" id="L594">) ?T {</span>
-<span class="line" id="L595">    <span class="tok-kw">const</span> i = argMax(T, items, context, lessThan) <span class="tok-kw">orelse</span> <span class="tok-kw">return</span> <span class="tok-null">null</span>;</span>
-<span class="line" id="L596">    <span class="tok-kw">return</span> items[i];</span>
-<span class="line" id="L597">}</span>
-<span class="line" id="L598"></span>
-<span class="line" id="L599"><span class="tok-kw">test</span> <span class="tok-str">&quot;max&quot;</span> {</span>
-<span class="line" id="L600">    <span class="tok-kw">try</span> testing.expectEqual(<span class="tok-builtin">@as</span>(?<span class="tok-type">i32</span>, <span class="tok-null">null</span>), max(<span class="tok-type">i32</span>, &amp;[_]<span class="tok-type">i32</span>{}, {}, asc_i32));</span>
-<span class="line" id="L601">    <span class="tok-kw">try</span> testing.expectEqual(<span class="tok-builtin">@as</span>(?<span class="tok-type">i32</span>, <span class="tok-number">1</span>), max(<span class="tok-type">i32</span>, &amp;[_]<span class="tok-type">i32</span>{<span class="tok-number">1</span>}, {}, asc_i32));</span>
-<span class="line" id="L602">    <span class="tok-kw">try</span> testing.expectEqual(<span class="tok-builtin">@as</span>(?<span class="tok-type">i32</span>, <span class="tok-number">5</span>), max(<span class="tok-type">i32</span>, &amp;[_]<span class="tok-type">i32</span>{ <span class="tok-number">1</span>, <span class="tok-number">2</span>, <span class="tok-number">3</span>, <span class="tok-number">4</span>, <span class="tok-number">5</span> }, {}, asc_i32));</span>
-<span class="line" id="L603">    <span class="tok-kw">try</span> testing.expectEqual(<span class="tok-builtin">@as</span>(?<span class="tok-type">i32</span>, <span class="tok-number">9</span>), max(<span class="tok-type">i32</span>, &amp;[_]<span class="tok-type">i32</span>{ <span class="tok-number">9</span>, <span class="tok-number">3</span>, <span class="tok-number">8</span>, <span class="tok-number">2</span>, <span class="tok-number">5</span> }, {}, asc_i32));</span>
-<span class="line" id="L604">    <span class="tok-kw">try</span> testing.expectEqual(<span class="tok-builtin">@as</span>(?<span class="tok-type">i32</span>, <span class="tok-number">1</span>), max(<span class="tok-type">i32</span>, &amp;[_]<span class="tok-type">i32</span>{ <span class="tok-number">1</span>, <span class="tok-number">1</span>, <span class="tok-number">1</span>, <span class="tok-number">1</span>, <span class="tok-number">1</span> }, {}, asc_i32));</span>
-<span class="line" id="L605">    <span class="tok-kw">try</span> testing.expectEqual(<span class="tok-builtin">@as</span>(?<span class="tok-type">i32</span>, <span class="tok-number">10</span>), max(<span class="tok-type">i32</span>, &amp;[_]<span class="tok-type">i32</span>{ -<span class="tok-number">10</span>, <span class="tok-number">1</span>, <span class="tok-number">10</span> }, {}, asc_i32));</span>
-<span class="line" id="L606">    <span class="tok-kw">try</span> testing.expectEqual(<span class="tok-builtin">@as</span>(?<span class="tok-type">i32</span>, <span class="tok-number">3</span>), max(<span class="tok-type">i32</span>, &amp;[_]<span class="tok-type">i32</span>{ <span class="tok-number">6</span>, <span class="tok-number">3</span>, <span class="tok-number">5</span>, <span class="tok-number">7</span>, <span class="tok-number">6</span> }, {}, desc_i32));</span>
-<span class="line" id="L607">}</span>
-<span class="line" id="L608"></span>
-<span class="line" id="L609"><span class="tok-kw">pub</span> <span class="tok-kw">fn</span> <span class="tok-fn">isSorted</span>(</span>
-<span class="line" id="L610">    <span class="tok-kw">comptime</span> T: <span class="tok-type">type</span>,</span>
+<span class="line" id="L537">    <span class="tok-kw">return</span> left;</span>
+<span class="line" id="L538">}</span>
+<span class="line" id="L539"></span>
+<span class="line" id="L540"><span class="tok-kw">test</span> <span class="tok-str">&quot;lowerBound&quot;</span> {</span>
+<span class="line" id="L541">    <span class="tok-kw">const</span> S = <span class="tok-kw">struct</span> {</span>
+<span class="line" id="L542">        <span class="tok-kw">fn</span> <span class="tok-fn">lower_u32</span>(context: <span class="tok-type">void</span>, lhs: <span class="tok-type">u32</span>, rhs: <span class="tok-type">u32</span>) <span class="tok-type">bool</span> {</span>
+<span class="line" id="L543">            _ = context;</span>
+<span class="line" id="L544">            <span class="tok-kw">return</span> lhs &lt; rhs;</span>
+<span class="line" id="L545">        }</span>
+<span class="line" id="L546">        <span class="tok-kw">fn</span> <span class="tok-fn">lower_i32</span>(context: <span class="tok-type">void</span>, lhs: <span class="tok-type">i32</span>, rhs: <span class="tok-type">i32</span>) <span class="tok-type">bool</span> {</span>
+<span class="line" id="L547">            _ = context;</span>
+<span class="line" id="L548">            <span class="tok-kw">return</span> lhs &lt; rhs;</span>
+<span class="line" id="L549">        }</span>
+<span class="line" id="L550">        <span class="tok-kw">fn</span> <span class="tok-fn">lower_f32</span>(context: <span class="tok-type">void</span>, lhs: <span class="tok-type">f32</span>, rhs: <span class="tok-type">f32</span>) <span class="tok-type">bool</span> {</span>
+<span class="line" id="L551">            _ = context;</span>
+<span class="line" id="L552">            <span class="tok-kw">return</span> lhs &lt; rhs;</span>
+<span class="line" id="L553">        }</span>
+<span class="line" id="L554">    };</span>
+<span class="line" id="L555"></span>
+<span class="line" id="L556">    <span class="tok-kw">try</span> testing.expectEqual(</span>
+<span class="line" id="L557">        <span class="tok-builtin">@as</span>(<span class="tok-type">usize</span>, <span class="tok-number">0</span>),</span>
+<span class="line" id="L558">        lowerBound(<span class="tok-type">u32</span>, <span class="tok-builtin">@as</span>(<span class="tok-type">u32</span>, <span class="tok-number">0</span>), &amp;[_]<span class="tok-type">u32</span>{}, {}, S.lower_u32),</span>
+<span class="line" id="L559">    );</span>
+<span class="line" id="L560">    <span class="tok-kw">try</span> testing.expectEqual(</span>
+<span class="line" id="L561">        <span class="tok-builtin">@as</span>(<span class="tok-type">usize</span>, <span class="tok-number">0</span>),</span>
+<span class="line" id="L562">        lowerBound(<span class="tok-type">u32</span>, <span class="tok-builtin">@as</span>(<span class="tok-type">u32</span>, <span class="tok-number">0</span>), &amp;[_]<span class="tok-type">u32</span>{ <span class="tok-number">2</span>, <span class="tok-number">4</span>, <span class="tok-number">8</span>, <span class="tok-number">16</span>, <span class="tok-number">32</span>, <span class="tok-number">64</span> }, {}, S.lower_u32),</span>
+<span class="line" id="L563">    );</span>
+<span class="line" id="L564">    <span class="tok-kw">try</span> testing.expectEqual(</span>
+<span class="line" id="L565">        <span class="tok-builtin">@as</span>(<span class="tok-type">usize</span>, <span class="tok-number">0</span>),</span>
+<span class="line" id="L566">        lowerBound(<span class="tok-type">u32</span>, <span class="tok-builtin">@as</span>(<span class="tok-type">u32</span>, <span class="tok-number">2</span>), &amp;[_]<span class="tok-type">u32</span>{ <span class="tok-number">2</span>, <span class="tok-number">4</span>, <span class="tok-number">8</span>, <span class="tok-number">16</span>, <span class="tok-number">32</span>, <span class="tok-number">64</span> }, {}, S.lower_u32),</span>
+<span class="line" id="L567">    );</span>
+<span class="line" id="L568">    <span class="tok-kw">try</span> testing.expectEqual(</span>
+<span class="line" id="L569">        <span class="tok-builtin">@as</span>(<span class="tok-type">usize</span>, <span class="tok-number">2</span>),</span>
+<span class="line" id="L570">        lowerBound(<span class="tok-type">u32</span>, <span class="tok-builtin">@as</span>(<span class="tok-type">u32</span>, <span class="tok-number">5</span>), &amp;[_]<span class="tok-type">u32</span>{ <span class="tok-number">2</span>, <span class="tok-number">4</span>, <span class="tok-number">8</span>, <span class="tok-number">16</span>, <span class="tok-number">32</span>, <span class="tok-number">64</span> }, {}, S.lower_u32),</span>
+<span class="line" id="L571">    );</span>
+<span class="line" id="L572">    <span class="tok-kw">try</span> testing.expectEqual(</span>
+<span class="line" id="L573">        <span class="tok-builtin">@as</span>(<span class="tok-type">usize</span>, <span class="tok-number">2</span>),</span>
+<span class="line" id="L574">        lowerBound(<span class="tok-type">u32</span>, <span class="tok-builtin">@as</span>(<span class="tok-type">u32</span>, <span class="tok-number">8</span>), &amp;[_]<span class="tok-type">u32</span>{ <span class="tok-number">2</span>, <span class="tok-number">4</span>, <span class="tok-number">8</span>, <span class="tok-number">16</span>, <span class="tok-number">32</span>, <span class="tok-number">64</span> }, {}, S.lower_u32),</span>
+<span class="line" id="L575">    );</span>
+<span class="line" id="L576">    <span class="tok-kw">try</span> testing.expectEqual(</span>
+<span class="line" id="L577">        <span class="tok-builtin">@as</span>(<span class="tok-type">usize</span>, <span class="tok-number">6</span>),</span>
+<span class="line" id="L578">        lowerBound(<span class="tok-type">u32</span>, <span class="tok-builtin">@as</span>(<span class="tok-type">u32</span>, <span class="tok-number">8</span>), &amp;[_]<span class="tok-type">u32</span>{ <span class="tok-number">2</span>, <span class="tok-number">4</span>, <span class="tok-number">7</span>, <span class="tok-number">7</span>, <span class="tok-number">7</span>, <span class="tok-number">7</span>, <span class="tok-number">16</span>, <span class="tok-number">32</span>, <span class="tok-number">64</span> }, {}, S.lower_u32),</span>
+<span class="line" id="L579">    );</span>
+<span class="line" id="L580">    <span class="tok-kw">try</span> testing.expectEqual(</span>
+<span class="line" id="L581">        <span class="tok-builtin">@as</span>(<span class="tok-type">usize</span>, <span class="tok-number">2</span>),</span>
+<span class="line" id="L582">        lowerBound(<span class="tok-type">u32</span>, <span class="tok-builtin">@as</span>(<span class="tok-type">u32</span>, <span class="tok-number">8</span>), &amp;[_]<span class="tok-type">u32</span>{ <span class="tok-number">2</span>, <span class="tok-number">4</span>, <span class="tok-number">8</span>, <span class="tok-number">8</span>, <span class="tok-number">8</span>, <span class="tok-number">8</span>, <span class="tok-number">16</span>, <span class="tok-number">32</span>, <span class="tok-number">64</span> }, {}, S.lower_u32),</span>
+<span class="line" id="L583">    );</span>
+<span class="line" id="L584">    <span class="tok-kw">try</span> testing.expectEqual(</span>
+<span class="line" id="L585">        <span class="tok-builtin">@as</span>(<span class="tok-type">usize</span>, <span class="tok-number">5</span>),</span>
+<span class="line" id="L586">        lowerBound(<span class="tok-type">u32</span>, <span class="tok-builtin">@as</span>(<span class="tok-type">u32</span>, <span class="tok-number">64</span>), &amp;[_]<span class="tok-type">u32</span>{ <span class="tok-number">2</span>, <span class="tok-number">4</span>, <span class="tok-number">8</span>, <span class="tok-number">16</span>, <span class="tok-number">32</span>, <span class="tok-number">64</span> }, {}, S.lower_u32),</span>
+<span class="line" id="L587">    );</span>
+<span class="line" id="L588">    <span class="tok-kw">try</span> testing.expectEqual(</span>
+<span class="line" id="L589">        <span class="tok-builtin">@as</span>(<span class="tok-type">usize</span>, <span class="tok-number">6</span>),</span>
+<span class="line" id="L590">        lowerBound(<span class="tok-type">u32</span>, <span class="tok-builtin">@as</span>(<span class="tok-type">u32</span>, <span class="tok-number">100</span>), &amp;[_]<span class="tok-type">u32</span>{ <span class="tok-number">2</span>, <span class="tok-number">4</span>, <span class="tok-number">8</span>, <span class="tok-number">16</span>, <span class="tok-number">32</span>, <span class="tok-number">64</span> }, {}, S.lower_u32),</span>
+<span class="line" id="L591">    );</span>
+<span class="line" id="L592">    <span class="tok-kw">try</span> testing.expectEqual(</span>
+<span class="line" id="L593">        <span class="tok-builtin">@as</span>(<span class="tok-type">usize</span>, <span class="tok-number">2</span>),</span>
+<span class="line" id="L594">        lowerBound(<span class="tok-type">i32</span>, <span class="tok-builtin">@as</span>(<span class="tok-type">i32</span>, <span class="tok-number">5</span>), &amp;[_]<span class="tok-type">i32</span>{ <span class="tok-number">2</span>, <span class="tok-number">4</span>, <span class="tok-number">8</span>, <span class="tok-number">16</span>, <span class="tok-number">32</span>, <span class="tok-number">64</span> }, {}, S.lower_i32),</span>
+<span class="line" id="L595">    );</span>
+<span class="line" id="L596">    <span class="tok-kw">try</span> testing.expectEqual(</span>
+<span class="line" id="L597">        <span class="tok-builtin">@as</span>(<span class="tok-type">usize</span>, <span class="tok-number">1</span>),</span>
+<span class="line" id="L598">        lowerBound(<span class="tok-type">f32</span>, <span class="tok-builtin">@as</span>(<span class="tok-type">f32</span>, -<span class="tok-number">33.4</span>), &amp;[_]<span class="tok-type">f32</span>{ -<span class="tok-number">54.2</span>, -<span class="tok-number">26.7</span>, <span class="tok-number">0.0</span>, <span class="tok-number">56.55</span>, <span class="tok-number">100.1</span>, <span class="tok-number">322.0</span> }, {}, S.lower_f32),</span>
+<span class="line" id="L599">    );</span>
+<span class="line" id="L600">}</span>
+<span class="line" id="L601"></span>
+<span class="line" id="L602"><span class="tok-comment">/// Returns the index of the first element in `items` greater than `key`,</span></span>
+<span class="line" id="L603"><span class="tok-comment">/// or `items.len` if all elements are less than or equal to `key`.</span></span>
+<span class="line" id="L604"><span class="tok-comment">///</span></span>
+<span class="line" id="L605"><span class="tok-comment">/// `items` must be sorted in ascending order with respect to `compareFn`.</span></span>
+<span class="line" id="L606"><span class="tok-comment">///</span></span>
+<span class="line" id="L607"><span class="tok-comment">/// O(log n) complexity.</span></span>
+<span class="line" id="L608"><span class="tok-kw">pub</span> <span class="tok-kw">fn</span> <span class="tok-fn">upperBound</span>(</span>
+<span class="line" id="L609">    <span class="tok-kw">comptime</span> T: <span class="tok-type">type</span>,</span>
+<span class="line" id="L610">    key: <span class="tok-kw">anytype</span>,</span>
 <span class="line" id="L611">    items: []<span class="tok-kw">const</span> T,</span>
 <span class="line" id="L612">    context: <span class="tok-kw">anytype</span>,</span>
-<span class="line" id="L613">    <span class="tok-kw">comptime</span> lessThan: <span class="tok-kw">fn</span> (context: <span class="tok-builtin">@TypeOf</span>(context), lhs: T, rhs: T) <span class="tok-type">bool</span>,</span>
-<span class="line" id="L614">) <span class="tok-type">bool</span> {</span>
-<span class="line" id="L615">    <span class="tok-kw">var</span> i: <span class="tok-type">usize</span> = <span class="tok-number">1</span>;</span>
-<span class="line" id="L616">    <span class="tok-kw">while</span> (i &lt; items.len) : (i += <span class="tok-number">1</span>) {</span>
-<span class="line" id="L617">        <span class="tok-kw">if</span> (lessThan(context, items[i], items[i - <span class="tok-number">1</span>])) {</span>
-<span class="line" id="L618">            <span class="tok-kw">return</span> <span class="tok-null">false</span>;</span>
-<span class="line" id="L619">        }</span>
-<span class="line" id="L620">    }</span>
-<span class="line" id="L621"></span>
-<span class="line" id="L622">    <span class="tok-kw">return</span> <span class="tok-null">true</span>;</span>
-<span class="line" id="L623">}</span>
-<span class="line" id="L624"></span>
-<span class="line" id="L625"><span class="tok-kw">test</span> <span class="tok-str">&quot;isSorted&quot;</span> {</span>
-<span class="line" id="L626">    <span class="tok-kw">try</span> testing.expect(isSorted(<span class="tok-type">i32</span>, &amp;[_]<span class="tok-type">i32</span>{}, {}, asc_i32));</span>
-<span class="line" id="L627">    <span class="tok-kw">try</span> testing.expect(isSorted(<span class="tok-type">i32</span>, &amp;[_]<span class="tok-type">i32</span>{<span class="tok-number">10</span>}, {}, asc_i32));</span>
-<span class="line" id="L628">    <span class="tok-kw">try</span> testing.expect(isSorted(<span class="tok-type">i32</span>, &amp;[_]<span class="tok-type">i32</span>{ <span class="tok-number">1</span>, <span class="tok-number">2</span>, <span class="tok-number">3</span>, <span class="tok-number">4</span>, <span class="tok-number">5</span> }, {}, asc_i32));</span>
-<span class="line" id="L629">    <span class="tok-kw">try</span> testing.expect(isSorted(<span class="tok-type">i32</span>, &amp;[_]<span class="tok-type">i32</span>{ -<span class="tok-number">10</span>, <span class="tok-number">1</span>, <span class="tok-number">1</span>, <span class="tok-number">1</span>, <span class="tok-number">10</span> }, {}, asc_i32));</span>
-<span class="line" id="L630"></span>
-<span class="line" id="L631">    <span class="tok-kw">try</span> testing.expect(isSorted(<span class="tok-type">i32</span>, &amp;[_]<span class="tok-type">i32</span>{}, {}, desc_i32));</span>
-<span class="line" id="L632">    <span class="tok-kw">try</span> testing.expect(isSorted(<span class="tok-type">i32</span>, &amp;[_]<span class="tok-type">i32</span>{-<span class="tok-number">20</span>}, {}, desc_i32));</span>
-<span class="line" id="L633">    <span class="tok-kw">try</span> testing.expect(isSorted(<span class="tok-type">i32</span>, &amp;[_]<span class="tok-type">i32</span>{ <span class="tok-number">3</span>, <span class="tok-number">2</span>, <span class="tok-number">1</span>, <span class="tok-number">0</span>, -<span class="tok-number">1</span> }, {}, desc_i32));</span>
-<span class="line" id="L634">    <span class="tok-kw">try</span> testing.expect(isSorted(<span class="tok-type">i32</span>, &amp;[_]<span class="tok-type">i32</span>{ <span class="tok-number">10</span>, -<span class="tok-number">10</span> }, {}, desc_i32));</span>
-<span class="line" id="L635"></span>
-<span class="line" id="L636">    <span class="tok-kw">try</span> testing.expect(isSorted(<span class="tok-type">i32</span>, &amp;[_]<span class="tok-type">i32</span>{ <span class="tok-number">1</span>, <span class="tok-number">1</span>, <span class="tok-number">1</span>, <span class="tok-number">1</span>, <span class="tok-number">1</span> }, {}, asc_i32));</span>
-<span class="line" id="L637">    <span class="tok-kw">try</span> testing.expect(isSorted(<span class="tok-type">i32</span>, &amp;[_]<span class="tok-type">i32</span>{ <span class="tok-number">1</span>, <span class="tok-number">1</span>, <span class="tok-number">1</span>, <span class="tok-number">1</span>, <span class="tok-number">1</span> }, {}, desc_i32));</span>
-<span class="line" id="L638"></span>
-<span class="line" id="L639">    <span class="tok-kw">try</span> testing.expectEqual(<span class="tok-null">false</span>, isSorted(<span class="tok-type">i32</span>, &amp;[_]<span class="tok-type">i32</span>{ <span class="tok-number">5</span>, <span class="tok-number">4</span>, <span class="tok-number">3</span>, <span class="tok-number">2</span>, <span class="tok-number">1</span> }, {}, asc_i32));</span>
-<span class="line" id="L640">    <span class="tok-kw">try</span> testing.expectEqual(<span class="tok-null">false</span>, isSorted(<span class="tok-type">i32</span>, &amp;[_]<span class="tok-type">i32</span>{ <span class="tok-number">1</span>, <span class="tok-number">2</span>, <span class="tok-number">3</span>, <span class="tok-number">4</span>, <span class="tok-number">5</span> }, {}, desc_i32));</span>
-<span class="line" id="L641"></span>
-<span class="line" id="L642">    <span class="tok-kw">try</span> testing.expect(isSorted(<span class="tok-type">u8</span>, <span class="tok-str">&quot;abcd&quot;</span>, {}, asc_u8));</span>
-<span class="line" id="L643">    <span class="tok-kw">try</span> testing.expect(isSorted(<span class="tok-type">u8</span>, <span class="tok-str">&quot;zyxw&quot;</span>, {}, desc_u8));</span>
-<span class="line" id="L644"></span>
-<span class="line" id="L645">    <span class="tok-kw">try</span> testing.expectEqual(<span class="tok-null">false</span>, isSorted(<span class="tok-type">u8</span>, <span class="tok-str">&quot;abcd&quot;</span>, {}, desc_u8));</span>
-<span class="line" id="L646">    <span class="tok-kw">try</span> testing.expectEqual(<span class="tok-null">false</span>, isSorted(<span class="tok-type">u8</span>, <span class="tok-str">&quot;zyxw&quot;</span>, {}, asc_u8));</span>
-<span class="line" id="L647"></span>
-<span class="line" id="L648">    <span class="tok-kw">try</span> testing.expect(isSorted(<span class="tok-type">u8</span>, <span class="tok-str">&quot;ffff&quot;</span>, {}, asc_u8));</span>
-<span class="line" id="L649">    <span class="tok-kw">try</span> testing.expect(isSorted(<span class="tok-type">u8</span>, <span class="tok-str">&quot;ffff&quot;</span>, {}, desc_u8));</span>
-<span class="line" id="L650">}</span>
-<span class="line" id="L651"></span>
+<span class="line" id="L613">    <span class="tok-kw">comptime</span> lessThan: <span class="tok-kw">fn</span> (context: <span class="tok-builtin">@TypeOf</span>(context), lhs: <span class="tok-builtin">@TypeOf</span>(key), rhs: T) <span class="tok-type">bool</span>,</span>
+<span class="line" id="L614">) <span class="tok-type">usize</span> {</span>
+<span class="line" id="L615">    <span class="tok-kw">var</span> left: <span class="tok-type">usize</span> = <span class="tok-number">0</span>;</span>
+<span class="line" id="L616">    <span class="tok-kw">var</span> right: <span class="tok-type">usize</span> = items.len;</span>
+<span class="line" id="L617"></span>
+<span class="line" id="L618">    <span class="tok-kw">while</span> (left &lt; right) {</span>
+<span class="line" id="L619">        <span class="tok-kw">const</span> mid = (right + left) / <span class="tok-number">2</span>;</span>
+<span class="line" id="L620">        <span class="tok-kw">if</span> (!lessThan(context, key, items[mid])) {</span>
+<span class="line" id="L621">            left = mid + <span class="tok-number">1</span>;</span>
+<span class="line" id="L622">        } <span class="tok-kw">else</span> {</span>
+<span class="line" id="L623">            right = mid;</span>
+<span class="line" id="L624">        }</span>
+<span class="line" id="L625">    }</span>
+<span class="line" id="L626"></span>
+<span class="line" id="L627">    <span class="tok-kw">return</span> left;</span>
+<span class="line" id="L628">}</span>
+<span class="line" id="L629"></span>
+<span class="line" id="L630"><span class="tok-kw">test</span> <span class="tok-str">&quot;upperBound&quot;</span> {</span>
+<span class="line" id="L631">    <span class="tok-kw">const</span> S = <span class="tok-kw">struct</span> {</span>
+<span class="line" id="L632">        <span class="tok-kw">fn</span> <span class="tok-fn">lower_u32</span>(context: <span class="tok-type">void</span>, lhs: <span class="tok-type">u32</span>, rhs: <span class="tok-type">u32</span>) <span class="tok-type">bool</span> {</span>
+<span class="line" id="L633">            _ = context;</span>
+<span class="line" id="L634">            <span class="tok-kw">return</span> lhs &lt; rhs;</span>
+<span class="line" id="L635">        }</span>
+<span class="line" id="L636">        <span class="tok-kw">fn</span> <span class="tok-fn">lower_i32</span>(context: <span class="tok-type">void</span>, lhs: <span class="tok-type">i32</span>, rhs: <span class="tok-type">i32</span>) <span class="tok-type">bool</span> {</span>
+<span class="line" id="L637">            _ = context;</span>
+<span class="line" id="L638">            <span class="tok-kw">return</span> lhs &lt; rhs;</span>
+<span class="line" id="L639">        }</span>
+<span class="line" id="L640">        <span class="tok-kw">fn</span> <span class="tok-fn">lower_f32</span>(context: <span class="tok-type">void</span>, lhs: <span class="tok-type">f32</span>, rhs: <span class="tok-type">f32</span>) <span class="tok-type">bool</span> {</span>
+<span class="line" id="L641">            _ = context;</span>
+<span class="line" id="L642">            <span class="tok-kw">return</span> lhs &lt; rhs;</span>
+<span class="line" id="L643">        }</span>
+<span class="line" id="L644">    };</span>
+<span class="line" id="L645"></span>
+<span class="line" id="L646">    <span class="tok-kw">try</span> testing.expectEqual(</span>
+<span class="line" id="L647">        <span class="tok-builtin">@as</span>(<span class="tok-type">usize</span>, <span class="tok-number">0</span>),</span>
+<span class="line" id="L648">        upperBound(<span class="tok-type">u32</span>, <span class="tok-builtin">@as</span>(<span class="tok-type">u32</span>, <span class="tok-number">0</span>), &amp;[_]<span class="tok-type">u32</span>{}, {}, S.lower_u32),</span>
+<span class="line" id="L649">    );</span>
+<span class="line" id="L650">    <span class="tok-kw">try</span> testing.expectEqual(</span>
+<span class="line" id="L651">        <span class="tok-builtin">@as</span>(<span class="tok-type">usize</span>, <span class="tok-number">0</span>),</span>
+<span class="line" id="L652">        upperBound(<span class="tok-type">u32</span>, <span class="tok-builtin">@as</span>(<span class="tok-type">u32</span>, <span class="tok-number">0</span>), &amp;[_]<span class="tok-type">u32</span>{ <span class="tok-number">2</span>, <span class="tok-number">4</span>, <span class="tok-number">8</span>, <span class="tok-number">16</span>, <span class="tok-number">32</span>, <span class="tok-number">64</span> }, {}, S.lower_u32),</span>
+<span class="line" id="L653">    );</span>
+<span class="line" id="L654">    <span class="tok-kw">try</span> testing.expectEqual(</span>
+<span class="line" id="L655">        <span class="tok-builtin">@as</span>(<span class="tok-type">usize</span>, <span class="tok-number">1</span>),</span>
+<span class="line" id="L656">        upperBound(<span class="tok-type">u32</span>, <span class="tok-builtin">@as</span>(<span class="tok-type">u32</span>, <span class="tok-number">2</span>), &amp;[_]<span class="tok-type">u32</span>{ <span class="tok-number">2</span>, <span class="tok-number">4</span>, <span class="tok-number">8</span>, <span class="tok-number">16</span>, <span class="tok-number">32</span>, <span class="tok-number">64</span> }, {}, S.lower_u32),</span>
+<span class="line" id="L657">    );</span>
+<span class="line" id="L658">    <span class="tok-kw">try</span> testing.expectEqual(</span>
+<span class="line" id="L659">        <span class="tok-builtin">@as</span>(<span class="tok-type">usize</span>, <span class="tok-number">2</span>),</span>
+<span class="line" id="L660">        upperBound(<span class="tok-type">u32</span>, <span class="tok-builtin">@as</span>(<span class="tok-type">u32</span>, <span class="tok-number">5</span>), &amp;[_]<span class="tok-type">u32</span>{ <span class="tok-number">2</span>, <span class="tok-number">4</span>, <span class="tok-number">8</span>, <span class="tok-number">16</span>, <span class="tok-number">32</span>, <span class="tok-number">64</span> }, {}, S.lower_u32),</span>
+<span class="line" id="L661">    );</span>
+<span class="line" id="L662">    <span class="tok-kw">try</span> testing.expectEqual(</span>
+<span class="line" id="L663">        <span class="tok-builtin">@as</span>(<span class="tok-type">usize</span>, <span class="tok-number">6</span>),</span>
+<span class="line" id="L664">        upperBound(<span class="tok-type">u32</span>, <span class="tok-builtin">@as</span>(<span class="tok-type">u32</span>, <span class="tok-number">8</span>), &amp;[_]<span class="tok-type">u32</span>{ <span class="tok-number">2</span>, <span class="tok-number">4</span>, <span class="tok-number">7</span>, <span class="tok-number">7</span>, <span class="tok-number">7</span>, <span class="tok-number">7</span>, <span class="tok-number">16</span>, <span class="tok-number">32</span>, <span class="tok-number">64</span> }, {}, S.lower_u32),</span>
+<span class="line" id="L665">    );</span>
+<span class="line" id="L666">    <span class="tok-kw">try</span> testing.expectEqual(</span>
+<span class="line" id="L667">        <span class="tok-builtin">@as</span>(<span class="tok-type">usize</span>, <span class="tok-number">6</span>),</span>
+<span class="line" id="L668">        upperBound(<span class="tok-type">u32</span>, <span class="tok-builtin">@as</span>(<span class="tok-type">u32</span>, <span class="tok-number">8</span>), &amp;[_]<span class="tok-type">u32</span>{ <span class="tok-number">2</span>, <span class="tok-number">4</span>, <span class="tok-number">8</span>, <span class="tok-number">8</span>, <span class="tok-number">8</span>, <span class="tok-number">8</span>, <span class="tok-number">16</span>, <span class="tok-number">32</span>, <span class="tok-number">64</span> }, {}, S.lower_u32),</span>
+<span class="line" id="L669">    );</span>
+<span class="line" id="L670">    <span class="tok-kw">try</span> testing.expectEqual(</span>
+<span class="line" id="L671">        <span class="tok-builtin">@as</span>(<span class="tok-type">usize</span>, <span class="tok-number">3</span>),</span>
+<span class="line" id="L672">        upperBound(<span class="tok-type">u32</span>, <span class="tok-builtin">@as</span>(<span class="tok-type">u32</span>, <span class="tok-number">8</span>), &amp;[_]<span class="tok-type">u32</span>{ <span class="tok-number">2</span>, <span class="tok-number">4</span>, <span class="tok-number">8</span>, <span class="tok-number">16</span>, <span class="tok-number">32</span>, <span class="tok-number">64</span> }, {}, S.lower_u32),</span>
+<span class="line" id="L673">    );</span>
+<span class="line" id="L674">    <span class="tok-kw">try</span> testing.expectEqual(</span>
+<span class="line" id="L675">        <span class="tok-builtin">@as</span>(<span class="tok-type">usize</span>, <span class="tok-number">6</span>),</span>
+<span class="line" id="L676">        upperBound(<span class="tok-type">u32</span>, <span class="tok-builtin">@as</span>(<span class="tok-type">u32</span>, <span class="tok-number">64</span>), &amp;[_]<span class="tok-type">u32</span>{ <span class="tok-number">2</span>, <span class="tok-number">4</span>, <span class="tok-number">8</span>, <span class="tok-number">16</span>, <span class="tok-number">32</span>, <span class="tok-number">64</span> }, {}, S.lower_u32),</span>
+<span class="line" id="L677">    );</span>
+<span class="line" id="L678">    <span class="tok-kw">try</span> testing.expectEqual(</span>
+<span class="line" id="L679">        <span class="tok-builtin">@as</span>(<span class="tok-type">usize</span>, <span class="tok-number">6</span>),</span>
+<span class="line" id="L680">        upperBound(<span class="tok-type">u32</span>, <span class="tok-builtin">@as</span>(<span class="tok-type">u32</span>, <span class="tok-number">100</span>), &amp;[_]<span class="tok-type">u32</span>{ <span class="tok-number">2</span>, <span class="tok-number">4</span>, <span class="tok-number">8</span>, <span class="tok-number">16</span>, <span class="tok-number">32</span>, <span class="tok-number">64</span> }, {}, S.lower_u32),</span>
+<span class="line" id="L681">    );</span>
+<span class="line" id="L682">    <span class="tok-kw">try</span> testing.expectEqual(</span>
+<span class="line" id="L683">        <span class="tok-builtin">@as</span>(<span class="tok-type">usize</span>, <span class="tok-number">2</span>),</span>
+<span class="line" id="L684">        upperBound(<span class="tok-type">i32</span>, <span class="tok-builtin">@as</span>(<span class="tok-type">i32</span>, <span class="tok-number">5</span>), &amp;[_]<span class="tok-type">i32</span>{ <span class="tok-number">2</span>, <span class="tok-number">4</span>, <span class="tok-number">8</span>, <span class="tok-number">16</span>, <span class="tok-number">32</span>, <span class="tok-number">64</span> }, {}, S.lower_i32),</span>
+<span class="line" id="L685">    );</span>
+<span class="line" id="L686">    <span class="tok-kw">try</span> testing.expectEqual(</span>
+<span class="line" id="L687">        <span class="tok-builtin">@as</span>(<span class="tok-type">usize</span>, <span class="tok-number">1</span>),</span>
+<span class="line" id="L688">        upperBound(<span class="tok-type">f32</span>, <span class="tok-builtin">@as</span>(<span class="tok-type">f32</span>, -<span class="tok-number">33.4</span>), &amp;[_]<span class="tok-type">f32</span>{ -<span class="tok-number">54.2</span>, -<span class="tok-number">26.7</span>, <span class="tok-number">0.0</span>, <span class="tok-number">56.55</span>, <span class="tok-number">100.1</span>, <span class="tok-number">322.0</span> }, {}, S.lower_f32),</span>
+<span class="line" id="L689">    );</span>
+<span class="line" id="L690">}</span>
+<span class="line" id="L691"></span>
+<span class="line" id="L692"><span class="tok-comment">/// Returns a tuple of the lower and upper indices in `items` between which all elements are equal to `key`.</span></span>
+<span class="line" id="L693"><span class="tok-comment">/// If no element in `items` is equal to `key`, both indices are the</span></span>
+<span class="line" id="L694"><span class="tok-comment">/// index of the first element in `items` greater than `key`.</span></span>
+<span class="line" id="L695"><span class="tok-comment">/// If no element in `items` is greater than `key`, both indices equal `items.len`.</span></span>
+<span class="line" id="L696"><span class="tok-comment">///</span></span>
+<span class="line" id="L697"><span class="tok-comment">/// `items` must be sorted in ascending order with respect to `compareFn`.</span></span>
+<span class="line" id="L698"><span class="tok-comment">///</span></span>
+<span class="line" id="L699"><span class="tok-comment">/// O(log n) complexity.</span></span>
+<span class="line" id="L700"><span class="tok-comment">///</span></span>
+<span class="line" id="L701"><span class="tok-comment">/// See also: `lowerBound` and `upperBound`.</span></span>
+<span class="line" id="L702"><span class="tok-kw">pub</span> <span class="tok-kw">fn</span> <span class="tok-fn">equalRange</span>(</span>
+<span class="line" id="L703">    <span class="tok-kw">comptime</span> T: <span class="tok-type">type</span>,</span>
+<span class="line" id="L704">    key: <span class="tok-kw">anytype</span>,</span>
+<span class="line" id="L705">    items: []<span class="tok-kw">const</span> T,</span>
+<span class="line" id="L706">    context: <span class="tok-kw">anytype</span>,</span>
+<span class="line" id="L707">    <span class="tok-kw">comptime</span> lessThan: <span class="tok-kw">fn</span> (context: <span class="tok-builtin">@TypeOf</span>(context), lhs: <span class="tok-builtin">@TypeOf</span>(key), rhs: T) <span class="tok-type">bool</span>,</span>
+<span class="line" id="L708">) <span class="tok-kw">struct</span> { <span class="tok-type">usize</span>, <span class="tok-type">usize</span> } {</span>
+<span class="line" id="L709">    <span class="tok-kw">return</span> .{</span>
+<span class="line" id="L710">        lowerBound(T, key, items, context, lessThan),</span>
+<span class="line" id="L711">        upperBound(T, key, items, context, lessThan),</span>
+<span class="line" id="L712">    };</span>
+<span class="line" id="L713">}</span>
+<span class="line" id="L714"></span>
+<span class="line" id="L715"><span class="tok-kw">test</span> <span class="tok-str">&quot;equalRange&quot;</span> {</span>
+<span class="line" id="L716">    <span class="tok-kw">const</span> S = <span class="tok-kw">struct</span> {</span>
+<span class="line" id="L717">        <span class="tok-kw">fn</span> <span class="tok-fn">lower_u32</span>(context: <span class="tok-type">void</span>, lhs: <span class="tok-type">u32</span>, rhs: <span class="tok-type">u32</span>) <span class="tok-type">bool</span> {</span>
+<span class="line" id="L718">            _ = context;</span>
+<span class="line" id="L719">            <span class="tok-kw">return</span> lhs &lt; rhs;</span>
+<span class="line" id="L720">        }</span>
+<span class="line" id="L721">        <span class="tok-kw">fn</span> <span class="tok-fn">lower_i32</span>(context: <span class="tok-type">void</span>, lhs: <span class="tok-type">i32</span>, rhs: <span class="tok-type">i32</span>) <span class="tok-type">bool</span> {</span>
+<span class="line" id="L722">            _ = context;</span>
+<span class="line" id="L723">            <span class="tok-kw">return</span> lhs &lt; rhs;</span>
+<span class="line" id="L724">        }</span>
+<span class="line" id="L725">        <span class="tok-kw">fn</span> <span class="tok-fn">lower_f32</span>(context: <span class="tok-type">void</span>, lhs: <span class="tok-type">f32</span>, rhs: <span class="tok-type">f32</span>) <span class="tok-type">bool</span> {</span>
+<span class="line" id="L726">            _ = context;</span>
+<span class="line" id="L727">            <span class="tok-kw">return</span> lhs &lt; rhs;</span>
+<span class="line" id="L728">        }</span>
+<span class="line" id="L729">    };</span>
+<span class="line" id="L730"></span>
+<span class="line" id="L731">    <span class="tok-kw">try</span> testing.expectEqual(</span>
+<span class="line" id="L732">        <span class="tok-builtin">@as</span>(<span class="tok-kw">struct</span> { <span class="tok-type">usize</span>, <span class="tok-type">usize</span> }, .{ <span class="tok-number">0</span>, <span class="tok-number">0</span> }),</span>
+<span class="line" id="L733">        equalRange(<span class="tok-type">i32</span>, <span class="tok-builtin">@as</span>(<span class="tok-type">i32</span>, <span class="tok-number">0</span>), &amp;[_]<span class="tok-type">i32</span>{}, {}, S.lower_i32),</span>
+<span class="line" id="L734">    );</span>
+<span class="line" id="L735">    <span class="tok-kw">try</span> testing.expectEqual(</span>
+<span class="line" id="L736">        <span class="tok-builtin">@as</span>(<span class="tok-kw">struct</span> { <span class="tok-type">usize</span>, <span class="tok-type">usize</span> }, .{ <span class="tok-number">0</span>, <span class="tok-number">0</span> }),</span>
+<span class="line" id="L737">        equalRange(<span class="tok-type">i32</span>, <span class="tok-builtin">@as</span>(<span class="tok-type">i32</span>, <span class="tok-number">0</span>), &amp;[_]<span class="tok-type">i32</span>{ <span class="tok-number">2</span>, <span class="tok-number">4</span>, <span class="tok-number">8</span>, <span class="tok-number">16</span>, <span class="tok-number">32</span>, <span class="tok-number">64</span> }, {}, S.lower_i32),</span>
+<span class="line" id="L738">    );</span>
+<span class="line" id="L739">    <span class="tok-kw">try</span> testing.expectEqual(</span>
+<span class="line" id="L740">        <span class="tok-builtin">@as</span>(<span class="tok-kw">struct</span> { <span class="tok-type">usize</span>, <span class="tok-type">usize</span> }, .{ <span class="tok-number">0</span>, <span class="tok-number">1</span> }),</span>
+<span class="line" id="L741">        equalRange(<span class="tok-type">i32</span>, <span class="tok-builtin">@as</span>(<span class="tok-type">i32</span>, <span class="tok-number">2</span>), &amp;[_]<span class="tok-type">i32</span>{ <span class="tok-number">2</span>, <span class="tok-number">4</span>, <span class="tok-number">8</span>, <span class="tok-number">16</span>, <span class="tok-number">32</span>, <span class="tok-number">64</span> }, {}, S.lower_i32),</span>
+<span class="line" id="L742">    );</span>
+<span class="line" id="L743">    <span class="tok-kw">try</span> testing.expectEqual(</span>
+<span class="line" id="L744">        <span class="tok-builtin">@as</span>(<span class="tok-kw">struct</span> { <span class="tok-type">usize</span>, <span class="tok-type">usize</span> }, .{ <span class="tok-number">2</span>, <span class="tok-number">2</span> }),</span>
+<span class="line" id="L745">        equalRange(<span class="tok-type">i32</span>, <span class="tok-builtin">@as</span>(<span class="tok-type">i32</span>, <span class="tok-number">5</span>), &amp;[_]<span class="tok-type">i32</span>{ <span class="tok-number">2</span>, <span class="tok-number">4</span>, <span class="tok-number">8</span>, <span class="tok-number">16</span>, <span class="tok-number">32</span>, <span class="tok-number">64</span> }, {}, S.lower_i32),</span>
+<span class="line" id="L746">    );</span>
+<span class="line" id="L747">    <span class="tok-kw">try</span> testing.expectEqual(</span>
+<span class="line" id="L748">        <span class="tok-builtin">@as</span>(<span class="tok-kw">struct</span> { <span class="tok-type">usize</span>, <span class="tok-type">usize</span> }, .{ <span class="tok-number">2</span>, <span class="tok-number">3</span> }),</span>
+<span class="line" id="L749">        equalRange(<span class="tok-type">i32</span>, <span class="tok-builtin">@as</span>(<span class="tok-type">i32</span>, <span class="tok-number">8</span>), &amp;[_]<span class="tok-type">i32</span>{ <span class="tok-number">2</span>, <span class="tok-number">4</span>, <span class="tok-number">8</span>, <span class="tok-number">16</span>, <span class="tok-number">32</span>, <span class="tok-number">64</span> }, {}, S.lower_i32),</span>
+<span class="line" id="L750">    );</span>
+<span class="line" id="L751">    <span class="tok-kw">try</span> testing.expectEqual(</span>
+<span class="line" id="L752">        <span class="tok-builtin">@as</span>(<span class="tok-kw">struct</span> { <span class="tok-type">usize</span>, <span class="tok-type">usize</span> }, .{ <span class="tok-number">5</span>, <span class="tok-number">6</span> }),</span>
+<span class="line" id="L753">        equalRange(<span class="tok-type">i32</span>, <span class="tok-builtin">@as</span>(<span class="tok-type">i32</span>, <span class="tok-number">64</span>), &amp;[_]<span class="tok-type">i32</span>{ <span class="tok-number">2</span>, <span class="tok-number">4</span>, <span class="tok-number">8</span>, <span class="tok-number">16</span>, <span class="tok-number">32</span>, <span class="tok-number">64</span> }, {}, S.lower_i32),</span>
+<span class="line" id="L754">    );</span>
+<span class="line" id="L755">    <span class="tok-kw">try</span> testing.expectEqual(</span>
+<span class="line" id="L756">        <span class="tok-builtin">@as</span>(<span class="tok-kw">struct</span> { <span class="tok-type">usize</span>, <span class="tok-type">usize</span> }, .{ <span class="tok-number">6</span>, <span class="tok-number">6</span> }),</span>
+<span class="line" id="L757">        equalRange(<span class="tok-type">i32</span>, <span class="tok-builtin">@as</span>(<span class="tok-type">i32</span>, <span class="tok-number">100</span>), &amp;[_]<span class="tok-type">i32</span>{ <span class="tok-number">2</span>, <span class="tok-number">4</span>, <span class="tok-number">8</span>, <span class="tok-number">16</span>, <span class="tok-number">32</span>, <span class="tok-number">64</span> }, {}, S.lower_i32),</span>
+<span class="line" id="L758">    );</span>
+<span class="line" id="L759">    <span class="tok-kw">try</span> testing.expectEqual(</span>
+<span class="line" id="L760">        <span class="tok-builtin">@as</span>(<span class="tok-kw">struct</span> { <span class="tok-type">usize</span>, <span class="tok-type">usize</span> }, .{ <span class="tok-number">2</span>, <span class="tok-number">6</span> }),</span>
+<span class="line" id="L761">        equalRange(<span class="tok-type">i32</span>, <span class="tok-builtin">@as</span>(<span class="tok-type">i32</span>, <span class="tok-number">8</span>), &amp;[_]<span class="tok-type">i32</span>{ <span class="tok-number">2</span>, <span class="tok-number">4</span>, <span class="tok-number">8</span>, <span class="tok-number">8</span>, <span class="tok-number">8</span>, <span class="tok-number">8</span>, <span class="tok-number">15</span>, <span class="tok-number">22</span> }, {}, S.lower_i32),</span>
+<span class="line" id="L762">    );</span>
+<span class="line" id="L763">    <span class="tok-kw">try</span> testing.expectEqual(</span>
+<span class="line" id="L764">        <span class="tok-builtin">@as</span>(<span class="tok-kw">struct</span> { <span class="tok-type">usize</span>, <span class="tok-type">usize</span> }, .{ <span class="tok-number">2</span>, <span class="tok-number">2</span> }),</span>
+<span class="line" id="L765">        equalRange(<span class="tok-type">u32</span>, <span class="tok-builtin">@as</span>(<span class="tok-type">u32</span>, <span class="tok-number">5</span>), &amp;[_]<span class="tok-type">u32</span>{ <span class="tok-number">2</span>, <span class="tok-number">4</span>, <span class="tok-number">8</span>, <span class="tok-number">16</span>, <span class="tok-number">32</span>, <span class="tok-number">64</span> }, {}, S.lower_u32),</span>
+<span class="line" id="L766">    );</span>
+<span class="line" id="L767">    <span class="tok-kw">try</span> testing.expectEqual(</span>
+<span class="line" id="L768">        <span class="tok-builtin">@as</span>(<span class="tok-kw">struct</span> { <span class="tok-type">usize</span>, <span class="tok-type">usize</span> }, .{ <span class="tok-number">1</span>, <span class="tok-number">1</span> }),</span>
+<span class="line" id="L769">        equalRange(<span class="tok-type">f32</span>, <span class="tok-builtin">@as</span>(<span class="tok-type">f32</span>, -<span class="tok-number">33.4</span>), &amp;[_]<span class="tok-type">f32</span>{ -<span class="tok-number">54.2</span>, -<span class="tok-number">26.7</span>, <span class="tok-number">0.0</span>, <span class="tok-number">56.55</span>, <span class="tok-number">100.1</span>, <span class="tok-number">322.0</span> }, {}, S.lower_f32),</span>
+<span class="line" id="L770">    );</span>
+<span class="line" id="L771">}</span>
+<span class="line" id="L772"></span>
+<span class="line" id="L773"><span class="tok-kw">pub</span> <span class="tok-kw">fn</span> <span class="tok-fn">argMin</span>(</span>
+<span class="line" id="L774">    <span class="tok-kw">comptime</span> T: <span class="tok-type">type</span>,</span>
+<span class="line" id="L775">    items: []<span class="tok-kw">const</span> T,</span>
+<span class="line" id="L776">    context: <span class="tok-kw">anytype</span>,</span>
+<span class="line" id="L777">    <span class="tok-kw">comptime</span> lessThan: <span class="tok-kw">fn</span> (<span class="tok-builtin">@TypeOf</span>(context), lhs: T, rhs: T) <span class="tok-type">bool</span>,</span>
+<span class="line" id="L778">) ?<span class="tok-type">usize</span> {</span>
+<span class="line" id="L779">    <span class="tok-kw">if</span> (items.len == <span class="tok-number">0</span>) {</span>
+<span class="line" id="L780">        <span class="tok-kw">return</span> <span class="tok-null">null</span>;</span>
+<span class="line" id="L781">    }</span>
+<span class="line" id="L782"></span>
+<span class="line" id="L783">    <span class="tok-kw">var</span> smallest = items[<span class="tok-number">0</span>];</span>
+<span class="line" id="L784">    <span class="tok-kw">var</span> smallest_index: <span class="tok-type">usize</span> = <span class="tok-number">0</span>;</span>
+<span class="line" id="L785">    <span class="tok-kw">for</span> (items[<span class="tok-number">1</span>..], <span class="tok-number">0</span>..) |item, i| {</span>
+<span class="line" id="L786">        <span class="tok-kw">if</span> (lessThan(context, item, smallest)) {</span>
+<span class="line" id="L787">            smallest = item;</span>
+<span class="line" id="L788">            smallest_index = i + <span class="tok-number">1</span>;</span>
+<span class="line" id="L789">        }</span>
+<span class="line" id="L790">    }</span>
+<span class="line" id="L791"></span>
+<span class="line" id="L792">    <span class="tok-kw">return</span> smallest_index;</span>
+<span class="line" id="L793">}</span>
+<span class="line" id="L794"></span>
+<span class="line" id="L795"><span class="tok-kw">test</span> <span class="tok-str">&quot;argMin&quot;</span> {</span>
+<span class="line" id="L796">    <span class="tok-kw">try</span> testing.expectEqual(<span class="tok-builtin">@as</span>(?<span class="tok-type">usize</span>, <span class="tok-null">null</span>), argMin(<span class="tok-type">i32</span>, &amp;[_]<span class="tok-type">i32</span>{}, {}, asc_i32));</span>
+<span class="line" id="L797">    <span class="tok-kw">try</span> testing.expectEqual(<span class="tok-builtin">@as</span>(?<span class="tok-type">usize</span>, <span class="tok-number">0</span>), argMin(<span class="tok-type">i32</span>, &amp;[_]<span class="tok-type">i32</span>{<span class="tok-number">1</span>}, {}, asc_i32));</span>
+<span class="line" id="L798">    <span class="tok-kw">try</span> testing.expectEqual(<span class="tok-builtin">@as</span>(?<span class="tok-type">usize</span>, <span class="tok-number">0</span>), argMin(<span class="tok-type">i32</span>, &amp;[_]<span class="tok-type">i32</span>{ <span class="tok-number">1</span>, <span class="tok-number">2</span>, <span class="tok-number">3</span>, <span class="tok-number">4</span>, <span class="tok-number">5</span> }, {}, asc_i32));</span>
+<span class="line" id="L799">    <span class="tok-kw">try</span> testing.expectEqual(<span class="tok-builtin">@as</span>(?<span class="tok-type">usize</span>, <span class="tok-number">3</span>), argMin(<span class="tok-type">i32</span>, &amp;[_]<span class="tok-type">i32</span>{ <span class="tok-number">9</span>, <span class="tok-number">3</span>, <span class="tok-number">8</span>, <span class="tok-number">2</span>, <span class="tok-number">5</span> }, {}, asc_i32));</span>
+<span class="line" id="L800">    <span class="tok-kw">try</span> testing.expectEqual(<span class="tok-builtin">@as</span>(?<span class="tok-type">usize</span>, <span class="tok-number">0</span>), argMin(<span class="tok-type">i32</span>, &amp;[_]<span class="tok-type">i32</span>{ <span class="tok-number">1</span>, <span class="tok-number">1</span>, <span class="tok-number">1</span>, <span class="tok-number">1</span>, <span class="tok-number">1</span> }, {}, asc_i32));</span>
+<span class="line" id="L801">    <span class="tok-kw">try</span> testing.expectEqual(<span class="tok-builtin">@as</span>(?<span class="tok-type">usize</span>, <span class="tok-number">0</span>), argMin(<span class="tok-type">i32</span>, &amp;[_]<span class="tok-type">i32</span>{ -<span class="tok-number">10</span>, <span class="tok-number">1</span>, <span class="tok-number">10</span> }, {}, asc_i32));</span>
+<span class="line" id="L802">    <span class="tok-kw">try</span> testing.expectEqual(<span class="tok-builtin">@as</span>(?<span class="tok-type">usize</span>, <span class="tok-number">3</span>), argMin(<span class="tok-type">i32</span>, &amp;[_]<span class="tok-type">i32</span>{ <span class="tok-number">6</span>, <span class="tok-number">3</span>, <span class="tok-number">5</span>, <span class="tok-number">7</span>, <span class="tok-number">6</span> }, {}, desc_i32));</span>
+<span class="line" id="L803">}</span>
+<span class="line" id="L804"></span>
+<span class="line" id="L805"><span class="tok-kw">pub</span> <span class="tok-kw">fn</span> <span class="tok-fn">min</span>(</span>
+<span class="line" id="L806">    <span class="tok-kw">comptime</span> T: <span class="tok-type">type</span>,</span>
+<span class="line" id="L807">    items: []<span class="tok-kw">const</span> T,</span>
+<span class="line" id="L808">    context: <span class="tok-kw">anytype</span>,</span>
+<span class="line" id="L809">    <span class="tok-kw">comptime</span> lessThan: <span class="tok-kw">fn</span> (context: <span class="tok-builtin">@TypeOf</span>(context), lhs: T, rhs: T) <span class="tok-type">bool</span>,</span>
+<span class="line" id="L810">) ?T {</span>
+<span class="line" id="L811">    <span class="tok-kw">const</span> i = argMin(T, items, context, lessThan) <span class="tok-kw">orelse</span> <span class="tok-kw">return</span> <span class="tok-null">null</span>;</span>
+<span class="line" id="L812">    <span class="tok-kw">return</span> items[i];</span>
+<span class="line" id="L813">}</span>
+<span class="line" id="L814"></span>
+<span class="line" id="L815"><span class="tok-kw">test</span> <span class="tok-str">&quot;min&quot;</span> {</span>
+<span class="line" id="L816">    <span class="tok-kw">try</span> testing.expectEqual(<span class="tok-builtin">@as</span>(?<span class="tok-type">i32</span>, <span class="tok-null">null</span>), min(<span class="tok-type">i32</span>, &amp;[_]<span class="tok-type">i32</span>{}, {}, asc_i32));</span>
+<span class="line" id="L817">    <span class="tok-kw">try</span> testing.expectEqual(<span class="tok-builtin">@as</span>(?<span class="tok-type">i32</span>, <span class="tok-number">1</span>), min(<span class="tok-type">i32</span>, &amp;[_]<span class="tok-type">i32</span>{<span class="tok-number">1</span>}, {}, asc_i32));</span>
+<span class="line" id="L818">    <span class="tok-kw">try</span> testing.expectEqual(<span class="tok-builtin">@as</span>(?<span class="tok-type">i32</span>, <span class="tok-number">1</span>), min(<span class="tok-type">i32</span>, &amp;[_]<span class="tok-type">i32</span>{ <span class="tok-number">1</span>, <span class="tok-number">2</span>, <span class="tok-number">3</span>, <span class="tok-number">4</span>, <span class="tok-number">5</span> }, {}, asc_i32));</span>
+<span class="line" id="L819">    <span class="tok-kw">try</span> testing.expectEqual(<span class="tok-builtin">@as</span>(?<span class="tok-type">i32</span>, <span class="tok-number">2</span>), min(<span class="tok-type">i32</span>, &amp;[_]<span class="tok-type">i32</span>{ <span class="tok-number">9</span>, <span class="tok-number">3</span>, <span class="tok-number">8</span>, <span class="tok-number">2</span>, <span class="tok-number">5</span> }, {}, asc_i32));</span>
+<span class="line" id="L820">    <span class="tok-kw">try</span> testing.expectEqual(<span class="tok-builtin">@as</span>(?<span class="tok-type">i32</span>, <span class="tok-number">1</span>), min(<span class="tok-type">i32</span>, &amp;[_]<span class="tok-type">i32</span>{ <span class="tok-number">1</span>, <span class="tok-number">1</span>, <span class="tok-number">1</span>, <span class="tok-number">1</span>, <span class="tok-number">1</span> }, {}, asc_i32));</span>
+<span class="line" id="L821">    <span class="tok-kw">try</span> testing.expectEqual(<span class="tok-builtin">@as</span>(?<span class="tok-type">i32</span>, -<span class="tok-number">10</span>), min(<span class="tok-type">i32</span>, &amp;[_]<span class="tok-type">i32</span>{ -<span class="tok-number">10</span>, <span class="tok-number">1</span>, <span class="tok-number">10</span> }, {}, asc_i32));</span>
+<span class="line" id="L822">    <span class="tok-kw">try</span> testing.expectEqual(<span class="tok-builtin">@as</span>(?<span class="tok-type">i32</span>, <span class="tok-number">7</span>), min(<span class="tok-type">i32</span>, &amp;[_]<span class="tok-type">i32</span>{ <span class="tok-number">6</span>, <span class="tok-number">3</span>, <span class="tok-number">5</span>, <span class="tok-number">7</span>, <span class="tok-number">6</span> }, {}, desc_i32));</span>
+<span class="line" id="L823">}</span>
+<span class="line" id="L824"></span>
+<span class="line" id="L825"><span class="tok-kw">pub</span> <span class="tok-kw">fn</span> <span class="tok-fn">argMax</span>(</span>
+<span class="line" id="L826">    <span class="tok-kw">comptime</span> T: <span class="tok-type">type</span>,</span>
+<span class="line" id="L827">    items: []<span class="tok-kw">const</span> T,</span>
+<span class="line" id="L828">    context: <span class="tok-kw">anytype</span>,</span>
+<span class="line" id="L829">    <span class="tok-kw">comptime</span> lessThan: <span class="tok-kw">fn</span> (context: <span class="tok-builtin">@TypeOf</span>(context), lhs: T, rhs: T) <span class="tok-type">bool</span>,</span>
+<span class="line" id="L830">) ?<span class="tok-type">usize</span> {</span>
+<span class="line" id="L831">    <span class="tok-kw">if</span> (items.len == <span class="tok-number">0</span>) {</span>
+<span class="line" id="L832">        <span class="tok-kw">return</span> <span class="tok-null">null</span>;</span>
+<span class="line" id="L833">    }</span>
+<span class="line" id="L834"></span>
+<span class="line" id="L835">    <span class="tok-kw">var</span> biggest = items[<span class="tok-number">0</span>];</span>
+<span class="line" id="L836">    <span class="tok-kw">var</span> biggest_index: <span class="tok-type">usize</span> = <span class="tok-number">0</span>;</span>
+<span class="line" id="L837">    <span class="tok-kw">for</span> (items[<span class="tok-number">1</span>..], <span class="tok-number">0</span>..) |item, i| {</span>
+<span class="line" id="L838">        <span class="tok-kw">if</span> (lessThan(context, biggest, item)) {</span>
+<span class="line" id="L839">            biggest = item;</span>
+<span class="line" id="L840">            biggest_index = i + <span class="tok-number">1</span>;</span>
+<span class="line" id="L841">        }</span>
+<span class="line" id="L842">    }</span>
+<span class="line" id="L843"></span>
+<span class="line" id="L844">    <span class="tok-kw">return</span> biggest_index;</span>
+<span class="line" id="L845">}</span>
+<span class="line" id="L846"></span>
+<span class="line" id="L847"><span class="tok-kw">test</span> <span class="tok-str">&quot;argMax&quot;</span> {</span>
+<span class="line" id="L848">    <span class="tok-kw">try</span> testing.expectEqual(<span class="tok-builtin">@as</span>(?<span class="tok-type">usize</span>, <span class="tok-null">null</span>), argMax(<span class="tok-type">i32</span>, &amp;[_]<span class="tok-type">i32</span>{}, {}, asc_i32));</span>
+<span class="line" id="L849">    <span class="tok-kw">try</span> testing.expectEqual(<span class="tok-builtin">@as</span>(?<span class="tok-type">usize</span>, <span class="tok-number">0</span>), argMax(<span class="tok-type">i32</span>, &amp;[_]<span class="tok-type">i32</span>{<span class="tok-number">1</span>}, {}, asc_i32));</span>
+<span class="line" id="L850">    <span class="tok-kw">try</span> testing.expectEqual(<span class="tok-builtin">@as</span>(?<span class="tok-type">usize</span>, <span class="tok-number">4</span>), argMax(<span class="tok-type">i32</span>, &amp;[_]<span class="tok-type">i32</span>{ <span class="tok-number">1</span>, <span class="tok-number">2</span>, <span class="tok-number">3</span>, <span class="tok-number">4</span>, <span class="tok-number">5</span> }, {}, asc_i32));</span>
+<span class="line" id="L851">    <span class="tok-kw">try</span> testing.expectEqual(<span class="tok-builtin">@as</span>(?<span class="tok-type">usize</span>, <span class="tok-number">0</span>), argMax(<span class="tok-type">i32</span>, &amp;[_]<span class="tok-type">i32</span>{ <span class="tok-number">9</span>, <span class="tok-number">3</span>, <span class="tok-number">8</span>, <span class="tok-number">2</span>, <span class="tok-number">5</span> }, {}, asc_i32));</span>
+<span class="line" id="L852">    <span class="tok-kw">try</span> testing.expectEqual(<span class="tok-builtin">@as</span>(?<span class="tok-type">usize</span>, <span class="tok-number">0</span>), argMax(<span class="tok-type">i32</span>, &amp;[_]<span class="tok-type">i32</span>{ <span class="tok-number">1</span>, <span class="tok-number">1</span>, <span class="tok-number">1</span>, <span class="tok-number">1</span>, <span class="tok-number">1</span> }, {}, asc_i32));</span>
+<span class="line" id="L853">    <span class="tok-kw">try</span> testing.expectEqual(<span class="tok-builtin">@as</span>(?<span class="tok-type">usize</span>, <span class="tok-number">2</span>), argMax(<span class="tok-type">i32</span>, &amp;[_]<span class="tok-type">i32</span>{ -<span class="tok-number">10</span>, <span class="tok-number">1</span>, <span class="tok-number">10</span> }, {}, asc_i32));</span>
+<span class="line" id="L854">    <span class="tok-kw">try</span> testing.expectEqual(<span class="tok-builtin">@as</span>(?<span class="tok-type">usize</span>, <span class="tok-number">1</span>), argMax(<span class="tok-type">i32</span>, &amp;[_]<span class="tok-type">i32</span>{ <span class="tok-number">6</span>, <span class="tok-number">3</span>, <span class="tok-number">5</span>, <span class="tok-number">7</span>, <span class="tok-number">6</span> }, {}, desc_i32));</span>
+<span class="line" id="L855">}</span>
+<span class="line" id="L856"></span>
+<span class="line" id="L857"><span class="tok-kw">pub</span> <span class="tok-kw">fn</span> <span class="tok-fn">max</span>(</span>
+<span class="line" id="L858">    <span class="tok-kw">comptime</span> T: <span class="tok-type">type</span>,</span>
+<span class="line" id="L859">    items: []<span class="tok-kw">const</span> T,</span>
+<span class="line" id="L860">    context: <span class="tok-kw">anytype</span>,</span>
+<span class="line" id="L861">    <span class="tok-kw">comptime</span> lessThan: <span class="tok-kw">fn</span> (context: <span class="tok-builtin">@TypeOf</span>(context), lhs: T, rhs: T) <span class="tok-type">bool</span>,</span>
+<span class="line" id="L862">) ?T {</span>
+<span class="line" id="L863">    <span class="tok-kw">const</span> i = argMax(T, items, context, lessThan) <span class="tok-kw">orelse</span> <span class="tok-kw">return</span> <span class="tok-null">null</span>;</span>
+<span class="line" id="L864">    <span class="tok-kw">return</span> items[i];</span>
+<span class="line" id="L865">}</span>
+<span class="line" id="L866"></span>
+<span class="line" id="L867"><span class="tok-kw">test</span> <span class="tok-str">&quot;max&quot;</span> {</span>
+<span class="line" id="L868">    <span class="tok-kw">try</span> testing.expectEqual(<span class="tok-builtin">@as</span>(?<span class="tok-type">i32</span>, <span class="tok-null">null</span>), max(<span class="tok-type">i32</span>, &amp;[_]<span class="tok-type">i32</span>{}, {}, asc_i32));</span>
+<span class="line" id="L869">    <span class="tok-kw">try</span> testing.expectEqual(<span class="tok-builtin">@as</span>(?<span class="tok-type">i32</span>, <span class="tok-number">1</span>), max(<span class="tok-type">i32</span>, &amp;[_]<span class="tok-type">i32</span>{<span class="tok-number">1</span>}, {}, asc_i32));</span>
+<span class="line" id="L870">    <span class="tok-kw">try</span> testing.expectEqual(<span class="tok-builtin">@as</span>(?<span class="tok-type">i32</span>, <span class="tok-number">5</span>), max(<span class="tok-type">i32</span>, &amp;[_]<span class="tok-type">i32</span>{ <span class="tok-number">1</span>, <span class="tok-number">2</span>, <span class="tok-number">3</span>, <span class="tok-number">4</span>, <span class="tok-number">5</span> }, {}, asc_i32));</span>
+<span class="line" id="L871">    <span class="tok-kw">try</span> testing.expectEqual(<span class="tok-builtin">@as</span>(?<span class="tok-type">i32</span>, <span class="tok-number">9</span>), max(<span class="tok-type">i32</span>, &amp;[_]<span class="tok-type">i32</span>{ <span class="tok-number">9</span>, <span class="tok-number">3</span>, <span class="tok-number">8</span>, <span class="tok-number">2</span>, <span class="tok-number">5</span> }, {}, asc_i32));</span>
+<span class="line" id="L872">    <span class="tok-kw">try</span> testing.expectEqual(<span class="tok-builtin">@as</span>(?<span class="tok-type">i32</span>, <span class="tok-number">1</span>), max(<span class="tok-type">i32</span>, &amp;[_]<span class="tok-type">i32</span>{ <span class="tok-number">1</span>, <span class="tok-number">1</span>, <span class="tok-number">1</span>, <span class="tok-number">1</span>, <span class="tok-number">1</span> }, {}, asc_i32));</span>
+<span class="line" id="L873">    <span class="tok-kw">try</span> testing.expectEqual(<span class="tok-builtin">@as</span>(?<span class="tok-type">i32</span>, <span class="tok-number">10</span>), max(<span class="tok-type">i32</span>, &amp;[_]<span class="tok-type">i32</span>{ -<span class="tok-number">10</span>, <span class="tok-number">1</span>, <span class="tok-number">10</span> }, {}, asc_i32));</span>
+<span class="line" id="L874">    <span class="tok-kw">try</span> testing.expectEqual(<span class="tok-builtin">@as</span>(?<span class="tok-type">i32</span>, <span class="tok-number">3</span>), max(<span class="tok-type">i32</span>, &amp;[_]<span class="tok-type">i32</span>{ <span class="tok-number">6</span>, <span class="tok-number">3</span>, <span class="tok-number">5</span>, <span class="tok-number">7</span>, <span class="tok-number">6</span> }, {}, desc_i32));</span>
+<span class="line" id="L875">}</span>
+<span class="line" id="L876"></span>
+<span class="line" id="L877"><span class="tok-kw">pub</span> <span class="tok-kw">fn</span> <span class="tok-fn">isSorted</span>(</span>
+<span class="line" id="L878">    <span class="tok-kw">comptime</span> T: <span class="tok-type">type</span>,</span>
+<span class="line" id="L879">    items: []<span class="tok-kw">const</span> T,</span>
+<span class="line" id="L880">    context: <span class="tok-kw">anytype</span>,</span>
+<span class="line" id="L881">    <span class="tok-kw">comptime</span> lessThan: <span class="tok-kw">fn</span> (context: <span class="tok-builtin">@TypeOf</span>(context), lhs: T, rhs: T) <span class="tok-type">bool</span>,</span>
+<span class="line" id="L882">) <span class="tok-type">bool</span> {</span>
+<span class="line" id="L883">    <span class="tok-kw">var</span> i: <span class="tok-type">usize</span> = <span class="tok-number">1</span>;</span>
+<span class="line" id="L884">    <span class="tok-kw">while</span> (i &lt; items.len) : (i += <span class="tok-number">1</span>) {</span>
+<span class="line" id="L885">        <span class="tok-kw">if</span> (lessThan(context, items[i], items[i - <span class="tok-number">1</span>])) {</span>
+<span class="line" id="L886">            <span class="tok-kw">return</span> <span class="tok-null">false</span>;</span>
+<span class="line" id="L887">        }</span>
+<span class="line" id="L888">    }</span>
+<span class="line" id="L889"></span>
+<span class="line" id="L890">    <span class="tok-kw">return</span> <span class="tok-null">true</span>;</span>
+<span class="line" id="L891">}</span>
+<span class="line" id="L892"></span>
+<span class="line" id="L893"><span class="tok-kw">test</span> <span class="tok-str">&quot;isSorted&quot;</span> {</span>
+<span class="line" id="L894">    <span class="tok-kw">try</span> testing.expect(isSorted(<span class="tok-type">i32</span>, &amp;[_]<span class="tok-type">i32</span>{}, {}, asc_i32));</span>
+<span class="line" id="L895">    <span class="tok-kw">try</span> testing.expect(isSorted(<span class="tok-type">i32</span>, &amp;[_]<span class="tok-type">i32</span>{<span class="tok-number">10</span>}, {}, asc_i32));</span>
+<span class="line" id="L896">    <span class="tok-kw">try</span> testing.expect(isSorted(<span class="tok-type">i32</span>, &amp;[_]<span class="tok-type">i32</span>{ <span class="tok-number">1</span>, <span class="tok-number">2</span>, <span class="tok-number">3</span>, <span class="tok-number">4</span>, <span class="tok-number">5</span> }, {}, asc_i32));</span>
+<span class="line" id="L897">    <span class="tok-kw">try</span> testing.expect(isSorted(<span class="tok-type">i32</span>, &amp;[_]<span class="tok-type">i32</span>{ -<span class="tok-number">10</span>, <span class="tok-number">1</span>, <span class="tok-number">1</span>, <span class="tok-number">1</span>, <span class="tok-number">10</span> }, {}, asc_i32));</span>
+<span class="line" id="L898"></span>
+<span class="line" id="L899">    <span class="tok-kw">try</span> testing.expect(isSorted(<span class="tok-type">i32</span>, &amp;[_]<span class="tok-type">i32</span>{}, {}, desc_i32));</span>
+<span class="line" id="L900">    <span class="tok-kw">try</span> testing.expect(isSorted(<span class="tok-type">i32</span>, &amp;[_]<span class="tok-type">i32</span>{-<span class="tok-number">20</span>}, {}, desc_i32));</span>
+<span class="line" id="L901">    <span class="tok-kw">try</span> testing.expect(isSorted(<span class="tok-type">i32</span>, &amp;[_]<span class="tok-type">i32</span>{ <span class="tok-number">3</span>, <span class="tok-number">2</span>, <span class="tok-number">1</span>, <span class="tok-number">0</span>, -<span class="tok-number">1</span> }, {}, desc_i32));</span>
+<span class="line" id="L902">    <span class="tok-kw">try</span> testing.expect(isSorted(<span class="tok-type">i32</span>, &amp;[_]<span class="tok-type">i32</span>{ <span class="tok-number">10</span>, -<span class="tok-number">10</span> }, {}, desc_i32));</span>
+<span class="line" id="L903"></span>
+<span class="line" id="L904">    <span class="tok-kw">try</span> testing.expect(isSorted(<span class="tok-type">i32</span>, &amp;[_]<span class="tok-type">i32</span>{ <span class="tok-number">1</span>, <span class="tok-number">1</span>, <span class="tok-number">1</span>, <span class="tok-number">1</span>, <span class="tok-number">1</span> }, {}, asc_i32));</span>
+<span class="line" id="L905">    <span class="tok-kw">try</span> testing.expect(isSorted(<span class="tok-type">i32</span>, &amp;[_]<span class="tok-type">i32</span>{ <span class="tok-number">1</span>, <span class="tok-number">1</span>, <span class="tok-number">1</span>, <span class="tok-number">1</span>, <span class="tok-number">1</span> }, {}, desc_i32));</span>
+<span class="line" id="L906"></span>
+<span class="line" id="L907">    <span class="tok-kw">try</span> testing.expectEqual(<span class="tok-null">false</span>, isSorted(<span class="tok-type">i32</span>, &amp;[_]<span class="tok-type">i32</span>{ <span class="tok-number">5</span>, <span class="tok-number">4</span>, <span class="tok-number">3</span>, <span class="tok-number">2</span>, <span class="tok-number">1</span> }, {}, asc_i32));</span>
+<span class="line" id="L908">    <span class="tok-kw">try</span> testing.expectEqual(<span class="tok-null">false</span>, isSorted(<span class="tok-type">i32</span>, &amp;[_]<span class="tok-type">i32</span>{ <span class="tok-number">1</span>, <span class="tok-number">2</span>, <span class="tok-number">3</span>, <span class="tok-number">4</span>, <span class="tok-number">5</span> }, {}, desc_i32));</span>
+<span class="line" id="L909"></span>
+<span class="line" id="L910">    <span class="tok-kw">try</span> testing.expect(isSorted(<span class="tok-type">u8</span>, <span class="tok-str">&quot;abcd&quot;</span>, {}, asc_u8));</span>
+<span class="line" id="L911">    <span class="tok-kw">try</span> testing.expect(isSorted(<span class="tok-type">u8</span>, <span class="tok-str">&quot;zyxw&quot;</span>, {}, desc_u8));</span>
+<span class="line" id="L912"></span>
+<span class="line" id="L913">    <span class="tok-kw">try</span> testing.expectEqual(<span class="tok-null">false</span>, isSorted(<span class="tok-type">u8</span>, <span class="tok-str">&quot;abcd&quot;</span>, {}, desc_u8));</span>
+<span class="line" id="L914">    <span class="tok-kw">try</span> testing.expectEqual(<span class="tok-null">false</span>, isSorted(<span class="tok-type">u8</span>, <span class="tok-str">&quot;zyxw&quot;</span>, {}, asc_u8));</span>
+<span class="line" id="L915"></span>
+<span class="line" id="L916">    <span class="tok-kw">try</span> testing.expect(isSorted(<span class="tok-type">u8</span>, <span class="tok-str">&quot;ffff&quot;</span>, {}, asc_u8));</span>
+<span class="line" id="L917">    <span class="tok-kw">try</span> testing.expect(isSorted(<span class="tok-type">u8</span>, <span class="tok-str">&quot;ffff&quot;</span>, {}, desc_u8));</span>
+<span class="line" id="L918">}</span>
+<span class="line" id="L919"></span>
 </code></pre></body>
 </html>

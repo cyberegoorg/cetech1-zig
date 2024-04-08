@@ -392,12 +392,12 @@
 <span class="line" id="L246">    }</span>
 <span class="line" id="L247">};</span>
 <span class="line" id="L248"></span>
-<span class="line" id="L249"><span class="tok-kw">test</span> <span class="tok-str">&quot;ArenaAllocator (reset with preheating)&quot;</span> {</span>
+<span class="line" id="L249"><span class="tok-kw">test</span> <span class="tok-str">&quot;reset with preheating&quot;</span> {</span>
 <span class="line" id="L250">    <span class="tok-kw">var</span> arena_allocator = ArenaAllocator.init(std.testing.allocator);</span>
 <span class="line" id="L251">    <span class="tok-kw">defer</span> arena_allocator.deinit();</span>
 <span class="line" id="L252">    <span class="tok-comment">// provides some variance in the allocated data</span>
 </span>
-<span class="line" id="L253">    <span class="tok-kw">var</span> rng_src = std.rand.DefaultPrng.init(<span class="tok-number">19930913</span>);</span>
+<span class="line" id="L253">    <span class="tok-kw">var</span> rng_src = std.Random.DefaultPrng.init(<span class="tok-number">19930913</span>);</span>
 <span class="line" id="L254">    <span class="tok-kw">const</span> random = rng_src.random();</span>
 <span class="line" id="L255">    <span class="tok-kw">var</span> rounds: <span class="tok-type">usize</span> = <span class="tok-number">25</span>;</span>
 <span class="line" id="L256">    <span class="tok-kw">while</span> (rounds &gt; <span class="tok-number">0</span>) {</span>
@@ -416,7 +416,7 @@
 <span class="line" id="L269">    }</span>
 <span class="line" id="L270">}</span>
 <span class="line" id="L271"></span>
-<span class="line" id="L272"><span class="tok-kw">test</span> <span class="tok-str">&quot;ArenaAllocator (reset while retaining a buffer)&quot;</span> {</span>
+<span class="line" id="L272"><span class="tok-kw">test</span> <span class="tok-str">&quot;reset while retaining a buffer&quot;</span> {</span>
 <span class="line" id="L273">    <span class="tok-kw">var</span> arena_allocator = ArenaAllocator.init(std.testing.allocator);</span>
 <span class="line" id="L274">    <span class="tok-kw">defer</span> arena_allocator.deinit();</span>
 <span class="line" id="L275">    <span class="tok-kw">const</span> a = arena_allocator.allocator();</span>

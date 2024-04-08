@@ -134,7 +134,7 @@
 <span class="line" id="L18"></span>
 <span class="line" id="L19">        <span class="tok-comment">/// A customized pseudo random number generator for the treap.</span></span>
 <span class="line" id="L20">        <span class="tok-comment">/// This just helps reducing the memory size of the treap itself</span></span>
-<span class="line" id="L21">        <span class="tok-comment">/// as std.rand.DefaultPrng requires larger state (while producing better entropy for randomness to be fair).</span></span>
+<span class="line" id="L21">        <span class="tok-comment">/// as std.Random.DefaultPrng requires larger state (while producing better entropy for randomness to be fair).</span></span>
 <span class="line" id="L22">        <span class="tok-kw">const</span> Prng = <span class="tok-kw">struct</span> {</span>
 <span class="line" id="L23">            xorshift: <span class="tok-type">usize</span> = <span class="tok-number">0</span>,</span>
 <span class="line" id="L24"></span>
@@ -449,7 +449,7 @@
 </span>
 <span class="line" id="L306"><span class="tok-kw">fn</span> <span class="tok-fn">SliceIterRandomOrder</span>(<span class="tok-kw">comptime</span> T: <span class="tok-type">type</span>) <span class="tok-type">type</span> {</span>
 <span class="line" id="L307">    <span class="tok-kw">return</span> <span class="tok-kw">struct</span> {</span>
-<span class="line" id="L308">        rng: std.rand.Random,</span>
+<span class="line" id="L308">        rng: std.Random,</span>
 <span class="line" id="L309">        slice: []T,</span>
 <span class="line" id="L310">        index: <span class="tok-type">usize</span> = <span class="tok-null">undefined</span>,</span>
 <span class="line" id="L311">        offset: <span class="tok-type">usize</span> = <span class="tok-null">undefined</span>,</span>
@@ -457,7 +457,7 @@
 <span class="line" id="L313"></span>
 <span class="line" id="L314">        <span class="tok-kw">const</span> Self = <span class="tok-builtin">@This</span>();</span>
 <span class="line" id="L315"></span>
-<span class="line" id="L316">        <span class="tok-kw">pub</span> <span class="tok-kw">fn</span> <span class="tok-fn">init</span>(slice: []T, rng: std.rand.Random) Self {</span>
+<span class="line" id="L316">        <span class="tok-kw">pub</span> <span class="tok-kw">fn</span> <span class="tok-fn">init</span>(slice: []T, rng: std.Random) Self {</span>
 <span class="line" id="L317">            <span class="tok-kw">return</span> Self{</span>
 <span class="line" id="L318">                .rng = rng,</span>
 <span class="line" id="L319">                .slice = slice,</span>
@@ -493,11 +493,11 @@
 <span class="line" id="L349"><span class="tok-kw">const</span> TestTreap = Treap(<span class="tok-type">u64</span>, std.math.order);</span>
 <span class="line" id="L350"><span class="tok-kw">const</span> TestNode = TestTreap.Node;</span>
 <span class="line" id="L351"></span>
-<span class="line" id="L352"><span class="tok-kw">test</span> <span class="tok-str">&quot;std.Treap: insert, find, replace, remove&quot;</span> {</span>
+<span class="line" id="L352"><span class="tok-kw">test</span> <span class="tok-str">&quot;insert, find, replace, remove&quot;</span> {</span>
 <span class="line" id="L353">    <span class="tok-kw">var</span> treap = TestTreap{};</span>
 <span class="line" id="L354">    <span class="tok-kw">var</span> nodes: [<span class="tok-number">10</span>]TestNode = <span class="tok-null">undefined</span>;</span>
 <span class="line" id="L355"></span>
-<span class="line" id="L356">    <span class="tok-kw">var</span> prng = std.rand.DefaultPrng.init(<span class="tok-number">0xdeadbeef</span>);</span>
+<span class="line" id="L356">    <span class="tok-kw">var</span> prng = std.Random.DefaultPrng.init(<span class="tok-number">0xdeadbeef</span>);</span>
 <span class="line" id="L357">    <span class="tok-kw">var</span> iter = SliceIterRandomOrder(TestNode).init(&amp;nodes, prng.random());</span>
 <span class="line" id="L358"></span>
 <span class="line" id="L359">    <span class="tok-comment">// insert check</span>

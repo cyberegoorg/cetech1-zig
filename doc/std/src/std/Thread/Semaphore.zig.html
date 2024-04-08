@@ -115,64 +115,114 @@
 <pre><code><span class="line" id="L1"><span class="tok-comment">//! A semaphore is an unsigned integer that blocks the kernel thread if</span></span>
 <span class="line" id="L2"><span class="tok-comment">//! the number would become negative.</span></span>
 <span class="line" id="L3"><span class="tok-comment">//! This API supports static initialization and does not require deinitialization.</span></span>
-<span class="line" id="L4"></span>
-<span class="line" id="L5">mutex: Mutex = .{},</span>
-<span class="line" id="L6">cond: Condition = .{},</span>
-<span class="line" id="L7"><span class="tok-comment">/// It is OK to initialize this field to any value.</span></span>
-<span class="line" id="L8">permits: <span class="tok-type">usize</span> = <span class="tok-number">0</span>,</span>
-<span class="line" id="L9"></span>
-<span class="line" id="L10"><span class="tok-kw">const</span> Semaphore = <span class="tok-builtin">@This</span>();</span>
-<span class="line" id="L11"><span class="tok-kw">const</span> std = <span class="tok-builtin">@import</span>(<span class="tok-str">&quot;../std.zig&quot;</span>);</span>
-<span class="line" id="L12"><span class="tok-kw">const</span> Mutex = std.Thread.Mutex;</span>
-<span class="line" id="L13"><span class="tok-kw">const</span> Condition = std.Thread.Condition;</span>
-<span class="line" id="L14"><span class="tok-kw">const</span> builtin = <span class="tok-builtin">@import</span>(<span class="tok-str">&quot;builtin&quot;</span>);</span>
-<span class="line" id="L15"><span class="tok-kw">const</span> testing = std.testing;</span>
-<span class="line" id="L16"></span>
-<span class="line" id="L17"><span class="tok-kw">pub</span> <span class="tok-kw">fn</span> <span class="tok-fn">wait</span>(sem: *Semaphore) <span class="tok-type">void</span> {</span>
-<span class="line" id="L18">    sem.mutex.lock();</span>
-<span class="line" id="L19">    <span class="tok-kw">defer</span> sem.mutex.unlock();</span>
-<span class="line" id="L20"></span>
-<span class="line" id="L21">    <span class="tok-kw">while</span> (sem.permits == <span class="tok-number">0</span>)</span>
-<span class="line" id="L22">        sem.cond.wait(&amp;sem.mutex);</span>
-<span class="line" id="L23"></span>
-<span class="line" id="L24">    sem.permits -= <span class="tok-number">1</span>;</span>
-<span class="line" id="L25">    <span class="tok-kw">if</span> (sem.permits &gt; <span class="tok-number">0</span>)</span>
-<span class="line" id="L26">        sem.cond.signal();</span>
-<span class="line" id="L27">}</span>
-<span class="line" id="L28"></span>
-<span class="line" id="L29"><span class="tok-kw">pub</span> <span class="tok-kw">fn</span> <span class="tok-fn">post</span>(sem: *Semaphore) <span class="tok-type">void</span> {</span>
-<span class="line" id="L30">    sem.mutex.lock();</span>
-<span class="line" id="L31">    <span class="tok-kw">defer</span> sem.mutex.unlock();</span>
-<span class="line" id="L32"></span>
-<span class="line" id="L33">    sem.permits += <span class="tok-number">1</span>;</span>
-<span class="line" id="L34">    sem.cond.signal();</span>
-<span class="line" id="L35">}</span>
-<span class="line" id="L36"></span>
-<span class="line" id="L37"><span class="tok-kw">test</span> <span class="tok-str">&quot;Thread.Semaphore&quot;</span> {</span>
-<span class="line" id="L38">    <span class="tok-kw">if</span> (builtin.single_threaded) {</span>
-<span class="line" id="L39">        <span class="tok-kw">return</span> <span class="tok-kw">error</span>.SkipZigTest;</span>
-<span class="line" id="L40">    }</span>
-<span class="line" id="L41"></span>
-<span class="line" id="L42">    <span class="tok-kw">const</span> TestContext = <span class="tok-kw">struct</span> {</span>
-<span class="line" id="L43">        sem: *Semaphore,</span>
-<span class="line" id="L44">        n: *<span class="tok-type">i32</span>,</span>
-<span class="line" id="L45">        <span class="tok-kw">fn</span> <span class="tok-fn">worker</span>(ctx: *<span class="tok-builtin">@This</span>()) <span class="tok-type">void</span> {</span>
-<span class="line" id="L46">            ctx.sem.wait();</span>
-<span class="line" id="L47">            ctx.n.* += <span class="tok-number">1</span>;</span>
-<span class="line" id="L48">            ctx.sem.post();</span>
-<span class="line" id="L49">        }</span>
-<span class="line" id="L50">    };</span>
-<span class="line" id="L51">    <span class="tok-kw">const</span> num_threads = <span class="tok-number">3</span>;</span>
-<span class="line" id="L52">    <span class="tok-kw">var</span> sem = Semaphore{ .permits = <span class="tok-number">1</span> };</span>
-<span class="line" id="L53">    <span class="tok-kw">var</span> threads: [num_threads]std.Thread = <span class="tok-null">undefined</span>;</span>
-<span class="line" id="L54">    <span class="tok-kw">var</span> n: <span class="tok-type">i32</span> = <span class="tok-number">0</span>;</span>
-<span class="line" id="L55">    <span class="tok-kw">var</span> ctx = TestContext{ .sem = &amp;sem, .n = &amp;n };</span>
+<span class="line" id="L4"><span class="tok-comment">//!</span></span>
+<span class="line" id="L5"><span class="tok-comment">//! Example:</span></span>
+<span class="line" id="L6"><span class="tok-comment">//! ```</span></span>
+<span class="line" id="L7"><span class="tok-comment">//! var s = Semaphore{};</span></span>
+<span class="line" id="L8"><span class="tok-comment">//!</span></span>
+<span class="line" id="L9"><span class="tok-comment">//! fn consumer() void {</span></span>
+<span class="line" id="L10"><span class="tok-comment">//!     s.wait();</span></span>
+<span class="line" id="L11"><span class="tok-comment">//! }</span></span>
+<span class="line" id="L12"><span class="tok-comment">//!</span></span>
+<span class="line" id="L13"><span class="tok-comment">//! fn producer() void {</span></span>
+<span class="line" id="L14"><span class="tok-comment">//!     s.post();</span></span>
+<span class="line" id="L15"><span class="tok-comment">//! }</span></span>
+<span class="line" id="L16"><span class="tok-comment">//!</span></span>
+<span class="line" id="L17"><span class="tok-comment">//! const thread = try std.Thread.spawn(.{}, producer, .{});</span></span>
+<span class="line" id="L18"><span class="tok-comment">//! consumer();</span></span>
+<span class="line" id="L19"><span class="tok-comment">//! thread.join();</span></span>
+<span class="line" id="L20"><span class="tok-comment">//! ```</span></span>
+<span class="line" id="L21"></span>
+<span class="line" id="L22">mutex: Mutex = .{},</span>
+<span class="line" id="L23">cond: Condition = .{},</span>
+<span class="line" id="L24"><span class="tok-comment">/// It is OK to initialize this field to any value.</span></span>
+<span class="line" id="L25">permits: <span class="tok-type">usize</span> = <span class="tok-number">0</span>,</span>
+<span class="line" id="L26"></span>
+<span class="line" id="L27"><span class="tok-kw">const</span> Semaphore = <span class="tok-builtin">@This</span>();</span>
+<span class="line" id="L28"><span class="tok-kw">const</span> std = <span class="tok-builtin">@import</span>(<span class="tok-str">&quot;../std.zig&quot;</span>);</span>
+<span class="line" id="L29"><span class="tok-kw">const</span> Mutex = std.Thread.Mutex;</span>
+<span class="line" id="L30"><span class="tok-kw">const</span> Condition = std.Thread.Condition;</span>
+<span class="line" id="L31"><span class="tok-kw">const</span> builtin = <span class="tok-builtin">@import</span>(<span class="tok-str">&quot;builtin&quot;</span>);</span>
+<span class="line" id="L32"><span class="tok-kw">const</span> testing = std.testing;</span>
+<span class="line" id="L33"></span>
+<span class="line" id="L34"><span class="tok-kw">pub</span> <span class="tok-kw">fn</span> <span class="tok-fn">wait</span>(sem: *Semaphore) <span class="tok-type">void</span> {</span>
+<span class="line" id="L35">    sem.mutex.lock();</span>
+<span class="line" id="L36">    <span class="tok-kw">defer</span> sem.mutex.unlock();</span>
+<span class="line" id="L37"></span>
+<span class="line" id="L38">    <span class="tok-kw">while</span> (sem.permits == <span class="tok-number">0</span>)</span>
+<span class="line" id="L39">        sem.cond.wait(&amp;sem.mutex);</span>
+<span class="line" id="L40"></span>
+<span class="line" id="L41">    sem.permits -= <span class="tok-number">1</span>;</span>
+<span class="line" id="L42">    <span class="tok-kw">if</span> (sem.permits &gt; <span class="tok-number">0</span>)</span>
+<span class="line" id="L43">        sem.cond.signal();</span>
+<span class="line" id="L44">}</span>
+<span class="line" id="L45"></span>
+<span class="line" id="L46"><span class="tok-kw">pub</span> <span class="tok-kw">fn</span> <span class="tok-fn">timedWait</span>(sem: *Semaphore, timeout_ns: <span class="tok-type">u64</span>) <span class="tok-kw">error</span>{Timeout}!<span class="tok-type">void</span> {</span>
+<span class="line" id="L47">    <span class="tok-kw">var</span> timeout_timer = std.time.Timer.start() <span class="tok-kw">catch</span> <span class="tok-kw">unreachable</span>;</span>
+<span class="line" id="L48"></span>
+<span class="line" id="L49">    sem.mutex.lock();</span>
+<span class="line" id="L50">    <span class="tok-kw">defer</span> sem.mutex.unlock();</span>
+<span class="line" id="L51"></span>
+<span class="line" id="L52">    <span class="tok-kw">while</span> (sem.permits == <span class="tok-number">0</span>) {</span>
+<span class="line" id="L53">        <span class="tok-kw">const</span> elapsed = timeout_timer.read();</span>
+<span class="line" id="L54">        <span class="tok-kw">if</span> (elapsed &gt; timeout_ns)</span>
+<span class="line" id="L55">            <span class="tok-kw">return</span> <span class="tok-kw">error</span>.Timeout;</span>
 <span class="line" id="L56"></span>
-<span class="line" id="L57">    <span class="tok-kw">for</span> (&amp;threads) |*t| t.* = <span class="tok-kw">try</span> std.Thread.spawn(.{}, TestContext.worker, .{&amp;ctx});</span>
-<span class="line" id="L58">    <span class="tok-kw">for</span> (threads) |t| t.join();</span>
-<span class="line" id="L59">    sem.wait();</span>
-<span class="line" id="L60">    <span class="tok-kw">try</span> testing.expect(n == num_threads);</span>
-<span class="line" id="L61">}</span>
-<span class="line" id="L62"></span>
+<span class="line" id="L57">        <span class="tok-kw">const</span> local_timeout_ns = timeout_ns - elapsed;</span>
+<span class="line" id="L58">        <span class="tok-kw">try</span> sem.cond.timedWait(&amp;sem.mutex, local_timeout_ns);</span>
+<span class="line" id="L59">    }</span>
+<span class="line" id="L60"></span>
+<span class="line" id="L61">    sem.permits -= <span class="tok-number">1</span>;</span>
+<span class="line" id="L62">    <span class="tok-kw">if</span> (sem.permits &gt; <span class="tok-number">0</span>)</span>
+<span class="line" id="L63">        sem.cond.signal();</span>
+<span class="line" id="L64">}</span>
+<span class="line" id="L65"></span>
+<span class="line" id="L66"><span class="tok-kw">pub</span> <span class="tok-kw">fn</span> <span class="tok-fn">post</span>(sem: *Semaphore) <span class="tok-type">void</span> {</span>
+<span class="line" id="L67">    sem.mutex.lock();</span>
+<span class="line" id="L68">    <span class="tok-kw">defer</span> sem.mutex.unlock();</span>
+<span class="line" id="L69"></span>
+<span class="line" id="L70">    sem.permits += <span class="tok-number">1</span>;</span>
+<span class="line" id="L71">    sem.cond.signal();</span>
+<span class="line" id="L72">}</span>
+<span class="line" id="L73"></span>
+<span class="line" id="L74"><span class="tok-kw">test</span> Semaphore {</span>
+<span class="line" id="L75">    <span class="tok-kw">if</span> (builtin.single_threaded) {</span>
+<span class="line" id="L76">        <span class="tok-kw">return</span> <span class="tok-kw">error</span>.SkipZigTest;</span>
+<span class="line" id="L77">    }</span>
+<span class="line" id="L78"></span>
+<span class="line" id="L79">    <span class="tok-kw">const</span> TestContext = <span class="tok-kw">struct</span> {</span>
+<span class="line" id="L80">        sem: *Semaphore,</span>
+<span class="line" id="L81">        n: *<span class="tok-type">i32</span>,</span>
+<span class="line" id="L82">        <span class="tok-kw">fn</span> <span class="tok-fn">worker</span>(ctx: *<span class="tok-builtin">@This</span>()) <span class="tok-type">void</span> {</span>
+<span class="line" id="L83">            ctx.sem.wait();</span>
+<span class="line" id="L84">            ctx.n.* += <span class="tok-number">1</span>;</span>
+<span class="line" id="L85">            ctx.sem.post();</span>
+<span class="line" id="L86">        }</span>
+<span class="line" id="L87">    };</span>
+<span class="line" id="L88">    <span class="tok-kw">const</span> num_threads = <span class="tok-number">3</span>;</span>
+<span class="line" id="L89">    <span class="tok-kw">var</span> sem = Semaphore{ .permits = <span class="tok-number">1</span> };</span>
+<span class="line" id="L90">    <span class="tok-kw">var</span> threads: [num_threads]std.Thread = <span class="tok-null">undefined</span>;</span>
+<span class="line" id="L91">    <span class="tok-kw">var</span> n: <span class="tok-type">i32</span> = <span class="tok-number">0</span>;</span>
+<span class="line" id="L92">    <span class="tok-kw">var</span> ctx = TestContext{ .sem = &amp;sem, .n = &amp;n };</span>
+<span class="line" id="L93"></span>
+<span class="line" id="L94">    <span class="tok-kw">for</span> (&amp;threads) |*t| t.* = <span class="tok-kw">try</span> std.Thread.spawn(.{}, TestContext.worker, .{&amp;ctx});</span>
+<span class="line" id="L95">    <span class="tok-kw">for</span> (threads) |t| t.join();</span>
+<span class="line" id="L96">    sem.wait();</span>
+<span class="line" id="L97">    <span class="tok-kw">try</span> testing.expect(n == num_threads);</span>
+<span class="line" id="L98">}</span>
+<span class="line" id="L99"></span>
+<span class="line" id="L100"><span class="tok-kw">test</span> timedWait {</span>
+<span class="line" id="L101">    <span class="tok-kw">var</span> sem = Semaphore{};</span>
+<span class="line" id="L102">    <span class="tok-kw">try</span> testing.expectEqual(<span class="tok-number">0</span>, sem.permits);</span>
+<span class="line" id="L103"></span>
+<span class="line" id="L104">    <span class="tok-kw">try</span> testing.expectError(<span class="tok-kw">error</span>.Timeout, sem.timedWait(<span class="tok-number">1</span>));</span>
+<span class="line" id="L105"></span>
+<span class="line" id="L106">    sem.post();</span>
+<span class="line" id="L107">    <span class="tok-kw">try</span> testing.expectEqual(<span class="tok-number">1</span>, sem.permits);</span>
+<span class="line" id="L108"></span>
+<span class="line" id="L109">    <span class="tok-kw">try</span> sem.timedWait(<span class="tok-number">1</span>);</span>
+<span class="line" id="L110">    <span class="tok-kw">try</span> testing.expectEqual(<span class="tok-number">0</span>, sem.permits);</span>
+<span class="line" id="L111">}</span>
+<span class="line" id="L112"></span>
 </code></pre></body>
 </html>

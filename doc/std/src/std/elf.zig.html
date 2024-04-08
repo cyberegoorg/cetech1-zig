@@ -1934,190 +1934,529 @@
 <span class="line" id="L1806">};</span>
 <span class="line" id="L1807"></span>
 <span class="line" id="L1808"><span class="tok-comment">/// AMD x86-64 relocations.</span></span>
-<span class="line" id="L1809"><span class="tok-comment">/// No reloc</span></span>
-<span class="line" id="L1810"><span class="tok-kw">pub</span> <span class="tok-kw">const</span> R_X86_64_NONE = <span class="tok-number">0</span>;</span>
-<span class="line" id="L1811"><span class="tok-comment">/// Direct 64 bit</span></span>
-<span class="line" id="L1812"><span class="tok-kw">pub</span> <span class="tok-kw">const</span> R_X86_64_64 = <span class="tok-number">1</span>;</span>
-<span class="line" id="L1813"><span class="tok-comment">/// PC relative 32 bit signed</span></span>
-<span class="line" id="L1814"><span class="tok-kw">pub</span> <span class="tok-kw">const</span> R_X86_64_PC32 = <span class="tok-number">2</span>;</span>
-<span class="line" id="L1815"><span class="tok-comment">/// 32 bit GOT entry</span></span>
-<span class="line" id="L1816"><span class="tok-kw">pub</span> <span class="tok-kw">const</span> R_X86_64_GOT32 = <span class="tok-number">3</span>;</span>
-<span class="line" id="L1817"><span class="tok-comment">/// 32 bit PLT address</span></span>
-<span class="line" id="L1818"><span class="tok-kw">pub</span> <span class="tok-kw">const</span> R_X86_64_PLT32 = <span class="tok-number">4</span>;</span>
-<span class="line" id="L1819"><span class="tok-comment">/// Copy symbol at runtime</span></span>
-<span class="line" id="L1820"><span class="tok-kw">pub</span> <span class="tok-kw">const</span> R_X86_64_COPY = <span class="tok-number">5</span>;</span>
-<span class="line" id="L1821"><span class="tok-comment">/// Create GOT entry</span></span>
-<span class="line" id="L1822"><span class="tok-kw">pub</span> <span class="tok-kw">const</span> R_X86_64_GLOB_DAT = <span class="tok-number">6</span>;</span>
-<span class="line" id="L1823"><span class="tok-comment">/// Create PLT entry</span></span>
-<span class="line" id="L1824"><span class="tok-kw">pub</span> <span class="tok-kw">const</span> R_X86_64_JUMP_SLOT = <span class="tok-number">7</span>;</span>
-<span class="line" id="L1825"><span class="tok-comment">/// Adjust by program base</span></span>
-<span class="line" id="L1826"><span class="tok-kw">pub</span> <span class="tok-kw">const</span> R_X86_64_RELATIVE = <span class="tok-number">8</span>;</span>
-<span class="line" id="L1827"><span class="tok-comment">/// 32 bit signed PC relative offset to GOT</span></span>
-<span class="line" id="L1828"><span class="tok-kw">pub</span> <span class="tok-kw">const</span> R_X86_64_GOTPCREL = <span class="tok-number">9</span>;</span>
-<span class="line" id="L1829"><span class="tok-comment">/// Direct 32 bit zero extended</span></span>
-<span class="line" id="L1830"><span class="tok-kw">pub</span> <span class="tok-kw">const</span> R_X86_64_32 = <span class="tok-number">10</span>;</span>
-<span class="line" id="L1831"><span class="tok-comment">/// Direct 32 bit sign extended</span></span>
-<span class="line" id="L1832"><span class="tok-kw">pub</span> <span class="tok-kw">const</span> R_X86_64_32S = <span class="tok-number">11</span>;</span>
-<span class="line" id="L1833"><span class="tok-comment">/// Direct 16 bit zero extended</span></span>
-<span class="line" id="L1834"><span class="tok-kw">pub</span> <span class="tok-kw">const</span> R_X86_64_16 = <span class="tok-number">12</span>;</span>
-<span class="line" id="L1835"><span class="tok-comment">/// 16 bit sign extended pc relative</span></span>
-<span class="line" id="L1836"><span class="tok-kw">pub</span> <span class="tok-kw">const</span> R_X86_64_PC16 = <span class="tok-number">13</span>;</span>
-<span class="line" id="L1837"><span class="tok-comment">/// Direct 8 bit sign extended</span></span>
-<span class="line" id="L1838"><span class="tok-kw">pub</span> <span class="tok-kw">const</span> R_X86_64_8 = <span class="tok-number">14</span>;</span>
-<span class="line" id="L1839"><span class="tok-comment">/// 8 bit sign extended pc relative</span></span>
-<span class="line" id="L1840"><span class="tok-kw">pub</span> <span class="tok-kw">const</span> R_X86_64_PC8 = <span class="tok-number">15</span>;</span>
-<span class="line" id="L1841"><span class="tok-comment">/// ID of module containing symbol</span></span>
-<span class="line" id="L1842"><span class="tok-kw">pub</span> <span class="tok-kw">const</span> R_X86_64_DTPMOD64 = <span class="tok-number">16</span>;</span>
-<span class="line" id="L1843"><span class="tok-comment">/// Offset in module's TLS block</span></span>
-<span class="line" id="L1844"><span class="tok-kw">pub</span> <span class="tok-kw">const</span> R_X86_64_DTPOFF64 = <span class="tok-number">17</span>;</span>
-<span class="line" id="L1845"><span class="tok-comment">/// Offset in initial TLS block</span></span>
-<span class="line" id="L1846"><span class="tok-kw">pub</span> <span class="tok-kw">const</span> R_X86_64_TPOFF64 = <span class="tok-number">18</span>;</span>
-<span class="line" id="L1847"><span class="tok-comment">/// 32 bit signed PC relative offset to two GOT entries for GD symbol</span></span>
-<span class="line" id="L1848"><span class="tok-kw">pub</span> <span class="tok-kw">const</span> R_X86_64_TLSGD = <span class="tok-number">19</span>;</span>
-<span class="line" id="L1849"><span class="tok-comment">/// 32 bit signed PC relative offset to two GOT entries for LD symbol</span></span>
-<span class="line" id="L1850"><span class="tok-kw">pub</span> <span class="tok-kw">const</span> R_X86_64_TLSLD = <span class="tok-number">20</span>;</span>
-<span class="line" id="L1851"><span class="tok-comment">/// Offset in TLS block</span></span>
-<span class="line" id="L1852"><span class="tok-kw">pub</span> <span class="tok-kw">const</span> R_X86_64_DTPOFF32 = <span class="tok-number">21</span>;</span>
-<span class="line" id="L1853"><span class="tok-comment">/// 32 bit signed PC relative offset to GOT entry for IE symbol</span></span>
-<span class="line" id="L1854"><span class="tok-kw">pub</span> <span class="tok-kw">const</span> R_X86_64_GOTTPOFF = <span class="tok-number">22</span>;</span>
-<span class="line" id="L1855"><span class="tok-comment">/// Offset in initial TLS block</span></span>
-<span class="line" id="L1856"><span class="tok-kw">pub</span> <span class="tok-kw">const</span> R_X86_64_TPOFF32 = <span class="tok-number">23</span>;</span>
-<span class="line" id="L1857"><span class="tok-comment">/// PC relative 64 bit</span></span>
-<span class="line" id="L1858"><span class="tok-kw">pub</span> <span class="tok-kw">const</span> R_X86_64_PC64 = <span class="tok-number">24</span>;</span>
-<span class="line" id="L1859"><span class="tok-comment">/// 64 bit offset to GOT</span></span>
-<span class="line" id="L1860"><span class="tok-kw">pub</span> <span class="tok-kw">const</span> R_X86_64_GOTOFF64 = <span class="tok-number">25</span>;</span>
-<span class="line" id="L1861"><span class="tok-comment">/// 32 bit signed pc relative offset to GOT</span></span>
-<span class="line" id="L1862"><span class="tok-kw">pub</span> <span class="tok-kw">const</span> R_X86_64_GOTPC32 = <span class="tok-number">26</span>;</span>
-<span class="line" id="L1863"><span class="tok-comment">/// 64 bit GOT entry offset</span></span>
-<span class="line" id="L1864"><span class="tok-kw">pub</span> <span class="tok-kw">const</span> R_X86_64_GOT64 = <span class="tok-number">27</span>;</span>
-<span class="line" id="L1865"><span class="tok-comment">/// 64 bit PC relative offset to GOT entry</span></span>
-<span class="line" id="L1866"><span class="tok-kw">pub</span> <span class="tok-kw">const</span> R_X86_64_GOTPCREL64 = <span class="tok-number">28</span>;</span>
-<span class="line" id="L1867"><span class="tok-comment">/// 64 bit PC relative offset to GOT</span></span>
-<span class="line" id="L1868"><span class="tok-kw">pub</span> <span class="tok-kw">const</span> R_X86_64_GOTPC64 = <span class="tok-number">29</span>;</span>
-<span class="line" id="L1869"><span class="tok-comment">/// Like GOT64, says PLT entry needed</span></span>
-<span class="line" id="L1870"><span class="tok-kw">pub</span> <span class="tok-kw">const</span> R_X86_64_GOTPLT64 = <span class="tok-number">30</span>;</span>
-<span class="line" id="L1871"><span class="tok-comment">/// 64-bit GOT relative offset to PLT entry</span></span>
-<span class="line" id="L1872"><span class="tok-kw">pub</span> <span class="tok-kw">const</span> R_X86_64_PLTOFF64 = <span class="tok-number">31</span>;</span>
-<span class="line" id="L1873"><span class="tok-comment">/// Size of symbol plus 32-bit addend</span></span>
-<span class="line" id="L1874"><span class="tok-kw">pub</span> <span class="tok-kw">const</span> R_X86_64_SIZE32 = <span class="tok-number">32</span>;</span>
-<span class="line" id="L1875"><span class="tok-comment">/// Size of symbol plus 64-bit addend</span></span>
-<span class="line" id="L1876"><span class="tok-kw">pub</span> <span class="tok-kw">const</span> R_X86_64_SIZE64 = <span class="tok-number">33</span>;</span>
-<span class="line" id="L1877"><span class="tok-comment">/// GOT offset for TLS descriptor</span></span>
-<span class="line" id="L1878"><span class="tok-kw">pub</span> <span class="tok-kw">const</span> R_X86_64_GOTPC32_TLSDESC = <span class="tok-number">34</span>;</span>
-<span class="line" id="L1879"><span class="tok-comment">/// Marker for call through TLS descriptor</span></span>
-<span class="line" id="L1880"><span class="tok-kw">pub</span> <span class="tok-kw">const</span> R_X86_64_TLSDESC_CALL = <span class="tok-number">35</span>;</span>
-<span class="line" id="L1881"><span class="tok-comment">/// TLS descriptor</span></span>
-<span class="line" id="L1882"><span class="tok-kw">pub</span> <span class="tok-kw">const</span> R_X86_64_TLSDESC = <span class="tok-number">36</span>;</span>
-<span class="line" id="L1883"><span class="tok-comment">/// Adjust indirectly by program base</span></span>
-<span class="line" id="L1884"><span class="tok-kw">pub</span> <span class="tok-kw">const</span> R_X86_64_IRELATIVE = <span class="tok-number">37</span>;</span>
-<span class="line" id="L1885"><span class="tok-comment">/// 64-bit adjust by program base</span></span>
-<span class="line" id="L1886"><span class="tok-kw">pub</span> <span class="tok-kw">const</span> R_X86_64_RELATIVE64 = <span class="tok-number">38</span>;</span>
-<span class="line" id="L1887"><span class="tok-comment">/// 39 Reserved was R_X86_64_PC32_BND</span></span>
-<span class="line" id="L1888"><span class="tok-comment">/// 40 Reserved was R_X86_64_PLT32_BND</span></span>
-<span class="line" id="L1889"><span class="tok-comment">/// Load from 32 bit signed pc relative offset to GOT entry without REX prefix, relaxable</span></span>
-<span class="line" id="L1890"><span class="tok-kw">pub</span> <span class="tok-kw">const</span> R_X86_64_GOTPCRELX = <span class="tok-number">41</span>;</span>
-<span class="line" id="L1891"><span class="tok-comment">/// Load from 32 bit signed PC relative offset to GOT entry with REX prefix, relaxable</span></span>
-<span class="line" id="L1892"><span class="tok-kw">pub</span> <span class="tok-kw">const</span> R_X86_64_REX_GOTPCRELX = <span class="tok-number">42</span>;</span>
-<span class="line" id="L1893"><span class="tok-kw">pub</span> <span class="tok-kw">const</span> R_X86_64_NUM = <span class="tok-number">43</span>;</span>
-<span class="line" id="L1894"></span>
-<span class="line" id="L1895"><span class="tok-kw">pub</span> <span class="tok-kw">const</span> STV = <span class="tok-kw">enum</span>(<span class="tok-type">u2</span>) {</span>
-<span class="line" id="L1896">    DEFAULT = <span class="tok-number">0</span>,</span>
-<span class="line" id="L1897">    INTERNAL = <span class="tok-number">1</span>,</span>
-<span class="line" id="L1898">    HIDDEN = <span class="tok-number">2</span>,</span>
-<span class="line" id="L1899">    PROTECTED = <span class="tok-number">3</span>,</span>
-<span class="line" id="L1900">};</span>
-<span class="line" id="L1901"></span>
-<span class="line" id="L1902"><span class="tok-kw">pub</span> <span class="tok-kw">const</span> ar_hdr = <span class="tok-kw">extern</span> <span class="tok-kw">struct</span> {</span>
-<span class="line" id="L1903">    <span class="tok-comment">/// Member file name, sometimes / terminated.</span></span>
-<span class="line" id="L1904">    ar_name: [<span class="tok-number">16</span>]<span class="tok-type">u8</span>,</span>
-<span class="line" id="L1905"></span>
-<span class="line" id="L1906">    <span class="tok-comment">/// File date, decimal seconds since Epoch.</span></span>
-<span class="line" id="L1907">    ar_date: [<span class="tok-number">12</span>]<span class="tok-type">u8</span>,</span>
-<span class="line" id="L1908"></span>
-<span class="line" id="L1909">    <span class="tok-comment">/// User ID, in ASCII format.</span></span>
-<span class="line" id="L1910">    ar_uid: [<span class="tok-number">6</span>]<span class="tok-type">u8</span>,</span>
-<span class="line" id="L1911"></span>
-<span class="line" id="L1912">    <span class="tok-comment">/// Group ID, in ASCII format.</span></span>
-<span class="line" id="L1913">    ar_gid: [<span class="tok-number">6</span>]<span class="tok-type">u8</span>,</span>
-<span class="line" id="L1914"></span>
-<span class="line" id="L1915">    <span class="tok-comment">/// File mode, in ASCII octal.</span></span>
-<span class="line" id="L1916">    ar_mode: [<span class="tok-number">8</span>]<span class="tok-type">u8</span>,</span>
-<span class="line" id="L1917"></span>
-<span class="line" id="L1918">    <span class="tok-comment">/// File size, in ASCII decimal.</span></span>
-<span class="line" id="L1919">    ar_size: [<span class="tok-number">10</span>]<span class="tok-type">u8</span>,</span>
-<span class="line" id="L1920"></span>
-<span class="line" id="L1921">    <span class="tok-comment">/// Always contains ARFMAG.</span></span>
-<span class="line" id="L1922">    ar_fmag: [<span class="tok-number">2</span>]<span class="tok-type">u8</span>,</span>
-<span class="line" id="L1923"></span>
-<span class="line" id="L1924">    <span class="tok-kw">pub</span> <span class="tok-kw">fn</span> <span class="tok-fn">date</span>(self: ar_hdr) std.fmt.ParseIntError!<span class="tok-type">u64</span> {</span>
-<span class="line" id="L1925">        <span class="tok-kw">const</span> value = mem.trimRight(<span class="tok-type">u8</span>, &amp;self.ar_date, &amp;[_]<span class="tok-type">u8</span>{<span class="tok-number">0x20</span>});</span>
-<span class="line" id="L1926">        <span class="tok-kw">return</span> std.fmt.parseInt(<span class="tok-type">u64</span>, value, <span class="tok-number">10</span>);</span>
-<span class="line" id="L1927">    }</span>
-<span class="line" id="L1928"></span>
-<span class="line" id="L1929">    <span class="tok-kw">pub</span> <span class="tok-kw">fn</span> <span class="tok-fn">size</span>(self: ar_hdr) std.fmt.ParseIntError!<span class="tok-type">u32</span> {</span>
-<span class="line" id="L1930">        <span class="tok-kw">const</span> value = mem.trimRight(<span class="tok-type">u8</span>, &amp;self.ar_size, &amp;[_]<span class="tok-type">u8</span>{<span class="tok-number">0x20</span>});</span>
-<span class="line" id="L1931">        <span class="tok-kw">return</span> std.fmt.parseInt(<span class="tok-type">u32</span>, value, <span class="tok-number">10</span>);</span>
-<span class="line" id="L1932">    }</span>
-<span class="line" id="L1933"></span>
-<span class="line" id="L1934">    <span class="tok-kw">pub</span> <span class="tok-kw">fn</span> <span class="tok-fn">isStrtab</span>(self: ar_hdr) <span class="tok-type">bool</span> {</span>
-<span class="line" id="L1935">        <span class="tok-kw">return</span> mem.eql(<span class="tok-type">u8</span>, &amp;self.ar_name, STRNAME);</span>
-<span class="line" id="L1936">    }</span>
-<span class="line" id="L1937"></span>
-<span class="line" id="L1938">    <span class="tok-kw">pub</span> <span class="tok-kw">fn</span> <span class="tok-fn">isSymtab</span>(self: ar_hdr) <span class="tok-type">bool</span> {</span>
-<span class="line" id="L1939">        <span class="tok-kw">return</span> mem.eql(<span class="tok-type">u8</span>, &amp;self.ar_name, SYMNAME);</span>
-<span class="line" id="L1940">    }</span>
-<span class="line" id="L1941"></span>
-<span class="line" id="L1942">    <span class="tok-kw">pub</span> <span class="tok-kw">fn</span> <span class="tok-fn">isSymtab64</span>(self: ar_hdr) <span class="tok-type">bool</span> {</span>
-<span class="line" id="L1943">        <span class="tok-kw">return</span> mem.eql(<span class="tok-type">u8</span>, &amp;self.ar_name, SYM64NAME);</span>
-<span class="line" id="L1944">    }</span>
-<span class="line" id="L1945"></span>
-<span class="line" id="L1946">    <span class="tok-kw">pub</span> <span class="tok-kw">fn</span> <span class="tok-fn">isSymdef</span>(self: ar_hdr) <span class="tok-type">bool</span> {</span>
-<span class="line" id="L1947">        <span class="tok-kw">return</span> mem.eql(<span class="tok-type">u8</span>, &amp;self.ar_name, SYMDEFNAME);</span>
-<span class="line" id="L1948">    }</span>
-<span class="line" id="L1949"></span>
-<span class="line" id="L1950">    <span class="tok-kw">pub</span> <span class="tok-kw">fn</span> <span class="tok-fn">isSymdefSorted</span>(self: ar_hdr) <span class="tok-type">bool</span> {</span>
-<span class="line" id="L1951">        <span class="tok-kw">return</span> mem.eql(<span class="tok-type">u8</span>, &amp;self.ar_name, SYMDEFSORTEDNAME);</span>
-<span class="line" id="L1952">    }</span>
-<span class="line" id="L1953"></span>
-<span class="line" id="L1954">    <span class="tok-kw">pub</span> <span class="tok-kw">fn</span> <span class="tok-fn">name</span>(self: *<span class="tok-kw">const</span> ar_hdr) ?[]<span class="tok-kw">const</span> <span class="tok-type">u8</span> {</span>
-<span class="line" id="L1955">        <span class="tok-kw">const</span> value = &amp;self.ar_name;</span>
-<span class="line" id="L1956">        <span class="tok-kw">if</span> (value[<span class="tok-number">0</span>] == <span class="tok-str">'/'</span>) <span class="tok-kw">return</span> <span class="tok-null">null</span>;</span>
-<span class="line" id="L1957">        <span class="tok-kw">const</span> sentinel = mem.indexOfScalar(<span class="tok-type">u8</span>, value, <span class="tok-str">'/'</span>) <span class="tok-kw">orelse</span> value.len;</span>
-<span class="line" id="L1958">        <span class="tok-kw">return</span> value[<span class="tok-number">0</span>..sentinel];</span>
-<span class="line" id="L1959">    }</span>
-<span class="line" id="L1960"></span>
-<span class="line" id="L1961">    <span class="tok-kw">pub</span> <span class="tok-kw">fn</span> <span class="tok-fn">nameOffset</span>(self: ar_hdr) std.fmt.ParseIntError!?<span class="tok-type">u32</span> {</span>
-<span class="line" id="L1962">        <span class="tok-kw">const</span> value = &amp;self.ar_name;</span>
-<span class="line" id="L1963">        <span class="tok-kw">if</span> (value[<span class="tok-number">0</span>] != <span class="tok-str">'/'</span>) <span class="tok-kw">return</span> <span class="tok-null">null</span>;</span>
-<span class="line" id="L1964">        <span class="tok-kw">const</span> trimmed = mem.trimRight(<span class="tok-type">u8</span>, value, &amp;[_]<span class="tok-type">u8</span>{<span class="tok-number">0x20</span>});</span>
-<span class="line" id="L1965">        <span class="tok-kw">return</span> <span class="tok-kw">try</span> std.fmt.parseInt(<span class="tok-type">u32</span>, trimmed[<span class="tok-number">1</span>..], <span class="tok-number">10</span>);</span>
-<span class="line" id="L1966">    }</span>
-<span class="line" id="L1967">};</span>
-<span class="line" id="L1968"></span>
-<span class="line" id="L1969"><span class="tok-kw">fn</span> <span class="tok-fn">genSpecialMemberName</span>(<span class="tok-kw">comptime</span> name: []<span class="tok-kw">const</span> <span class="tok-type">u8</span>) *<span class="tok-kw">const</span> [<span class="tok-number">16</span>]<span class="tok-type">u8</span> {</span>
-<span class="line" id="L1970">    assert(name.len &lt;= <span class="tok-number">16</span>);</span>
-<span class="line" id="L1971">    <span class="tok-kw">const</span> padding = <span class="tok-number">16</span> - name.len;</span>
-<span class="line" id="L1972">    <span class="tok-kw">return</span> name ++ &amp;[_]<span class="tok-type">u8</span>{<span class="tok-number">0x20</span>} ** padding;</span>
-<span class="line" id="L1973">}</span>
-<span class="line" id="L1974"></span>
-<span class="line" id="L1975"><span class="tok-comment">// Archive files start with the ARMAG identifying string.  Then follows a</span>
+<span class="line" id="L1809"><span class="tok-kw">pub</span> <span class="tok-kw">const</span> R_X86_64 = <span class="tok-kw">enum</span>(<span class="tok-type">u32</span>) {</span>
+<span class="line" id="L1810">    <span class="tok-comment">/// No reloc</span></span>
+<span class="line" id="L1811">    NONE = <span class="tok-number">0</span>,</span>
+<span class="line" id="L1812">    <span class="tok-comment">/// Direct 64 bit</span></span>
+<span class="line" id="L1813">    @&quot;64&quot; = <span class="tok-number">1</span>,</span>
+<span class="line" id="L1814">    <span class="tok-comment">/// PC relative 32 bit signed</span></span>
+<span class="line" id="L1815">    PC32 = <span class="tok-number">2</span>,</span>
+<span class="line" id="L1816">    <span class="tok-comment">/// 32 bit GOT entry</span></span>
+<span class="line" id="L1817">    GOT32 = <span class="tok-number">3</span>,</span>
+<span class="line" id="L1818">    <span class="tok-comment">/// 32 bit PLT address</span></span>
+<span class="line" id="L1819">    PLT32 = <span class="tok-number">4</span>,</span>
+<span class="line" id="L1820">    <span class="tok-comment">/// Copy symbol at runtime</span></span>
+<span class="line" id="L1821">    COPY = <span class="tok-number">5</span>,</span>
+<span class="line" id="L1822">    <span class="tok-comment">/// Create GOT entry</span></span>
+<span class="line" id="L1823">    GLOB_DAT = <span class="tok-number">6</span>,</span>
+<span class="line" id="L1824">    <span class="tok-comment">/// Create PLT entry</span></span>
+<span class="line" id="L1825">    JUMP_SLOT = <span class="tok-number">7</span>,</span>
+<span class="line" id="L1826">    <span class="tok-comment">/// Adjust by program base</span></span>
+<span class="line" id="L1827">    RELATIVE = <span class="tok-number">8</span>,</span>
+<span class="line" id="L1828">    <span class="tok-comment">/// 32 bit signed PC relative offset to GOT</span></span>
+<span class="line" id="L1829">    GOTPCREL = <span class="tok-number">9</span>,</span>
+<span class="line" id="L1830">    <span class="tok-comment">/// Direct 32 bit zero extended</span></span>
+<span class="line" id="L1831">    @&quot;32&quot; = <span class="tok-number">10</span>,</span>
+<span class="line" id="L1832">    <span class="tok-comment">/// Direct 32 bit sign extended</span></span>
+<span class="line" id="L1833">    @&quot;32S&quot; = <span class="tok-number">11</span>,</span>
+<span class="line" id="L1834">    <span class="tok-comment">/// Direct 16 bit zero extended</span></span>
+<span class="line" id="L1835">    @&quot;16&quot; = <span class="tok-number">12</span>,</span>
+<span class="line" id="L1836">    <span class="tok-comment">/// 16 bit sign extended pc relative</span></span>
+<span class="line" id="L1837">    PC16 = <span class="tok-number">13</span>,</span>
+<span class="line" id="L1838">    <span class="tok-comment">/// Direct 8 bit sign extended</span></span>
+<span class="line" id="L1839">    @&quot;8&quot; = <span class="tok-number">14</span>,</span>
+<span class="line" id="L1840">    <span class="tok-comment">/// 8 bit sign extended pc relative</span></span>
+<span class="line" id="L1841">    PC8 = <span class="tok-number">15</span>,</span>
+<span class="line" id="L1842">    <span class="tok-comment">/// ID of module containing symbol</span></span>
+<span class="line" id="L1843">    DTPMOD64 = <span class="tok-number">16</span>,</span>
+<span class="line" id="L1844">    <span class="tok-comment">/// Offset in module's TLS block</span></span>
+<span class="line" id="L1845">    DTPOFF64 = <span class="tok-number">17</span>,</span>
+<span class="line" id="L1846">    <span class="tok-comment">/// Offset in initial TLS block</span></span>
+<span class="line" id="L1847">    TPOFF64 = <span class="tok-number">18</span>,</span>
+<span class="line" id="L1848">    <span class="tok-comment">/// 32 bit signed PC relative offset to two GOT entries for GD symbol</span></span>
+<span class="line" id="L1849">    TLSGD = <span class="tok-number">19</span>,</span>
+<span class="line" id="L1850">    <span class="tok-comment">/// 32 bit signed PC relative offset to two GOT entries for LD symbol</span></span>
+<span class="line" id="L1851">    TLSLD = <span class="tok-number">20</span>,</span>
+<span class="line" id="L1852">    <span class="tok-comment">/// Offset in TLS block</span></span>
+<span class="line" id="L1853">    DTPOFF32 = <span class="tok-number">21</span>,</span>
+<span class="line" id="L1854">    <span class="tok-comment">/// 32 bit signed PC relative offset to GOT entry for IE symbol</span></span>
+<span class="line" id="L1855">    GOTTPOFF = <span class="tok-number">22</span>,</span>
+<span class="line" id="L1856">    <span class="tok-comment">/// Offset in initial TLS block</span></span>
+<span class="line" id="L1857">    TPOFF32 = <span class="tok-number">23</span>,</span>
+<span class="line" id="L1858">    <span class="tok-comment">/// PC relative 64 bit</span></span>
+<span class="line" id="L1859">    PC64 = <span class="tok-number">24</span>,</span>
+<span class="line" id="L1860">    <span class="tok-comment">/// 64 bit offset to GOT</span></span>
+<span class="line" id="L1861">    GOTOFF64 = <span class="tok-number">25</span>,</span>
+<span class="line" id="L1862">    <span class="tok-comment">/// 32 bit signed pc relative offset to GOT</span></span>
+<span class="line" id="L1863">    GOTPC32 = <span class="tok-number">26</span>,</span>
+<span class="line" id="L1864">    <span class="tok-comment">/// 64 bit GOT entry offset</span></span>
+<span class="line" id="L1865">    GOT64 = <span class="tok-number">27</span>,</span>
+<span class="line" id="L1866">    <span class="tok-comment">/// 64 bit PC relative offset to GOT entry</span></span>
+<span class="line" id="L1867">    GOTPCREL64 = <span class="tok-number">28</span>,</span>
+<span class="line" id="L1868">    <span class="tok-comment">/// 64 bit PC relative offset to GOT</span></span>
+<span class="line" id="L1869">    GOTPC64 = <span class="tok-number">29</span>,</span>
+<span class="line" id="L1870">    <span class="tok-comment">/// Like GOT64, says PLT entry needed</span></span>
+<span class="line" id="L1871">    GOTPLT64 = <span class="tok-number">30</span>,</span>
+<span class="line" id="L1872">    <span class="tok-comment">/// 64-bit GOT relative offset to PLT entry</span></span>
+<span class="line" id="L1873">    PLTOFF64 = <span class="tok-number">31</span>,</span>
+<span class="line" id="L1874">    <span class="tok-comment">/// Size of symbol plus 32-bit addend</span></span>
+<span class="line" id="L1875">    SIZE32 = <span class="tok-number">32</span>,</span>
+<span class="line" id="L1876">    <span class="tok-comment">/// Size of symbol plus 64-bit addend</span></span>
+<span class="line" id="L1877">    SIZE64 = <span class="tok-number">33</span>,</span>
+<span class="line" id="L1878">    <span class="tok-comment">/// GOT offset for TLS descriptor</span></span>
+<span class="line" id="L1879">    GOTPC32_TLSDESC = <span class="tok-number">34</span>,</span>
+<span class="line" id="L1880">    <span class="tok-comment">/// Marker for call through TLS descriptor</span></span>
+<span class="line" id="L1881">    TLSDESC_CALL = <span class="tok-number">35</span>,</span>
+<span class="line" id="L1882">    <span class="tok-comment">/// TLS descriptor</span></span>
+<span class="line" id="L1883">    TLSDESC = <span class="tok-number">36</span>,</span>
+<span class="line" id="L1884">    <span class="tok-comment">/// Adjust indirectly by program base</span></span>
+<span class="line" id="L1885">    IRELATIVE = <span class="tok-number">37</span>,</span>
+<span class="line" id="L1886">    <span class="tok-comment">/// 64-bit adjust by program base</span></span>
+<span class="line" id="L1887">    RELATIVE64 = <span class="tok-number">38</span>,</span>
+<span class="line" id="L1888">    <span class="tok-comment">/// 39 Reserved was PC32_BND</span></span>
+<span class="line" id="L1889">    <span class="tok-comment">/// 40 Reserved was PLT32_BND</span></span>
+<span class="line" id="L1890">    <span class="tok-comment">/// Load from 32 bit signed pc relative offset to GOT entry without REX prefix, relaxable</span></span>
+<span class="line" id="L1891">    GOTPCRELX = <span class="tok-number">41</span>,</span>
+<span class="line" id="L1892">    <span class="tok-comment">/// Load from 32 bit signed PC relative offset to GOT entry with REX prefix, relaxable</span></span>
+<span class="line" id="L1893">    REX_GOTPCRELX = <span class="tok-number">42</span>,</span>
+<span class="line" id="L1894">    _,</span>
+<span class="line" id="L1895">};</span>
+<span class="line" id="L1896"></span>
+<span class="line" id="L1897"><span class="tok-comment">/// AArch64 relocs.</span></span>
+<span class="line" id="L1898"><span class="tok-kw">pub</span> <span class="tok-kw">const</span> R_AARCH64 = <span class="tok-kw">enum</span>(<span class="tok-type">u32</span>) {</span>
+<span class="line" id="L1899">    <span class="tok-comment">/// No relocation.</span></span>
+<span class="line" id="L1900">    NONE = <span class="tok-number">0</span>,</span>
+<span class="line" id="L1901">    <span class="tok-comment">/// ILP32 AArch64 relocs.</span></span>
+<span class="line" id="L1902">    <span class="tok-comment">/// Direct 32 bit.</span></span>
+<span class="line" id="L1903">    P32_ABS32 = <span class="tok-number">1</span>,</span>
+<span class="line" id="L1904">    <span class="tok-comment">/// Copy symbol at runtime.</span></span>
+<span class="line" id="L1905">    P32_COPY = <span class="tok-number">180</span>,</span>
+<span class="line" id="L1906">    <span class="tok-comment">/// Create GOT entry.</span></span>
+<span class="line" id="L1907">    P32_GLOB_DAT = <span class="tok-number">181</span>,</span>
+<span class="line" id="L1908">    <span class="tok-comment">/// Create PLT entry.</span></span>
+<span class="line" id="L1909">    P32_JUMP_SLOT = <span class="tok-number">182</span>,</span>
+<span class="line" id="L1910">    <span class="tok-comment">/// Adjust by program base.</span></span>
+<span class="line" id="L1911">    P32_RELATIVE = <span class="tok-number">183</span>,</span>
+<span class="line" id="L1912">    <span class="tok-comment">/// Module number, 32 bit.</span></span>
+<span class="line" id="L1913">    P32_TLS_DTPMOD = <span class="tok-number">184</span>,</span>
+<span class="line" id="L1914">    <span class="tok-comment">/// Module-relative offset, 32 bit.</span></span>
+<span class="line" id="L1915">    P32_TLS_DTPREL = <span class="tok-number">185</span>,</span>
+<span class="line" id="L1916">    <span class="tok-comment">/// TP-relative offset, 32 bit.</span></span>
+<span class="line" id="L1917">    P32_TLS_TPREL = <span class="tok-number">186</span>,</span>
+<span class="line" id="L1918">    <span class="tok-comment">/// TLS Descriptor.</span></span>
+<span class="line" id="L1919">    P32_TLSDESC = <span class="tok-number">187</span>,</span>
+<span class="line" id="L1920">    <span class="tok-comment">/// STT_GNU_IFUNC relocation.</span></span>
+<span class="line" id="L1921">    P32_IRELATIVE = <span class="tok-number">188</span>,</span>
+<span class="line" id="L1922">    <span class="tok-comment">/// LP64 AArch64 relocs.</span></span>
+<span class="line" id="L1923">    <span class="tok-comment">/// Direct 64 bit.</span></span>
+<span class="line" id="L1924">    ABS64 = <span class="tok-number">257</span>,</span>
+<span class="line" id="L1925">    <span class="tok-comment">/// Direct 32 bit.</span></span>
+<span class="line" id="L1926">    ABS32 = <span class="tok-number">258</span>,</span>
+<span class="line" id="L1927">    <span class="tok-comment">/// Direct 16-bit.</span></span>
+<span class="line" id="L1928">    ABS16 = <span class="tok-number">259</span>,</span>
+<span class="line" id="L1929">    <span class="tok-comment">/// PC-relative 64-bit.</span></span>
+<span class="line" id="L1930">    PREL64 = <span class="tok-number">260</span>,</span>
+<span class="line" id="L1931">    <span class="tok-comment">/// PC-relative 32-bit.</span></span>
+<span class="line" id="L1932">    PREL32 = <span class="tok-number">261</span>,</span>
+<span class="line" id="L1933">    <span class="tok-comment">/// PC-relative 16-bit.</span></span>
+<span class="line" id="L1934">    PREL16 = <span class="tok-number">262</span>,</span>
+<span class="line" id="L1935">    <span class="tok-comment">/// Dir. MOVZ imm. from bits 15:0.</span></span>
+<span class="line" id="L1936">    MOVW_UABS_G0 = <span class="tok-number">263</span>,</span>
+<span class="line" id="L1937">    <span class="tok-comment">/// Likewise for MOVK; no check.</span></span>
+<span class="line" id="L1938">    MOVW_UABS_G0_NC = <span class="tok-number">264</span>,</span>
+<span class="line" id="L1939">    <span class="tok-comment">/// Dir. MOVZ imm. from bits 31:16.</span></span>
+<span class="line" id="L1940">    MOVW_UABS_G1 = <span class="tok-number">265</span>,</span>
+<span class="line" id="L1941">    <span class="tok-comment">/// Likewise for MOVK; no check.</span></span>
+<span class="line" id="L1942">    MOVW_UABS_G1_NC = <span class="tok-number">266</span>,</span>
+<span class="line" id="L1943">    <span class="tok-comment">/// Dir. MOVZ imm. from bits 47:32.</span></span>
+<span class="line" id="L1944">    MOVW_UABS_G2 = <span class="tok-number">267</span>,</span>
+<span class="line" id="L1945">    <span class="tok-comment">/// Likewise for MOVK; no check.</span></span>
+<span class="line" id="L1946">    MOVW_UABS_G2_NC = <span class="tok-number">268</span>,</span>
+<span class="line" id="L1947">    <span class="tok-comment">/// Dir. MOV{K,Z} imm. from 63:48.</span></span>
+<span class="line" id="L1948">    MOVW_UABS_G3 = <span class="tok-number">269</span>,</span>
+<span class="line" id="L1949">    <span class="tok-comment">/// Dir. MOV{N,Z} imm. from 15:0.</span></span>
+<span class="line" id="L1950">    MOVW_SABS_G0 = <span class="tok-number">270</span>,</span>
+<span class="line" id="L1951">    <span class="tok-comment">/// Dir. MOV{N,Z} imm. from 31:16.</span></span>
+<span class="line" id="L1952">    MOVW_SABS_G1 = <span class="tok-number">271</span>,</span>
+<span class="line" id="L1953">    <span class="tok-comment">/// Dir. MOV{N,Z} imm. from 47:32.</span></span>
+<span class="line" id="L1954">    MOVW_SABS_G2 = <span class="tok-number">272</span>,</span>
+<span class="line" id="L1955">    <span class="tok-comment">/// PC-rel. LD imm. from bits 20:2.</span></span>
+<span class="line" id="L1956">    LD_PREL_LO19 = <span class="tok-number">273</span>,</span>
+<span class="line" id="L1957">    <span class="tok-comment">/// PC-rel. ADR imm. from bits 20:0.</span></span>
+<span class="line" id="L1958">    ADR_PREL_LO21 = <span class="tok-number">274</span>,</span>
+<span class="line" id="L1959">    <span class="tok-comment">/// Page-rel. ADRP imm. from 32:12.</span></span>
+<span class="line" id="L1960">    ADR_PREL_PG_HI21 = <span class="tok-number">275</span>,</span>
+<span class="line" id="L1961">    <span class="tok-comment">/// Likewise; no overflow check.</span></span>
+<span class="line" id="L1962">    ADR_PREL_PG_HI21_NC = <span class="tok-number">276</span>,</span>
+<span class="line" id="L1963">    <span class="tok-comment">/// Dir. ADD imm. from bits 11:0.</span></span>
+<span class="line" id="L1964">    ADD_ABS_LO12_NC = <span class="tok-number">277</span>,</span>
+<span class="line" id="L1965">    <span class="tok-comment">/// Likewise for LD/ST; no check.</span></span>
+<span class="line" id="L1966">    LDST8_ABS_LO12_NC = <span class="tok-number">278</span>,</span>
+<span class="line" id="L1967">    <span class="tok-comment">/// PC-rel. TBZ/TBNZ imm. from 15:2.</span></span>
+<span class="line" id="L1968">    TSTBR14 = <span class="tok-number">279</span>,</span>
+<span class="line" id="L1969">    <span class="tok-comment">/// PC-rel. cond. br. imm. from 20:2.</span></span>
+<span class="line" id="L1970">    CONDBR19 = <span class="tok-number">280</span>,</span>
+<span class="line" id="L1971">    <span class="tok-comment">/// PC-rel. B imm. from bits 27:2.</span></span>
+<span class="line" id="L1972">    JUMP26 = <span class="tok-number">282</span>,</span>
+<span class="line" id="L1973">    <span class="tok-comment">/// Likewise for CALL.</span></span>
+<span class="line" id="L1974">    CALL26 = <span class="tok-number">283</span>,</span>
+<span class="line" id="L1975">    <span class="tok-comment">/// Dir. ADD imm. from bits 11:1.</span></span>
+<span class="line" id="L1976">    LDST16_ABS_LO12_NC = <span class="tok-number">284</span>,</span>
+<span class="line" id="L1977">    <span class="tok-comment">/// Likewise for bits 11:2.</span></span>
+<span class="line" id="L1978">    LDST32_ABS_LO12_NC = <span class="tok-number">285</span>,</span>
+<span class="line" id="L1979">    <span class="tok-comment">/// Likewise for bits 11:3.</span></span>
+<span class="line" id="L1980">    LDST64_ABS_LO12_NC = <span class="tok-number">286</span>,</span>
+<span class="line" id="L1981">    <span class="tok-comment">/// PC-rel. MOV{N,Z} imm. from 15:0.</span></span>
+<span class="line" id="L1982">    MOVW_PREL_G0 = <span class="tok-number">287</span>,</span>
+<span class="line" id="L1983">    <span class="tok-comment">/// Likewise for MOVK; no check.</span></span>
+<span class="line" id="L1984">    MOVW_PREL_G0_NC = <span class="tok-number">288</span>,</span>
+<span class="line" id="L1985">    <span class="tok-comment">/// PC-rel. MOV{N,Z} imm. from 31:16.</span></span>
+<span class="line" id="L1986">    MOVW_PREL_G1 = <span class="tok-number">289</span>,</span>
+<span class="line" id="L1987">    <span class="tok-comment">/// Likewise for MOVK; no check.</span></span>
+<span class="line" id="L1988">    MOVW_PREL_G1_NC = <span class="tok-number">290</span>,</span>
+<span class="line" id="L1989">    <span class="tok-comment">/// PC-rel. MOV{N,Z} imm. from 47:32.</span></span>
+<span class="line" id="L1990">    MOVW_PREL_G2 = <span class="tok-number">291</span>,</span>
+<span class="line" id="L1991">    <span class="tok-comment">/// Likewise for MOVK; no check.</span></span>
+<span class="line" id="L1992">    MOVW_PREL_G2_NC = <span class="tok-number">292</span>,</span>
+<span class="line" id="L1993">    <span class="tok-comment">/// PC-rel. MOV{N,Z} imm. from 63:48.</span></span>
+<span class="line" id="L1994">    MOVW_PREL_G3 = <span class="tok-number">293</span>,</span>
+<span class="line" id="L1995">    <span class="tok-comment">/// Dir. ADD imm. from bits 11:4.</span></span>
+<span class="line" id="L1996">    LDST128_ABS_LO12_NC = <span class="tok-number">299</span>,</span>
+<span class="line" id="L1997">    <span class="tok-comment">/// GOT-rel. off. MOV{N,Z} imm. 15:0.</span></span>
+<span class="line" id="L1998">    MOVW_GOTOFF_G0 = <span class="tok-number">300</span>,</span>
+<span class="line" id="L1999">    <span class="tok-comment">/// Likewise for MOVK; no check.</span></span>
+<span class="line" id="L2000">    MOVW_GOTOFF_G0_NC = <span class="tok-number">301</span>,</span>
+<span class="line" id="L2001">    <span class="tok-comment">/// GOT-rel. o. MOV{N,Z} imm. 31:16.</span></span>
+<span class="line" id="L2002">    MOVW_GOTOFF_G1 = <span class="tok-number">302</span>,</span>
+<span class="line" id="L2003">    <span class="tok-comment">/// Likewise for MOVK; no check.</span></span>
+<span class="line" id="L2004">    MOVW_GOTOFF_G1_NC = <span class="tok-number">303</span>,</span>
+<span class="line" id="L2005">    <span class="tok-comment">/// GOT-rel. o. MOV{N,Z} imm. 47:32.</span></span>
+<span class="line" id="L2006">    MOVW_GOTOFF_G2 = <span class="tok-number">304</span>,</span>
+<span class="line" id="L2007">    <span class="tok-comment">/// Likewise for MOVK; no check.</span></span>
+<span class="line" id="L2008">    MOVW_GOTOFF_G2_NC = <span class="tok-number">305</span>,</span>
+<span class="line" id="L2009">    <span class="tok-comment">/// GOT-rel. o. MOV{N,Z} imm. 63:48.</span></span>
+<span class="line" id="L2010">    MOVW_GOTOFF_G3 = <span class="tok-number">306</span>,</span>
+<span class="line" id="L2011">    <span class="tok-comment">/// GOT-relative 64-bit.</span></span>
+<span class="line" id="L2012">    GOTREL64 = <span class="tok-number">307</span>,</span>
+<span class="line" id="L2013">    <span class="tok-comment">/// GOT-relative 32-bit.</span></span>
+<span class="line" id="L2014">    GOTREL32 = <span class="tok-number">308</span>,</span>
+<span class="line" id="L2015">    <span class="tok-comment">/// PC-rel. GOT off. load imm. 20:2.</span></span>
+<span class="line" id="L2016">    GOT_LD_PREL19 = <span class="tok-number">309</span>,</span>
+<span class="line" id="L2017">    <span class="tok-comment">/// GOT-rel. off. LD/ST imm. 14:3.</span></span>
+<span class="line" id="L2018">    LD64_GOTOFF_LO15 = <span class="tok-number">310</span>,</span>
+<span class="line" id="L2019">    <span class="tok-comment">/// P-page-rel. GOT off. ADRP 32:12.</span></span>
+<span class="line" id="L2020">    ADR_GOT_PAGE = <span class="tok-number">311</span>,</span>
+<span class="line" id="L2021">    <span class="tok-comment">/// Dir. GOT off. LD/ST imm. 11:3.</span></span>
+<span class="line" id="L2022">    LD64_GOT_LO12_NC = <span class="tok-number">312</span>,</span>
+<span class="line" id="L2023">    <span class="tok-comment">/// GOT-page-rel. GOT off. LD/ST 14:3</span></span>
+<span class="line" id="L2024">    LD64_GOTPAGE_LO15 = <span class="tok-number">313</span>,</span>
+<span class="line" id="L2025">    <span class="tok-comment">/// PC-relative ADR imm. 20:0.</span></span>
+<span class="line" id="L2026">    TLSGD_ADR_PREL21 = <span class="tok-number">512</span>,</span>
+<span class="line" id="L2027">    <span class="tok-comment">/// page-rel. ADRP imm. 32:12.</span></span>
+<span class="line" id="L2028">    TLSGD_ADR_PAGE21 = <span class="tok-number">513</span>,</span>
+<span class="line" id="L2029">    <span class="tok-comment">/// direct ADD imm. from 11:0.</span></span>
+<span class="line" id="L2030">    TLSGD_ADD_LO12_NC = <span class="tok-number">514</span>,</span>
+<span class="line" id="L2031">    <span class="tok-comment">/// GOT-rel. MOV{N,Z} 31:16.</span></span>
+<span class="line" id="L2032">    TLSGD_MOVW_G1 = <span class="tok-number">515</span>,</span>
+<span class="line" id="L2033">    <span class="tok-comment">/// GOT-rel. MOVK imm. 15:0.</span></span>
+<span class="line" id="L2034">    TLSGD_MOVW_G0_NC = <span class="tok-number">516</span>,</span>
+<span class="line" id="L2035">    <span class="tok-comment">/// Like 512; local dynamic model.</span></span>
+<span class="line" id="L2036">    TLSLD_ADR_PREL21 = <span class="tok-number">517</span>,</span>
+<span class="line" id="L2037">    <span class="tok-comment">/// Like 513; local dynamic model.</span></span>
+<span class="line" id="L2038">    TLSLD_ADR_PAGE21 = <span class="tok-number">518</span>,</span>
+<span class="line" id="L2039">    <span class="tok-comment">/// Like 514; local dynamic model.</span></span>
+<span class="line" id="L2040">    TLSLD_ADD_LO12_NC = <span class="tok-number">519</span>,</span>
+<span class="line" id="L2041">    <span class="tok-comment">/// Like 515; local dynamic model.</span></span>
+<span class="line" id="L2042">    TLSLD_MOVW_G1 = <span class="tok-number">520</span>,</span>
+<span class="line" id="L2043">    <span class="tok-comment">/// Like 516; local dynamic model.</span></span>
+<span class="line" id="L2044">    TLSLD_MOVW_G0_NC = <span class="tok-number">521</span>,</span>
+<span class="line" id="L2045">    <span class="tok-comment">/// TLS PC-rel. load imm. 20:2.</span></span>
+<span class="line" id="L2046">    TLSLD_LD_PREL19 = <span class="tok-number">522</span>,</span>
+<span class="line" id="L2047">    <span class="tok-comment">/// TLS DTP-rel. MOV{N,Z} 47:32.</span></span>
+<span class="line" id="L2048">    TLSLD_MOVW_DTPREL_G2 = <span class="tok-number">523</span>,</span>
+<span class="line" id="L2049">    <span class="tok-comment">/// TLS DTP-rel. MOV{N,Z} 31:16.</span></span>
+<span class="line" id="L2050">    TLSLD_MOVW_DTPREL_G1 = <span class="tok-number">524</span>,</span>
+<span class="line" id="L2051">    <span class="tok-comment">/// Likewise; MOVK; no check.</span></span>
+<span class="line" id="L2052">    TLSLD_MOVW_DTPREL_G1_NC = <span class="tok-number">525</span>,</span>
+<span class="line" id="L2053">    <span class="tok-comment">/// TLS DTP-rel. MOV{N,Z} 15:0.</span></span>
+<span class="line" id="L2054">    TLSLD_MOVW_DTPREL_G0 = <span class="tok-number">526</span>,</span>
+<span class="line" id="L2055">    <span class="tok-comment">/// Likewise; MOVK; no check.</span></span>
+<span class="line" id="L2056">    TLSLD_MOVW_DTPREL_G0_NC = <span class="tok-number">527</span>,</span>
+<span class="line" id="L2057">    <span class="tok-comment">/// DTP-rel. ADD imm. from 23:12.</span></span>
+<span class="line" id="L2058">    TLSLD_ADD_DTPREL_HI12 = <span class="tok-number">528</span>,</span>
+<span class="line" id="L2059">    <span class="tok-comment">/// DTP-rel. ADD imm. from 11:0.</span></span>
+<span class="line" id="L2060">    TLSLD_ADD_DTPREL_LO12 = <span class="tok-number">529</span>,</span>
+<span class="line" id="L2061">    <span class="tok-comment">/// Likewise; no ovfl. check.</span></span>
+<span class="line" id="L2062">    TLSLD_ADD_DTPREL_LO12_NC = <span class="tok-number">530</span>,</span>
+<span class="line" id="L2063">    <span class="tok-comment">/// DTP-rel. LD/ST imm. 11:0.</span></span>
+<span class="line" id="L2064">    TLSLD_LDST8_DTPREL_LO12 = <span class="tok-number">531</span>,</span>
+<span class="line" id="L2065">    <span class="tok-comment">/// Likewise; no check.</span></span>
+<span class="line" id="L2066">    TLSLD_LDST8_DTPREL_LO12_NC = <span class="tok-number">532</span>,</span>
+<span class="line" id="L2067">    <span class="tok-comment">/// DTP-rel. LD/ST imm. 11:1.</span></span>
+<span class="line" id="L2068">    TLSLD_LDST16_DTPREL_LO12 = <span class="tok-number">533</span>,</span>
+<span class="line" id="L2069">    <span class="tok-comment">/// Likewise; no check.</span></span>
+<span class="line" id="L2070">    TLSLD_LDST16_DTPREL_LO12_NC = <span class="tok-number">534</span>,</span>
+<span class="line" id="L2071">    <span class="tok-comment">/// DTP-rel. LD/ST imm. 11:2.</span></span>
+<span class="line" id="L2072">    TLSLD_LDST32_DTPREL_LO12 = <span class="tok-number">535</span>,</span>
+<span class="line" id="L2073">    <span class="tok-comment">/// Likewise; no check.</span></span>
+<span class="line" id="L2074">    TLSLD_LDST32_DTPREL_LO12_NC = <span class="tok-number">536</span>,</span>
+<span class="line" id="L2075">    <span class="tok-comment">/// DTP-rel. LD/ST imm. 11:3.</span></span>
+<span class="line" id="L2076">    TLSLD_LDST64_DTPREL_LO12 = <span class="tok-number">537</span>,</span>
+<span class="line" id="L2077">    <span class="tok-comment">/// Likewise; no check.</span></span>
+<span class="line" id="L2078">    TLSLD_LDST64_DTPREL_LO12_NC = <span class="tok-number">538</span>,</span>
+<span class="line" id="L2079">    <span class="tok-comment">/// GOT-rel. MOV{N,Z} 31:16.</span></span>
+<span class="line" id="L2080">    TLSIE_MOVW_GOTTPREL_G1 = <span class="tok-number">539</span>,</span>
+<span class="line" id="L2081">    <span class="tok-comment">/// GOT-rel. MOVK 15:0.</span></span>
+<span class="line" id="L2082">    TLSIE_MOVW_GOTTPREL_G0_NC = <span class="tok-number">540</span>,</span>
+<span class="line" id="L2083">    <span class="tok-comment">/// Page-rel. ADRP 32:12.</span></span>
+<span class="line" id="L2084">    TLSIE_ADR_GOTTPREL_PAGE21 = <span class="tok-number">541</span>,</span>
+<span class="line" id="L2085">    <span class="tok-comment">/// Direct LD off. 11:3.</span></span>
+<span class="line" id="L2086">    TLSIE_LD64_GOTTPREL_LO12_NC = <span class="tok-number">542</span>,</span>
+<span class="line" id="L2087">    <span class="tok-comment">/// PC-rel. load imm. 20:2.</span></span>
+<span class="line" id="L2088">    TLSIE_LD_GOTTPREL_PREL19 = <span class="tok-number">543</span>,</span>
+<span class="line" id="L2089">    <span class="tok-comment">/// TLS TP-rel. MOV{N,Z} 47:32.</span></span>
+<span class="line" id="L2090">    TLSLE_MOVW_TPREL_G2 = <span class="tok-number">544</span>,</span>
+<span class="line" id="L2091">    <span class="tok-comment">/// TLS TP-rel. MOV{N,Z} 31:16.</span></span>
+<span class="line" id="L2092">    TLSLE_MOVW_TPREL_G1 = <span class="tok-number">545</span>,</span>
+<span class="line" id="L2093">    <span class="tok-comment">/// Likewise; MOVK; no check.</span></span>
+<span class="line" id="L2094">    TLSLE_MOVW_TPREL_G1_NC = <span class="tok-number">546</span>,</span>
+<span class="line" id="L2095">    <span class="tok-comment">/// TLS TP-rel. MOV{N,Z} 15:0.</span></span>
+<span class="line" id="L2096">    TLSLE_MOVW_TPREL_G0 = <span class="tok-number">547</span>,</span>
+<span class="line" id="L2097">    <span class="tok-comment">/// Likewise; MOVK; no check.</span></span>
+<span class="line" id="L2098">    TLSLE_MOVW_TPREL_G0_NC = <span class="tok-number">548</span>,</span>
+<span class="line" id="L2099">    <span class="tok-comment">/// TP-rel. ADD imm. 23:12.</span></span>
+<span class="line" id="L2100">    TLSLE_ADD_TPREL_HI12 = <span class="tok-number">549</span>,</span>
+<span class="line" id="L2101">    <span class="tok-comment">/// TP-rel. ADD imm. 11:0.</span></span>
+<span class="line" id="L2102">    TLSLE_ADD_TPREL_LO12 = <span class="tok-number">550</span>,</span>
+<span class="line" id="L2103">    <span class="tok-comment">/// Likewise; no ovfl. check.</span></span>
+<span class="line" id="L2104">    TLSLE_ADD_TPREL_LO12_NC = <span class="tok-number">551</span>,</span>
+<span class="line" id="L2105">    <span class="tok-comment">/// TP-rel. LD/ST off. 11:0.</span></span>
+<span class="line" id="L2106">    TLSLE_LDST8_TPREL_LO12 = <span class="tok-number">552</span>,</span>
+<span class="line" id="L2107">    <span class="tok-comment">/// Likewise; no ovfl. check.</span></span>
+<span class="line" id="L2108">    TLSLE_LDST8_TPREL_LO12_NC = <span class="tok-number">553</span>,</span>
+<span class="line" id="L2109">    <span class="tok-comment">/// TP-rel. LD/ST off. 11:1.</span></span>
+<span class="line" id="L2110">    TLSLE_LDST16_TPREL_LO12 = <span class="tok-number">554</span>,</span>
+<span class="line" id="L2111">    <span class="tok-comment">/// Likewise; no check.</span></span>
+<span class="line" id="L2112">    TLSLE_LDST16_TPREL_LO12_NC = <span class="tok-number">555</span>,</span>
+<span class="line" id="L2113">    <span class="tok-comment">/// TP-rel. LD/ST off. 11:2.</span></span>
+<span class="line" id="L2114">    TLSLE_LDST32_TPREL_LO12 = <span class="tok-number">556</span>,</span>
+<span class="line" id="L2115">    <span class="tok-comment">/// Likewise; no check.</span></span>
+<span class="line" id="L2116">    TLSLE_LDST32_TPREL_LO12_NC = <span class="tok-number">557</span>,</span>
+<span class="line" id="L2117">    <span class="tok-comment">/// TP-rel. LD/ST off. 11:3.</span></span>
+<span class="line" id="L2118">    TLSLE_LDST64_TPREL_LO12 = <span class="tok-number">558</span>,</span>
+<span class="line" id="L2119">    <span class="tok-comment">/// Likewise; no check.</span></span>
+<span class="line" id="L2120">    TLSLE_LDST64_TPREL_LO12_NC = <span class="tok-number">559</span>,</span>
+<span class="line" id="L2121">    <span class="tok-comment">///  PC-rel. load immediate 20:2.</span></span>
+<span class="line" id="L2122">    TLSDESC_LD_PREL19 = <span class="tok-number">560</span>,</span>
+<span class="line" id="L2123">    <span class="tok-comment">/// PC-rel. ADR immediate 20:0.</span></span>
+<span class="line" id="L2124">    TLSDESC_ADR_PREL21 = <span class="tok-number">561</span>,</span>
+<span class="line" id="L2125">    <span class="tok-comment">/// Page-rel. ADRP imm. 32:12.</span></span>
+<span class="line" id="L2126">    TLSDESC_ADR_PAGE21 = <span class="tok-number">562</span>,</span>
+<span class="line" id="L2127">    <span class="tok-comment">/// Direct LD off. from 11:3.</span></span>
+<span class="line" id="L2128">    TLSDESC_LD64_LO12 = <span class="tok-number">563</span>,</span>
+<span class="line" id="L2129">    <span class="tok-comment">/// Direct ADD imm. from 11:0.</span></span>
+<span class="line" id="L2130">    TLSDESC_ADD_LO12 = <span class="tok-number">564</span>,</span>
+<span class="line" id="L2131">    <span class="tok-comment">/// GOT-rel. MOV{N,Z} imm. 31:16.</span></span>
+<span class="line" id="L2132">    TLSDESC_OFF_G1 = <span class="tok-number">565</span>,</span>
+<span class="line" id="L2133">    <span class="tok-comment">/// GOT-rel. MOVK imm. 15:0; no ck.</span></span>
+<span class="line" id="L2134">    TLSDESC_OFF_G0_NC = <span class="tok-number">566</span>,</span>
+<span class="line" id="L2135">    <span class="tok-comment">/// Relax LDR.</span></span>
+<span class="line" id="L2136">    TLSDESC_LDR = <span class="tok-number">567</span>,</span>
+<span class="line" id="L2137">    <span class="tok-comment">/// Relax ADD.</span></span>
+<span class="line" id="L2138">    TLSDESC_ADD = <span class="tok-number">568</span>,</span>
+<span class="line" id="L2139">    <span class="tok-comment">/// Relax BLR.</span></span>
+<span class="line" id="L2140">    TLSDESC_CALL = <span class="tok-number">569</span>,</span>
+<span class="line" id="L2141">    <span class="tok-comment">/// TP-rel. LD/ST off. 11:4.</span></span>
+<span class="line" id="L2142">    TLSLE_LDST128_TPREL_LO12 = <span class="tok-number">570</span>,</span>
+<span class="line" id="L2143">    <span class="tok-comment">/// Likewise; no check.</span></span>
+<span class="line" id="L2144">    TLSLE_LDST128_TPREL_LO12_NC = <span class="tok-number">571</span>,</span>
+<span class="line" id="L2145">    <span class="tok-comment">/// DTP-rel. LD/ST imm. 11:4.</span></span>
+<span class="line" id="L2146">    TLSLD_LDST128_DTPREL_LO12 = <span class="tok-number">572</span>,</span>
+<span class="line" id="L2147">    <span class="tok-comment">/// Likewise; no check.</span></span>
+<span class="line" id="L2148">    TLSLD_LDST128_DTPREL_LO12_NC = <span class="tok-number">573</span>,</span>
+<span class="line" id="L2149">    <span class="tok-comment">/// Copy symbol at runtime.</span></span>
+<span class="line" id="L2150">    COPY = <span class="tok-number">1024</span>,</span>
+<span class="line" id="L2151">    <span class="tok-comment">/// Create GOT entry.</span></span>
+<span class="line" id="L2152">    GLOB_DAT = <span class="tok-number">1025</span>,</span>
+<span class="line" id="L2153">    <span class="tok-comment">/// Create PLT entry.</span></span>
+<span class="line" id="L2154">    JUMP_SLOT = <span class="tok-number">1026</span>,</span>
+<span class="line" id="L2155">    <span class="tok-comment">/// Adjust by program base.</span></span>
+<span class="line" id="L2156">    RELATIVE = <span class="tok-number">1027</span>,</span>
+<span class="line" id="L2157">    <span class="tok-comment">/// Module number, 64 bit.</span></span>
+<span class="line" id="L2158">    TLS_DTPMOD = <span class="tok-number">1028</span>,</span>
+<span class="line" id="L2159">    <span class="tok-comment">/// Module-relative offset, 64 bit.</span></span>
+<span class="line" id="L2160">    TLS_DTPREL = <span class="tok-number">1029</span>,</span>
+<span class="line" id="L2161">    <span class="tok-comment">/// TP-relative offset, 64 bit.</span></span>
+<span class="line" id="L2162">    TLS_TPREL = <span class="tok-number">1030</span>,</span>
+<span class="line" id="L2163">    <span class="tok-comment">/// TLS Descriptor.</span></span>
+<span class="line" id="L2164">    TLSDESC = <span class="tok-number">1031</span>,</span>
+<span class="line" id="L2165">    <span class="tok-comment">/// STT_GNU_IFUNC relocation.</span></span>
+<span class="line" id="L2166">    IRELATIVE = <span class="tok-number">1032</span>,</span>
+<span class="line" id="L2167">    _,</span>
+<span class="line" id="L2168">};</span>
+<span class="line" id="L2169"></span>
+<span class="line" id="L2170"><span class="tok-comment">/// RISC-V relocations.</span></span>
+<span class="line" id="L2171"><span class="tok-kw">pub</span> <span class="tok-kw">const</span> R_RISCV = <span class="tok-kw">enum</span>(<span class="tok-type">u32</span>) {</span>
+<span class="line" id="L2172">    NONE = <span class="tok-number">0</span>,</span>
+<span class="line" id="L2173">    @&quot;32&quot; = <span class="tok-number">1</span>,</span>
+<span class="line" id="L2174">    @&quot;64&quot; = <span class="tok-number">2</span>,</span>
+<span class="line" id="L2175">    RELATIVE = <span class="tok-number">3</span>,</span>
+<span class="line" id="L2176">    COPY = <span class="tok-number">4</span>,</span>
+<span class="line" id="L2177">    JUMP_SLOT = <span class="tok-number">5</span>,</span>
+<span class="line" id="L2178">    TLS_DTPMOD32 = <span class="tok-number">6</span>,</span>
+<span class="line" id="L2179">    TLS_DTPMOD64 = <span class="tok-number">7</span>,</span>
+<span class="line" id="L2180">    TLS_DTPREL32 = <span class="tok-number">8</span>,</span>
+<span class="line" id="L2181">    TLS_DTPREL64 = <span class="tok-number">9</span>,</span>
+<span class="line" id="L2182">    TLS_TPREL32 = <span class="tok-number">10</span>,</span>
+<span class="line" id="L2183">    TLS_TPREL64 = <span class="tok-number">11</span>,</span>
+<span class="line" id="L2184">    TLSDESC = <span class="tok-number">12</span>,</span>
+<span class="line" id="L2185">    BRANCH = <span class="tok-number">16</span>,</span>
+<span class="line" id="L2186">    JAL = <span class="tok-number">17</span>,</span>
+<span class="line" id="L2187">    CALL = <span class="tok-number">18</span>,</span>
+<span class="line" id="L2188">    CALL_PLT = <span class="tok-number">19</span>,</span>
+<span class="line" id="L2189">    GOT_HI20 = <span class="tok-number">20</span>,</span>
+<span class="line" id="L2190">    TLS_GOT_HI20 = <span class="tok-number">21</span>,</span>
+<span class="line" id="L2191">    TLS_GD_HI20 = <span class="tok-number">22</span>,</span>
+<span class="line" id="L2192">    PCREL_HI20 = <span class="tok-number">23</span>,</span>
+<span class="line" id="L2193">    PCREL_LO12_I = <span class="tok-number">24</span>,</span>
+<span class="line" id="L2194">    PCREL_LO12_S = <span class="tok-number">25</span>,</span>
+<span class="line" id="L2195">    HI20 = <span class="tok-number">26</span>,</span>
+<span class="line" id="L2196">    LO12_I = <span class="tok-number">27</span>,</span>
+<span class="line" id="L2197">    LO12_S = <span class="tok-number">28</span>,</span>
+<span class="line" id="L2198">    TPREL_HI20 = <span class="tok-number">29</span>,</span>
+<span class="line" id="L2199">    TPREL_LO12_I = <span class="tok-number">30</span>,</span>
+<span class="line" id="L2200">    TPREL_LO12_S = <span class="tok-number">31</span>,</span>
+<span class="line" id="L2201">    TPREL_ADD = <span class="tok-number">32</span>,</span>
+<span class="line" id="L2202">    ADD8 = <span class="tok-number">33</span>,</span>
+<span class="line" id="L2203">    ADD16 = <span class="tok-number">34</span>,</span>
+<span class="line" id="L2204">    ADD32 = <span class="tok-number">35</span>,</span>
+<span class="line" id="L2205">    ADD64 = <span class="tok-number">36</span>,</span>
+<span class="line" id="L2206">    SUB8 = <span class="tok-number">37</span>,</span>
+<span class="line" id="L2207">    SUB16 = <span class="tok-number">38</span>,</span>
+<span class="line" id="L2208">    SUB32 = <span class="tok-number">39</span>,</span>
+<span class="line" id="L2209">    SUB64 = <span class="tok-number">40</span>,</span>
+<span class="line" id="L2210">    GNU_VTINHERIT = <span class="tok-number">41</span>,</span>
+<span class="line" id="L2211">    GNU_VTENTRY = <span class="tok-number">42</span>,</span>
+<span class="line" id="L2212">    ALIGN = <span class="tok-number">43</span>,</span>
+<span class="line" id="L2213">    RVC_BRANCH = <span class="tok-number">44</span>,</span>
+<span class="line" id="L2214">    RVC_JUMP = <span class="tok-number">45</span>,</span>
+<span class="line" id="L2215">    RVC_LUI = <span class="tok-number">46</span>,</span>
+<span class="line" id="L2216">    GPREL_I = <span class="tok-number">47</span>,</span>
+<span class="line" id="L2217">    GPREL_S = <span class="tok-number">48</span>,</span>
+<span class="line" id="L2218">    TPREL_I = <span class="tok-number">49</span>,</span>
+<span class="line" id="L2219">    TPREL_S = <span class="tok-number">50</span>,</span>
+<span class="line" id="L2220">    RELAX = <span class="tok-number">51</span>,</span>
+<span class="line" id="L2221">    SUB6 = <span class="tok-number">52</span>,</span>
+<span class="line" id="L2222">    SET6 = <span class="tok-number">53</span>,</span>
+<span class="line" id="L2223">    SET8 = <span class="tok-number">54</span>,</span>
+<span class="line" id="L2224">    SET16 = <span class="tok-number">55</span>,</span>
+<span class="line" id="L2225">    SET32 = <span class="tok-number">56</span>,</span>
+<span class="line" id="L2226">    @&quot;32_PCREL&quot; = <span class="tok-number">57</span>,</span>
+<span class="line" id="L2227">    IRELATIVE = <span class="tok-number">58</span>,</span>
+<span class="line" id="L2228">    PLT32 = <span class="tok-number">59</span>,</span>
+<span class="line" id="L2229">    SET_ULEB128 = <span class="tok-number">60</span>,</span>
+<span class="line" id="L2230">    SUB_ULEB128 = <span class="tok-number">61</span>,</span>
+<span class="line" id="L2231">    _,</span>
+<span class="line" id="L2232">};</span>
+<span class="line" id="L2233"></span>
+<span class="line" id="L2234"><span class="tok-kw">pub</span> <span class="tok-kw">const</span> STV = <span class="tok-kw">enum</span>(<span class="tok-type">u2</span>) {</span>
+<span class="line" id="L2235">    DEFAULT = <span class="tok-number">0</span>,</span>
+<span class="line" id="L2236">    INTERNAL = <span class="tok-number">1</span>,</span>
+<span class="line" id="L2237">    HIDDEN = <span class="tok-number">2</span>,</span>
+<span class="line" id="L2238">    PROTECTED = <span class="tok-number">3</span>,</span>
+<span class="line" id="L2239">};</span>
+<span class="line" id="L2240"></span>
+<span class="line" id="L2241"><span class="tok-kw">pub</span> <span class="tok-kw">const</span> ar_hdr = <span class="tok-kw">extern</span> <span class="tok-kw">struct</span> {</span>
+<span class="line" id="L2242">    <span class="tok-comment">/// Member file name, sometimes / terminated.</span></span>
+<span class="line" id="L2243">    ar_name: [<span class="tok-number">16</span>]<span class="tok-type">u8</span>,</span>
+<span class="line" id="L2244"></span>
+<span class="line" id="L2245">    <span class="tok-comment">/// File date, decimal seconds since Epoch.</span></span>
+<span class="line" id="L2246">    ar_date: [<span class="tok-number">12</span>]<span class="tok-type">u8</span>,</span>
+<span class="line" id="L2247"></span>
+<span class="line" id="L2248">    <span class="tok-comment">/// User ID, in ASCII format.</span></span>
+<span class="line" id="L2249">    ar_uid: [<span class="tok-number">6</span>]<span class="tok-type">u8</span>,</span>
+<span class="line" id="L2250"></span>
+<span class="line" id="L2251">    <span class="tok-comment">/// Group ID, in ASCII format.</span></span>
+<span class="line" id="L2252">    ar_gid: [<span class="tok-number">6</span>]<span class="tok-type">u8</span>,</span>
+<span class="line" id="L2253"></span>
+<span class="line" id="L2254">    <span class="tok-comment">/// File mode, in ASCII octal.</span></span>
+<span class="line" id="L2255">    ar_mode: [<span class="tok-number">8</span>]<span class="tok-type">u8</span>,</span>
+<span class="line" id="L2256"></span>
+<span class="line" id="L2257">    <span class="tok-comment">/// File size, in ASCII decimal.</span></span>
+<span class="line" id="L2258">    ar_size: [<span class="tok-number">10</span>]<span class="tok-type">u8</span>,</span>
+<span class="line" id="L2259"></span>
+<span class="line" id="L2260">    <span class="tok-comment">/// Always contains ARFMAG.</span></span>
+<span class="line" id="L2261">    ar_fmag: [<span class="tok-number">2</span>]<span class="tok-type">u8</span>,</span>
+<span class="line" id="L2262"></span>
+<span class="line" id="L2263">    <span class="tok-kw">pub</span> <span class="tok-kw">fn</span> <span class="tok-fn">date</span>(self: ar_hdr) std.fmt.ParseIntError!<span class="tok-type">u64</span> {</span>
+<span class="line" id="L2264">        <span class="tok-kw">const</span> value = mem.trimRight(<span class="tok-type">u8</span>, &amp;self.ar_date, &amp;[_]<span class="tok-type">u8</span>{<span class="tok-number">0x20</span>});</span>
+<span class="line" id="L2265">        <span class="tok-kw">return</span> std.fmt.parseInt(<span class="tok-type">u64</span>, value, <span class="tok-number">10</span>);</span>
+<span class="line" id="L2266">    }</span>
+<span class="line" id="L2267"></span>
+<span class="line" id="L2268">    <span class="tok-kw">pub</span> <span class="tok-kw">fn</span> <span class="tok-fn">size</span>(self: ar_hdr) std.fmt.ParseIntError!<span class="tok-type">u32</span> {</span>
+<span class="line" id="L2269">        <span class="tok-kw">const</span> value = mem.trimRight(<span class="tok-type">u8</span>, &amp;self.ar_size, &amp;[_]<span class="tok-type">u8</span>{<span class="tok-number">0x20</span>});</span>
+<span class="line" id="L2270">        <span class="tok-kw">return</span> std.fmt.parseInt(<span class="tok-type">u32</span>, value, <span class="tok-number">10</span>);</span>
+<span class="line" id="L2271">    }</span>
+<span class="line" id="L2272"></span>
+<span class="line" id="L2273">    <span class="tok-kw">pub</span> <span class="tok-kw">fn</span> <span class="tok-fn">isStrtab</span>(self: ar_hdr) <span class="tok-type">bool</span> {</span>
+<span class="line" id="L2274">        <span class="tok-kw">return</span> mem.eql(<span class="tok-type">u8</span>, &amp;self.ar_name, STRNAME);</span>
+<span class="line" id="L2275">    }</span>
+<span class="line" id="L2276"></span>
+<span class="line" id="L2277">    <span class="tok-kw">pub</span> <span class="tok-kw">fn</span> <span class="tok-fn">isSymtab</span>(self: ar_hdr) <span class="tok-type">bool</span> {</span>
+<span class="line" id="L2278">        <span class="tok-kw">return</span> mem.eql(<span class="tok-type">u8</span>, &amp;self.ar_name, SYMNAME);</span>
+<span class="line" id="L2279">    }</span>
+<span class="line" id="L2280"></span>
+<span class="line" id="L2281">    <span class="tok-kw">pub</span> <span class="tok-kw">fn</span> <span class="tok-fn">isSymtab64</span>(self: ar_hdr) <span class="tok-type">bool</span> {</span>
+<span class="line" id="L2282">        <span class="tok-kw">return</span> mem.eql(<span class="tok-type">u8</span>, &amp;self.ar_name, SYM64NAME);</span>
+<span class="line" id="L2283">    }</span>
+<span class="line" id="L2284"></span>
+<span class="line" id="L2285">    <span class="tok-kw">pub</span> <span class="tok-kw">fn</span> <span class="tok-fn">isSymdef</span>(self: ar_hdr) <span class="tok-type">bool</span> {</span>
+<span class="line" id="L2286">        <span class="tok-kw">return</span> mem.eql(<span class="tok-type">u8</span>, &amp;self.ar_name, SYMDEFNAME);</span>
+<span class="line" id="L2287">    }</span>
+<span class="line" id="L2288"></span>
+<span class="line" id="L2289">    <span class="tok-kw">pub</span> <span class="tok-kw">fn</span> <span class="tok-fn">isSymdefSorted</span>(self: ar_hdr) <span class="tok-type">bool</span> {</span>
+<span class="line" id="L2290">        <span class="tok-kw">return</span> mem.eql(<span class="tok-type">u8</span>, &amp;self.ar_name, SYMDEFSORTEDNAME);</span>
+<span class="line" id="L2291">    }</span>
+<span class="line" id="L2292"></span>
+<span class="line" id="L2293">    <span class="tok-kw">pub</span> <span class="tok-kw">fn</span> <span class="tok-fn">name</span>(self: *<span class="tok-kw">const</span> ar_hdr) ?[]<span class="tok-kw">const</span> <span class="tok-type">u8</span> {</span>
+<span class="line" id="L2294">        <span class="tok-kw">const</span> value = &amp;self.ar_name;</span>
+<span class="line" id="L2295">        <span class="tok-kw">if</span> (value[<span class="tok-number">0</span>] == <span class="tok-str">'/'</span>) <span class="tok-kw">return</span> <span class="tok-null">null</span>;</span>
+<span class="line" id="L2296">        <span class="tok-kw">const</span> sentinel = mem.indexOfScalar(<span class="tok-type">u8</span>, value, <span class="tok-str">'/'</span>) <span class="tok-kw">orelse</span> value.len;</span>
+<span class="line" id="L2297">        <span class="tok-kw">return</span> value[<span class="tok-number">0</span>..sentinel];</span>
+<span class="line" id="L2298">    }</span>
+<span class="line" id="L2299"></span>
+<span class="line" id="L2300">    <span class="tok-kw">pub</span> <span class="tok-kw">fn</span> <span class="tok-fn">nameOffset</span>(self: ar_hdr) std.fmt.ParseIntError!?<span class="tok-type">u32</span> {</span>
+<span class="line" id="L2301">        <span class="tok-kw">const</span> value = &amp;self.ar_name;</span>
+<span class="line" id="L2302">        <span class="tok-kw">if</span> (value[<span class="tok-number">0</span>] != <span class="tok-str">'/'</span>) <span class="tok-kw">return</span> <span class="tok-null">null</span>;</span>
+<span class="line" id="L2303">        <span class="tok-kw">const</span> trimmed = mem.trimRight(<span class="tok-type">u8</span>, value, &amp;[_]<span class="tok-type">u8</span>{<span class="tok-number">0x20</span>});</span>
+<span class="line" id="L2304">        <span class="tok-kw">return</span> <span class="tok-kw">try</span> std.fmt.parseInt(<span class="tok-type">u32</span>, trimmed[<span class="tok-number">1</span>..], <span class="tok-number">10</span>);</span>
+<span class="line" id="L2305">    }</span>
+<span class="line" id="L2306">};</span>
+<span class="line" id="L2307"></span>
+<span class="line" id="L2308"><span class="tok-kw">fn</span> <span class="tok-fn">genSpecialMemberName</span>(<span class="tok-kw">comptime</span> name: []<span class="tok-kw">const</span> <span class="tok-type">u8</span>) *<span class="tok-kw">const</span> [<span class="tok-number">16</span>]<span class="tok-type">u8</span> {</span>
+<span class="line" id="L2309">    assert(name.len &lt;= <span class="tok-number">16</span>);</span>
+<span class="line" id="L2310">    <span class="tok-kw">const</span> padding = <span class="tok-number">16</span> - name.len;</span>
+<span class="line" id="L2311">    <span class="tok-kw">return</span> name ++ &amp;[_]<span class="tok-type">u8</span>{<span class="tok-number">0x20</span>} ** padding;</span>
+<span class="line" id="L2312">}</span>
+<span class="line" id="L2313"></span>
+<span class="line" id="L2314"><span class="tok-comment">// Archive files start with the ARMAG identifying string.  Then follows a</span>
 </span>
-<span class="line" id="L1976"><span class="tok-comment">// `struct ar_hdr', and as many bytes of member file data as its `ar_size'</span>
+<span class="line" id="L2315"><span class="tok-comment">// `struct ar_hdr', and as many bytes of member file data as its `ar_size'</span>
 </span>
-<span class="line" id="L1977"><span class="tok-comment">// member indicates, for each member file.</span>
+<span class="line" id="L2316"><span class="tok-comment">// member indicates, for each member file.</span>
 </span>
-<span class="line" id="L1978"><span class="tok-comment">/// String that begins an archive file.</span></span>
-<span class="line" id="L1979"><span class="tok-kw">pub</span> <span class="tok-kw">const</span> ARMAG = <span class="tok-str">&quot;!&lt;arch&gt;\n&quot;</span>;</span>
-<span class="line" id="L1980"><span class="tok-comment">/// String in ar_fmag at the end of each header.</span></span>
-<span class="line" id="L1981"><span class="tok-kw">pub</span> <span class="tok-kw">const</span> ARFMAG = <span class="tok-str">&quot;`\n&quot;</span>;</span>
-<span class="line" id="L1982"><span class="tok-comment">/// 32-bit symtab identifier</span></span>
-<span class="line" id="L1983"><span class="tok-kw">pub</span> <span class="tok-kw">const</span> SYMNAME = genSpecialMemberName(<span class="tok-str">&quot;/&quot;</span>);</span>
-<span class="line" id="L1984"><span class="tok-comment">/// Strtab identifier</span></span>
-<span class="line" id="L1985"><span class="tok-kw">pub</span> <span class="tok-kw">const</span> STRNAME = genSpecialMemberName(<span class="tok-str">&quot;//&quot;</span>);</span>
-<span class="line" id="L1986"><span class="tok-comment">/// 64-bit symtab identifier</span></span>
-<span class="line" id="L1987"><span class="tok-kw">pub</span> <span class="tok-kw">const</span> SYM64NAME = genSpecialMemberName(<span class="tok-str">&quot;/SYM64/&quot;</span>);</span>
-<span class="line" id="L1988"><span class="tok-kw">pub</span> <span class="tok-kw">const</span> SYMDEFNAME = genSpecialMemberName(<span class="tok-str">&quot;__.SYMDEF&quot;</span>);</span>
-<span class="line" id="L1989"><span class="tok-kw">pub</span> <span class="tok-kw">const</span> SYMDEFSORTEDNAME = genSpecialMemberName(<span class="tok-str">&quot;__.SYMDEF SORTED&quot;</span>);</span>
-<span class="line" id="L1990"></span>
+<span class="line" id="L2317"><span class="tok-comment">/// String that begins an archive file.</span></span>
+<span class="line" id="L2318"><span class="tok-kw">pub</span> <span class="tok-kw">const</span> ARMAG = <span class="tok-str">&quot;!&lt;arch&gt;\n&quot;</span>;</span>
+<span class="line" id="L2319"><span class="tok-comment">/// String in ar_fmag at the end of each header.</span></span>
+<span class="line" id="L2320"><span class="tok-kw">pub</span> <span class="tok-kw">const</span> ARFMAG = <span class="tok-str">&quot;`\n&quot;</span>;</span>
+<span class="line" id="L2321"><span class="tok-comment">/// 32-bit symtab identifier</span></span>
+<span class="line" id="L2322"><span class="tok-kw">pub</span> <span class="tok-kw">const</span> SYMNAME = genSpecialMemberName(<span class="tok-str">&quot;/&quot;</span>);</span>
+<span class="line" id="L2323"><span class="tok-comment">/// Strtab identifier</span></span>
+<span class="line" id="L2324"><span class="tok-kw">pub</span> <span class="tok-kw">const</span> STRNAME = genSpecialMemberName(<span class="tok-str">&quot;//&quot;</span>);</span>
+<span class="line" id="L2325"><span class="tok-comment">/// 64-bit symtab identifier</span></span>
+<span class="line" id="L2326"><span class="tok-kw">pub</span> <span class="tok-kw">const</span> SYM64NAME = genSpecialMemberName(<span class="tok-str">&quot;/SYM64/&quot;</span>);</span>
+<span class="line" id="L2327"><span class="tok-kw">pub</span> <span class="tok-kw">const</span> SYMDEFNAME = genSpecialMemberName(<span class="tok-str">&quot;__.SYMDEF&quot;</span>);</span>
+<span class="line" id="L2328"><span class="tok-kw">pub</span> <span class="tok-kw">const</span> SYMDEFSORTEDNAME = genSpecialMemberName(<span class="tok-str">&quot;__.SYMDEF SORTED&quot;</span>);</span>
+<span class="line" id="L2329"></span>
 </code></pre></body>
 </html>

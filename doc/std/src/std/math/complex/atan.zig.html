@@ -130,8 +130,8 @@
 <span class="line" id="L11"><span class="tok-kw">const</span> Complex = cmath.Complex;</span>
 <span class="line" id="L12"></span>
 <span class="line" id="L13"><span class="tok-comment">/// Returns the arc-tangent of z.</span></span>
-<span class="line" id="L14"><span class="tok-kw">pub</span> <span class="tok-kw">fn</span> <span class="tok-fn">atan</span>(z: <span class="tok-kw">anytype</span>) <span class="tok-builtin">@TypeOf</span>(z) {</span>
-<span class="line" id="L15">    <span class="tok-kw">const</span> T = <span class="tok-builtin">@TypeOf</span>(z.re);</span>
+<span class="line" id="L14"><span class="tok-kw">pub</span> <span class="tok-kw">fn</span> <span class="tok-fn">atan</span>(z: <span class="tok-kw">anytype</span>) Complex(<span class="tok-builtin">@TypeOf</span>(z.re, z.im)) {</span>
+<span class="line" id="L15">    <span class="tok-kw">const</span> T = <span class="tok-builtin">@TypeOf</span>(z.re, z.im);</span>
 <span class="line" id="L16">    <span class="tok-kw">return</span> <span class="tok-kw">switch</span> (T) {</span>
 <span class="line" id="L17">        <span class="tok-type">f32</span> =&gt; atan32(z),</span>
 <span class="line" id="L18">        <span class="tok-type">f64</span> =&gt; atan64(z),</span>
@@ -175,7 +175,7 @@
 <span class="line" id="L54">        <span class="tok-kw">return</span> Complex(<span class="tok-type">f32</span>).init(maxnum, maxnum);</span>
 <span class="line" id="L55">    }</span>
 <span class="line" id="L56"></span>
-<span class="line" id="L57">    <span class="tok-kw">var</span> t = <span class="tok-number">0.5</span> * math.atan2(<span class="tok-type">f32</span>, <span class="tok-number">2.0</span> * x, a);</span>
+<span class="line" id="L57">    <span class="tok-kw">var</span> t = <span class="tok-number">0.5</span> * math.atan2(<span class="tok-number">2.0</span> * x, a);</span>
 <span class="line" id="L58">    <span class="tok-kw">const</span> w = redupif32(t);</span>
 <span class="line" id="L59"></span>
 <span class="line" id="L60">    t = y - <span class="tok-number">1.0</span>;</span>
@@ -227,7 +227,7 @@
 <span class="line" id="L103">        <span class="tok-kw">return</span> Complex(<span class="tok-type">f64</span>).init(maxnum, maxnum);</span>
 <span class="line" id="L104">    }</span>
 <span class="line" id="L105"></span>
-<span class="line" id="L106">    <span class="tok-kw">var</span> t = <span class="tok-number">0.5</span> * math.atan2(<span class="tok-type">f64</span>, <span class="tok-number">2.0</span> * x, a);</span>
+<span class="line" id="L106">    <span class="tok-kw">var</span> t = <span class="tok-number">0.5</span> * math.atan2(<span class="tok-number">2.0</span> * x, a);</span>
 <span class="line" id="L107">    <span class="tok-kw">const</span> w = redupif64(t);</span>
 <span class="line" id="L108"></span>
 <span class="line" id="L109">    t = y - <span class="tok-number">1.0</span>;</span>
@@ -245,7 +245,7 @@
 <span class="line" id="L120"></span>
 <span class="line" id="L121"><span class="tok-kw">const</span> epsilon = <span class="tok-number">0.0001</span>;</span>
 <span class="line" id="L122"></span>
-<span class="line" id="L123"><span class="tok-kw">test</span> <span class="tok-str">&quot;complex.catan32&quot;</span> {</span>
+<span class="line" id="L123"><span class="tok-kw">test</span> atan32 {</span>
 <span class="line" id="L124">    <span class="tok-kw">const</span> a = Complex(<span class="tok-type">f32</span>).init(<span class="tok-number">5</span>, <span class="tok-number">3</span>);</span>
 <span class="line" id="L125">    <span class="tok-kw">const</span> c = atan(a);</span>
 <span class="line" id="L126"></span>
@@ -253,7 +253,7 @@
 <span class="line" id="L128">    <span class="tok-kw">try</span> testing.expect(math.approxEqAbs(<span class="tok-type">f32</span>, c.im, <span class="tok-number">0.086569</span>, epsilon));</span>
 <span class="line" id="L129">}</span>
 <span class="line" id="L130"></span>
-<span class="line" id="L131"><span class="tok-kw">test</span> <span class="tok-str">&quot;complex.catan64&quot;</span> {</span>
+<span class="line" id="L131"><span class="tok-kw">test</span> atan64 {</span>
 <span class="line" id="L132">    <span class="tok-kw">const</span> a = Complex(<span class="tok-type">f64</span>).init(<span class="tok-number">5</span>, <span class="tok-number">3</span>);</span>
 <span class="line" id="L133">    <span class="tok-kw">const</span> c = atan(a);</span>
 <span class="line" id="L134"></span>

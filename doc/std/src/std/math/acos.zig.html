@@ -278,12 +278,12 @@
 <span class="line" id="L148">    <span class="tok-kw">return</span> <span class="tok-number">2</span> * (df + w);</span>
 <span class="line" id="L149">}</span>
 <span class="line" id="L150"></span>
-<span class="line" id="L151"><span class="tok-kw">test</span> <span class="tok-str">&quot;math.acos&quot;</span> {</span>
+<span class="line" id="L151"><span class="tok-kw">test</span> acos {</span>
 <span class="line" id="L152">    <span class="tok-kw">try</span> expect(acos(<span class="tok-builtin">@as</span>(<span class="tok-type">f32</span>, <span class="tok-number">0.0</span>)) == acos32(<span class="tok-number">0.0</span>));</span>
 <span class="line" id="L153">    <span class="tok-kw">try</span> expect(acos(<span class="tok-builtin">@as</span>(<span class="tok-type">f64</span>, <span class="tok-number">0.0</span>)) == acos64(<span class="tok-number">0.0</span>));</span>
 <span class="line" id="L154">}</span>
 <span class="line" id="L155"></span>
-<span class="line" id="L156"><span class="tok-kw">test</span> <span class="tok-str">&quot;math.acos32&quot;</span> {</span>
+<span class="line" id="L156"><span class="tok-kw">test</span> acos32 {</span>
 <span class="line" id="L157">    <span class="tok-kw">const</span> epsilon = <span class="tok-number">0.000001</span>;</span>
 <span class="line" id="L158"></span>
 <span class="line" id="L159">    <span class="tok-kw">try</span> expect(math.approxEqAbs(<span class="tok-type">f32</span>, acos32(<span class="tok-number">0.0</span>), <span class="tok-number">1.570796</span>, epsilon));</span>
@@ -294,7 +294,7 @@
 <span class="line" id="L164">    <span class="tok-kw">try</span> expect(math.approxEqAbs(<span class="tok-type">f32</span>, acos32(-<span class="tok-number">0.2</span>), <span class="tok-number">1.772154</span>, epsilon));</span>
 <span class="line" id="L165">}</span>
 <span class="line" id="L166"></span>
-<span class="line" id="L167"><span class="tok-kw">test</span> <span class="tok-str">&quot;math.acos64&quot;</span> {</span>
+<span class="line" id="L167"><span class="tok-kw">test</span> acos64 {</span>
 <span class="line" id="L168">    <span class="tok-kw">const</span> epsilon = <span class="tok-number">0.000001</span>;</span>
 <span class="line" id="L169"></span>
 <span class="line" id="L170">    <span class="tok-kw">try</span> expect(math.approxEqAbs(<span class="tok-type">f64</span>, acos64(<span class="tok-number">0.0</span>), <span class="tok-number">1.570796</span>, epsilon));</span>
@@ -305,12 +305,12 @@
 <span class="line" id="L175">    <span class="tok-kw">try</span> expect(math.approxEqAbs(<span class="tok-type">f64</span>, acos64(-<span class="tok-number">0.2</span>), <span class="tok-number">1.772154</span>, epsilon));</span>
 <span class="line" id="L176">}</span>
 <span class="line" id="L177"></span>
-<span class="line" id="L178"><span class="tok-kw">test</span> <span class="tok-str">&quot;math.acos32.special&quot;</span> {</span>
+<span class="line" id="L178"><span class="tok-kw">test</span> <span class="tok-str">&quot;acos32.special&quot;</span> {</span>
 <span class="line" id="L179">    <span class="tok-kw">try</span> expect(math.isNan(acos32(-<span class="tok-number">2</span>)));</span>
 <span class="line" id="L180">    <span class="tok-kw">try</span> expect(math.isNan(acos32(<span class="tok-number">1.5</span>)));</span>
 <span class="line" id="L181">}</span>
 <span class="line" id="L182"></span>
-<span class="line" id="L183"><span class="tok-kw">test</span> <span class="tok-str">&quot;math.acos64.special&quot;</span> {</span>
+<span class="line" id="L183"><span class="tok-kw">test</span> <span class="tok-str">&quot;acos64.special&quot;</span> {</span>
 <span class="line" id="L184">    <span class="tok-kw">try</span> expect(math.isNan(acos64(-<span class="tok-number">2</span>)));</span>
 <span class="line" id="L185">    <span class="tok-kw">try</span> expect(math.isNan(acos64(<span class="tok-number">1.5</span>)));</span>
 <span class="line" id="L186">}</span>

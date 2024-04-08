@@ -1056,61 +1056,60 @@
 <span class="line" id="L907">    }</span>
 <span class="line" id="L908">};</span>
 <span class="line" id="L909"></span>
-<span class="line" id="L910"><span class="tok-kw">test</span> {</span>
+<span class="line" id="L910"><span class="tok-kw">test</span> <span class="tok-str">&quot;finite field arithmetic&quot;</span> {</span>
 <span class="line" id="L911">    <span class="tok-kw">if</span> (builtin.zig_backend == .stage2_c) <span class="tok-kw">return</span> <span class="tok-kw">error</span>.SkipZigTest;</span>
-<span class="line" id="L912">    <span class="tok-kw">if</span> (builtin.zig_backend == .stage2_x86_64) <span class="tok-kw">return</span> <span class="tok-kw">error</span>.SkipZigTest;</span>
-<span class="line" id="L913"></span>
-<span class="line" id="L914">    <span class="tok-kw">const</span> M = Modulus(<span class="tok-number">256</span>);</span>
-<span class="line" id="L915">    <span class="tok-kw">const</span> m = <span class="tok-kw">try</span> M.fromPrimitive(<span class="tok-type">u256</span>, <span class="tok-number">3429938563481314093726330772853735541133072814650493833233</span>);</span>
-<span class="line" id="L916">    <span class="tok-kw">var</span> x = <span class="tok-kw">try</span> M.Fe.fromPrimitive(<span class="tok-type">u256</span>, m, <span class="tok-number">80169837251094269539116136208111827396136208141182357733</span>);</span>
-<span class="line" id="L917">    <span class="tok-kw">var</span> y = <span class="tok-kw">try</span> M.Fe.fromPrimitive(<span class="tok-type">u256</span>, m, <span class="tok-number">24620149608466364616251608466389896540098571</span>);</span>
-<span class="line" id="L918"></span>
-<span class="line" id="L919">    <span class="tok-kw">const</span> x_ = <span class="tok-kw">try</span> x.toPrimitive(<span class="tok-type">u256</span>);</span>
-<span class="line" id="L920">    <span class="tok-kw">try</span> testing.expect((<span class="tok-kw">try</span> M.Fe.fromPrimitive(<span class="tok-builtin">@TypeOf</span>(x_), m, x_)).eql(x));</span>
-<span class="line" id="L921">    <span class="tok-kw">try</span> testing.expectError(<span class="tok-kw">error</span>.Overflow, x.toPrimitive(<span class="tok-type">u50</span>));</span>
-<span class="line" id="L922"></span>
-<span class="line" id="L923">    <span class="tok-kw">const</span> bits = m.bits();</span>
-<span class="line" id="L924">    <span class="tok-kw">try</span> testing.expectEqual(bits, <span class="tok-number">192</span>);</span>
-<span class="line" id="L925"></span>
-<span class="line" id="L926">    <span class="tok-kw">var</span> x_y = m.mul(x, y);</span>
-<span class="line" id="L927">    <span class="tok-kw">try</span> testing.expectEqual(x_y.toPrimitive(<span class="tok-type">u256</span>), <span class="tok-number">1666576607955767413750776202132407807424848069716933450241</span>);</span>
-<span class="line" id="L928"></span>
-<span class="line" id="L929">    <span class="tok-kw">try</span> m.toMontgomery(&amp;x);</span>
-<span class="line" id="L930">    x_y = m.mul(x, y);</span>
-<span class="line" id="L931">    <span class="tok-kw">try</span> testing.expectEqual(x_y.toPrimitive(<span class="tok-type">u256</span>), <span class="tok-number">1666576607955767413750776202132407807424848069716933450241</span>);</span>
-<span class="line" id="L932">    <span class="tok-kw">try</span> m.fromMontgomery(&amp;x);</span>
-<span class="line" id="L933"></span>
-<span class="line" id="L934">    x = m.add(x, y);</span>
-<span class="line" id="L935">    <span class="tok-kw">try</span> testing.expectEqual(x.toPrimitive(<span class="tok-type">u256</span>), <span class="tok-number">80169837251118889688724602572728079004602598037722456304</span>);</span>
-<span class="line" id="L936">    x = m.sub(x, y);</span>
-<span class="line" id="L937">    <span class="tok-kw">try</span> testing.expectEqual(x.toPrimitive(<span class="tok-type">u256</span>), <span class="tok-number">80169837251094269539116136208111827396136208141182357733</span>);</span>
-<span class="line" id="L938"></span>
-<span class="line" id="L939">    <span class="tok-kw">const</span> big = <span class="tok-kw">try</span> Uint(<span class="tok-number">512</span>).fromPrimitive(<span class="tok-type">u495</span>, <span class="tok-number">77285373554113307281465049383342993856348131409372633077285373554113307281465049383323332333429938563481314093726330772853735541133072814650493833233</span>);</span>
-<span class="line" id="L940">    <span class="tok-kw">const</span> reduced = m.reduce(big);</span>
-<span class="line" id="L941">    <span class="tok-kw">try</span> testing.expectEqual(reduced.toPrimitive(<span class="tok-type">u495</span>), <span class="tok-number">858047099884257670294681641776170038885500210968322054970</span>);</span>
-<span class="line" id="L942"></span>
-<span class="line" id="L943">    <span class="tok-kw">const</span> x_pow_y = <span class="tok-kw">try</span> m.powPublic(x, y);</span>
-<span class="line" id="L944">    <span class="tok-kw">try</span> testing.expectEqual(x_pow_y.toPrimitive(<span class="tok-type">u256</span>), <span class="tok-number">1631933139300737762906024873185789093007782131928298618473</span>);</span>
-<span class="line" id="L945">    <span class="tok-kw">try</span> m.toMontgomery(&amp;x);</span>
-<span class="line" id="L946">    <span class="tok-kw">const</span> x_pow_y2 = <span class="tok-kw">try</span> m.powPublic(x, y);</span>
-<span class="line" id="L947">    <span class="tok-kw">try</span> m.fromMontgomery(&amp;x);</span>
-<span class="line" id="L948">    <span class="tok-kw">try</span> testing.expect(x_pow_y2.eql(x_pow_y));</span>
-<span class="line" id="L949">    <span class="tok-kw">try</span> testing.expectError(<span class="tok-kw">error</span>.NullExponent, m.powPublic(x, m.zero));</span>
-<span class="line" id="L950"></span>
-<span class="line" id="L951">    <span class="tok-kw">try</span> testing.expect(!x.isZero());</span>
-<span class="line" id="L952">    <span class="tok-kw">try</span> testing.expect(!y.isZero());</span>
-<span class="line" id="L953">    <span class="tok-kw">try</span> testing.expect(m.v.isOdd());</span>
-<span class="line" id="L954"></span>
-<span class="line" id="L955">    <span class="tok-kw">const</span> x_sq = m.sq(x);</span>
-<span class="line" id="L956">    <span class="tok-kw">const</span> x_sq2 = m.mul(x, x);</span>
-<span class="line" id="L957">    <span class="tok-kw">try</span> testing.expect(x_sq.eql(x_sq2));</span>
-<span class="line" id="L958">    <span class="tok-kw">try</span> m.toMontgomery(&amp;x);</span>
-<span class="line" id="L959">    <span class="tok-kw">const</span> x_sq3 = m.sq(x);</span>
-<span class="line" id="L960">    <span class="tok-kw">const</span> x_sq4 = m.mul(x, x);</span>
-<span class="line" id="L961">    <span class="tok-kw">try</span> testing.expect(x_sq.eql(x_sq3));</span>
-<span class="line" id="L962">    <span class="tok-kw">try</span> testing.expect(x_sq3.eql(x_sq4));</span>
-<span class="line" id="L963">    <span class="tok-kw">try</span> m.fromMontgomery(&amp;x);</span>
-<span class="line" id="L964">}</span>
-<span class="line" id="L965"></span>
+<span class="line" id="L912"></span>
+<span class="line" id="L913">    <span class="tok-kw">const</span> M = Modulus(<span class="tok-number">256</span>);</span>
+<span class="line" id="L914">    <span class="tok-kw">const</span> m = <span class="tok-kw">try</span> M.fromPrimitive(<span class="tok-type">u256</span>, <span class="tok-number">3429938563481314093726330772853735541133072814650493833233</span>);</span>
+<span class="line" id="L915">    <span class="tok-kw">var</span> x = <span class="tok-kw">try</span> M.Fe.fromPrimitive(<span class="tok-type">u256</span>, m, <span class="tok-number">80169837251094269539116136208111827396136208141182357733</span>);</span>
+<span class="line" id="L916">    <span class="tok-kw">var</span> y = <span class="tok-kw">try</span> M.Fe.fromPrimitive(<span class="tok-type">u256</span>, m, <span class="tok-number">24620149608466364616251608466389896540098571</span>);</span>
+<span class="line" id="L917"></span>
+<span class="line" id="L918">    <span class="tok-kw">const</span> x_ = <span class="tok-kw">try</span> x.toPrimitive(<span class="tok-type">u256</span>);</span>
+<span class="line" id="L919">    <span class="tok-kw">try</span> testing.expect((<span class="tok-kw">try</span> M.Fe.fromPrimitive(<span class="tok-builtin">@TypeOf</span>(x_), m, x_)).eql(x));</span>
+<span class="line" id="L920">    <span class="tok-kw">try</span> testing.expectError(<span class="tok-kw">error</span>.Overflow, x.toPrimitive(<span class="tok-type">u50</span>));</span>
+<span class="line" id="L921"></span>
+<span class="line" id="L922">    <span class="tok-kw">const</span> bits = m.bits();</span>
+<span class="line" id="L923">    <span class="tok-kw">try</span> testing.expectEqual(bits, <span class="tok-number">192</span>);</span>
+<span class="line" id="L924"></span>
+<span class="line" id="L925">    <span class="tok-kw">var</span> x_y = m.mul(x, y);</span>
+<span class="line" id="L926">    <span class="tok-kw">try</span> testing.expectEqual(x_y.toPrimitive(<span class="tok-type">u256</span>), <span class="tok-number">1666576607955767413750776202132407807424848069716933450241</span>);</span>
+<span class="line" id="L927"></span>
+<span class="line" id="L928">    <span class="tok-kw">try</span> m.toMontgomery(&amp;x);</span>
+<span class="line" id="L929">    x_y = m.mul(x, y);</span>
+<span class="line" id="L930">    <span class="tok-kw">try</span> testing.expectEqual(x_y.toPrimitive(<span class="tok-type">u256</span>), <span class="tok-number">1666576607955767413750776202132407807424848069716933450241</span>);</span>
+<span class="line" id="L931">    <span class="tok-kw">try</span> m.fromMontgomery(&amp;x);</span>
+<span class="line" id="L932"></span>
+<span class="line" id="L933">    x = m.add(x, y);</span>
+<span class="line" id="L934">    <span class="tok-kw">try</span> testing.expectEqual(x.toPrimitive(<span class="tok-type">u256</span>), <span class="tok-number">80169837251118889688724602572728079004602598037722456304</span>);</span>
+<span class="line" id="L935">    x = m.sub(x, y);</span>
+<span class="line" id="L936">    <span class="tok-kw">try</span> testing.expectEqual(x.toPrimitive(<span class="tok-type">u256</span>), <span class="tok-number">80169837251094269539116136208111827396136208141182357733</span>);</span>
+<span class="line" id="L937"></span>
+<span class="line" id="L938">    <span class="tok-kw">const</span> big = <span class="tok-kw">try</span> Uint(<span class="tok-number">512</span>).fromPrimitive(<span class="tok-type">u495</span>, <span class="tok-number">77285373554113307281465049383342993856348131409372633077285373554113307281465049383323332333429938563481314093726330772853735541133072814650493833233</span>);</span>
+<span class="line" id="L939">    <span class="tok-kw">const</span> reduced = m.reduce(big);</span>
+<span class="line" id="L940">    <span class="tok-kw">try</span> testing.expectEqual(reduced.toPrimitive(<span class="tok-type">u495</span>), <span class="tok-number">858047099884257670294681641776170038885500210968322054970</span>);</span>
+<span class="line" id="L941"></span>
+<span class="line" id="L942">    <span class="tok-kw">const</span> x_pow_y = <span class="tok-kw">try</span> m.powPublic(x, y);</span>
+<span class="line" id="L943">    <span class="tok-kw">try</span> testing.expectEqual(x_pow_y.toPrimitive(<span class="tok-type">u256</span>), <span class="tok-number">1631933139300737762906024873185789093007782131928298618473</span>);</span>
+<span class="line" id="L944">    <span class="tok-kw">try</span> m.toMontgomery(&amp;x);</span>
+<span class="line" id="L945">    <span class="tok-kw">const</span> x_pow_y2 = <span class="tok-kw">try</span> m.powPublic(x, y);</span>
+<span class="line" id="L946">    <span class="tok-kw">try</span> m.fromMontgomery(&amp;x);</span>
+<span class="line" id="L947">    <span class="tok-kw">try</span> testing.expect(x_pow_y2.eql(x_pow_y));</span>
+<span class="line" id="L948">    <span class="tok-kw">try</span> testing.expectError(<span class="tok-kw">error</span>.NullExponent, m.powPublic(x, m.zero));</span>
+<span class="line" id="L949"></span>
+<span class="line" id="L950">    <span class="tok-kw">try</span> testing.expect(!x.isZero());</span>
+<span class="line" id="L951">    <span class="tok-kw">try</span> testing.expect(!y.isZero());</span>
+<span class="line" id="L952">    <span class="tok-kw">try</span> testing.expect(m.v.isOdd());</span>
+<span class="line" id="L953"></span>
+<span class="line" id="L954">    <span class="tok-kw">const</span> x_sq = m.sq(x);</span>
+<span class="line" id="L955">    <span class="tok-kw">const</span> x_sq2 = m.mul(x, x);</span>
+<span class="line" id="L956">    <span class="tok-kw">try</span> testing.expect(x_sq.eql(x_sq2));</span>
+<span class="line" id="L957">    <span class="tok-kw">try</span> m.toMontgomery(&amp;x);</span>
+<span class="line" id="L958">    <span class="tok-kw">const</span> x_sq3 = m.sq(x);</span>
+<span class="line" id="L959">    <span class="tok-kw">const</span> x_sq4 = m.mul(x, x);</span>
+<span class="line" id="L960">    <span class="tok-kw">try</span> testing.expect(x_sq.eql(x_sq3));</span>
+<span class="line" id="L961">    <span class="tok-kw">try</span> testing.expect(x_sq3.eql(x_sq4));</span>
+<span class="line" id="L962">    <span class="tok-kw">try</span> m.fromMontgomery(&amp;x);</span>
+<span class="line" id="L963">}</span>
+<span class="line" id="L964"></span>
 </code></pre></body>
 </html>

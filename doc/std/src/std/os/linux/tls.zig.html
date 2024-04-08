@@ -522,7 +522,7 @@
 <span class="line" id="L324">            <span class="tok-null">null</span>,</span>
 <span class="line" id="L325">            tls_image.alloc_size + tls_image.alloc_align - <span class="tok-number">1</span>,</span>
 <span class="line" id="L326">            os.PROT.READ | os.PROT.WRITE,</span>
-<span class="line" id="L327">            os.MAP.PRIVATE | os.MAP.ANONYMOUS,</span>
+<span class="line" id="L327">            .{ .TYPE = .PRIVATE, .ANONYMOUS = <span class="tok-null">true</span> },</span>
 <span class="line" id="L328">            -<span class="tok-number">1</span>,</span>
 <span class="line" id="L329">            <span class="tok-number">0</span>,</span>
 <span class="line" id="L330">        ) <span class="tok-kw">catch</span> os.abort();</span>

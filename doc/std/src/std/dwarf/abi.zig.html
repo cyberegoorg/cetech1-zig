@@ -500,37 +500,45 @@
 <span class="line" id="L369"></span>
 <span class="line" id="L370">                <span class="tok-kw">else</span> =&gt; <span class="tok-kw">error</span>.InvalidRegister,</span>
 <span class="line" id="L371">            },</span>
-<span class="line" id="L372">            <span class="tok-kw">else</span> =&gt; <span class="tok-kw">switch</span> (reg_number) {</span>
-<span class="line" id="L373">                <span class="tok-number">0</span>...<span class="tok-number">30</span> =&gt; mem.asBytes(&amp;ucontext_ptr.mcontext.regs[reg_number]),</span>
-<span class="line" id="L374">                <span class="tok-number">31</span> =&gt; mem.asBytes(&amp;ucontext_ptr.mcontext.sp),</span>
-<span class="line" id="L375">                <span class="tok-number">32</span> =&gt; mem.asBytes(&amp;ucontext_ptr.mcontext.pc),</span>
-<span class="line" id="L376">                <span class="tok-kw">else</span> =&gt; <span class="tok-kw">error</span>.InvalidRegister,</span>
-<span class="line" id="L377">            },</span>
-<span class="line" id="L378">        },</span>
-<span class="line" id="L379">        <span class="tok-kw">else</span> =&gt; <span class="tok-kw">error</span>.UnimplementedArch,</span>
-<span class="line" id="L380">    };</span>
-<span class="line" id="L381">}</span>
-<span class="line" id="L382"></span>
-<span class="line" id="L383"><span class="tok-comment">/// Returns the ABI-defined default value this register has in the unwinding table</span></span>
-<span class="line" id="L384"><span class="tok-comment">/// before running any of the CIE instructions. The DWARF spec defines these as having</span></span>
-<span class="line" id="L385"><span class="tok-comment">/// the .undefined rule by default, but allows ABI authors to override that.</span></span>
-<span class="line" id="L386"><span class="tok-kw">pub</span> <span class="tok-kw">fn</span> <span class="tok-fn">getRegDefaultValue</span>(reg_number: <span class="tok-type">u8</span>, context: *std.dwarf.UnwindContext, out: []<span class="tok-type">u8</span>) !<span class="tok-type">void</span> {</span>
-<span class="line" id="L387">    <span class="tok-kw">switch</span> (builtin.cpu.arch) {</span>
-<span class="line" id="L388">        .aarch64 =&gt; {</span>
-<span class="line" id="L389">            <span class="tok-comment">// Callee-saved registers are initialized as if they had the .same_value rule</span>
+<span class="line" id="L372">            .openbsd =&gt; <span class="tok-kw">switch</span> (reg_number) {</span>
+<span class="line" id="L373">                <span class="tok-number">0</span>...<span class="tok-number">30</span> =&gt; mem.asBytes(&amp;ucontext_ptr.sc_x[reg_number]),</span>
+<span class="line" id="L374">                <span class="tok-number">31</span> =&gt; mem.asBytes(&amp;ucontext_ptr.sc_sp),</span>
+<span class="line" id="L375">                <span class="tok-number">32</span> =&gt; mem.asBytes(&amp;ucontext_ptr.sc_lr),</span>
+<span class="line" id="L376">                <span class="tok-number">33</span> =&gt; mem.asBytes(&amp;ucontext_ptr.sc_elr),</span>
+<span class="line" id="L377">                <span class="tok-number">34</span> =&gt; mem.asBytes(&amp;ucontext_ptr.sc_spsr),</span>
+<span class="line" id="L378">                <span class="tok-kw">else</span> =&gt; <span class="tok-kw">error</span>.InvalidRegister,</span>
+<span class="line" id="L379">            },</span>
+<span class="line" id="L380">            <span class="tok-kw">else</span> =&gt; <span class="tok-kw">switch</span> (reg_number) {</span>
+<span class="line" id="L381">                <span class="tok-number">0</span>...<span class="tok-number">30</span> =&gt; mem.asBytes(&amp;ucontext_ptr.mcontext.regs[reg_number]),</span>
+<span class="line" id="L382">                <span class="tok-number">31</span> =&gt; mem.asBytes(&amp;ucontext_ptr.mcontext.sp),</span>
+<span class="line" id="L383">                <span class="tok-number">32</span> =&gt; mem.asBytes(&amp;ucontext_ptr.mcontext.pc),</span>
+<span class="line" id="L384">                <span class="tok-kw">else</span> =&gt; <span class="tok-kw">error</span>.InvalidRegister,</span>
+<span class="line" id="L385">            },</span>
+<span class="line" id="L386">        },</span>
+<span class="line" id="L387">        <span class="tok-kw">else</span> =&gt; <span class="tok-kw">error</span>.UnimplementedArch,</span>
+<span class="line" id="L388">    };</span>
+<span class="line" id="L389">}</span>
+<span class="line" id="L390"></span>
+<span class="line" id="L391"><span class="tok-comment">/// Returns the ABI-defined default value this register has in the unwinding table</span></span>
+<span class="line" id="L392"><span class="tok-comment">/// before running any of the CIE instructions. The DWARF spec defines these as having</span></span>
+<span class="line" id="L393"><span class="tok-comment">/// the .undefined rule by default, but allows ABI authors to override that.</span></span>
+<span class="line" id="L394"><span class="tok-kw">pub</span> <span class="tok-kw">fn</span> <span class="tok-fn">getRegDefaultValue</span>(reg_number: <span class="tok-type">u8</span>, context: *std.dwarf.UnwindContext, out: []<span class="tok-type">u8</span>) !<span class="tok-type">void</span> {</span>
+<span class="line" id="L395">    <span class="tok-kw">switch</span> (builtin.cpu.arch) {</span>
+<span class="line" id="L396">        .aarch64 =&gt; {</span>
+<span class="line" id="L397">            <span class="tok-comment">// Callee-saved registers are initialized as if they had the .same_value rule</span>
 </span>
-<span class="line" id="L390">            <span class="tok-kw">if</span> (reg_number &gt;= <span class="tok-number">19</span> <span class="tok-kw">and</span> reg_number &lt;= <span class="tok-number">28</span>) {</span>
-<span class="line" id="L391">                <span class="tok-kw">const</span> src = <span class="tok-kw">try</span> regBytes(context.thread_context, reg_number, context.reg_context);</span>
-<span class="line" id="L392">                <span class="tok-kw">if</span> (src.len != out.len) <span class="tok-kw">return</span> <span class="tok-kw">error</span>.RegisterSizeMismatch;</span>
-<span class="line" id="L393">                <span class="tok-builtin">@memcpy</span>(out, src);</span>
-<span class="line" id="L394">                <span class="tok-kw">return</span>;</span>
-<span class="line" id="L395">            }</span>
-<span class="line" id="L396">        },</span>
-<span class="line" id="L397">        <span class="tok-kw">else</span> =&gt; {},</span>
-<span class="line" id="L398">    }</span>
-<span class="line" id="L399"></span>
-<span class="line" id="L400">    <span class="tok-builtin">@memset</span>(out, <span class="tok-null">undefined</span>);</span>
-<span class="line" id="L401">}</span>
-<span class="line" id="L402"></span>
+<span class="line" id="L398">            <span class="tok-kw">if</span> (reg_number &gt;= <span class="tok-number">19</span> <span class="tok-kw">and</span> reg_number &lt;= <span class="tok-number">28</span>) {</span>
+<span class="line" id="L399">                <span class="tok-kw">const</span> src = <span class="tok-kw">try</span> regBytes(context.thread_context, reg_number, context.reg_context);</span>
+<span class="line" id="L400">                <span class="tok-kw">if</span> (src.len != out.len) <span class="tok-kw">return</span> <span class="tok-kw">error</span>.RegisterSizeMismatch;</span>
+<span class="line" id="L401">                <span class="tok-builtin">@memcpy</span>(out, src);</span>
+<span class="line" id="L402">                <span class="tok-kw">return</span>;</span>
+<span class="line" id="L403">            }</span>
+<span class="line" id="L404">        },</span>
+<span class="line" id="L405">        <span class="tok-kw">else</span> =&gt; {},</span>
+<span class="line" id="L406">    }</span>
+<span class="line" id="L407"></span>
+<span class="line" id="L408">    <span class="tok-builtin">@memset</span>(out, <span class="tok-null">undefined</span>);</span>
+<span class="line" id="L409">}</span>
+<span class="line" id="L410"></span>
 </code></pre></body>
 </html>

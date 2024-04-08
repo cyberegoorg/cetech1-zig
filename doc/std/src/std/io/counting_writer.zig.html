@@ -143,7 +143,7 @@
 <span class="line" id="L29">    <span class="tok-kw">return</span> .{ .bytes_written = <span class="tok-number">0</span>, .child_stream = child_stream };</span>
 <span class="line" id="L30">}</span>
 <span class="line" id="L31"></span>
-<span class="line" id="L32"><span class="tok-kw">test</span> <span class="tok-str">&quot;io.CountingWriter&quot;</span> {</span>
+<span class="line" id="L32"><span class="tok-kw">test</span> CountingWriter {</span>
 <span class="line" id="L33">    <span class="tok-kw">var</span> counting_stream = countingWriter(std.io.null_writer);</span>
 <span class="line" id="L34">    <span class="tok-kw">const</span> stream = counting_stream.writer();</span>
 <span class="line" id="L35"></span>

@@ -138,7 +138,7 @@
 <span class="line" id="L19">    <span class="tok-kw">return</span> value &amp; remove_sign &gt;= (increment_exp &lt;&lt; <span class="tok-number">1</span>);</span>
 <span class="line" id="L20">}</span>
 <span class="line" id="L21"></span>
-<span class="line" id="L22"><span class="tok-kw">test</span> <span class="tok-str">&quot;math.isNormal&quot;</span> {</span>
+<span class="line" id="L22"><span class="tok-kw">test</span> isNormal {</span>
 <span class="line" id="L23">    <span class="tok-comment">// TODO add `c_longdouble' when math.inf(T) supports it</span>
 </span>
 <span class="line" id="L24">    <span class="tok-kw">inline</span> <span class="tok-kw">for</span> ([_]<span class="tok-type">type</span>{ <span class="tok-type">f16</span>, <span class="tok-type">f32</span>, <span class="tok-type">f64</span>, <span class="tok-type">f80</span>, <span class="tok-type">f128</span> }) |T| {</span>

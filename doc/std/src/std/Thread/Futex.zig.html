@@ -1170,7 +1170,7 @@
 <span class="line" id="L881">    }</span>
 <span class="line" id="L882">};</span>
 <span class="line" id="L883"></span>
-<span class="line" id="L884"><span class="tok-kw">test</span> <span class="tok-str">&quot;Futex - smoke test&quot;</span> {</span>
+<span class="line" id="L884"><span class="tok-kw">test</span> <span class="tok-str">&quot;smoke test&quot;</span> {</span>
 <span class="line" id="L885">    <span class="tok-kw">var</span> value = atomic.Value(<span class="tok-type">u32</span>).init(<span class="tok-number">0</span>);</span>
 <span class="line" id="L886"></span>
 <span class="line" id="L887">    <span class="tok-comment">// Try waits with invalid values.</span>
@@ -1190,7 +1190,7 @@
 <span class="line" id="L898">    Futex.wake(&amp;value, std.math.maxInt(<span class="tok-type">u32</span>));</span>
 <span class="line" id="L899">}</span>
 <span class="line" id="L900"></span>
-<span class="line" id="L901"><span class="tok-kw">test</span> <span class="tok-str">&quot;Futex - signaling&quot;</span> {</span>
+<span class="line" id="L901"><span class="tok-kw">test</span> <span class="tok-str">&quot;signaling&quot;</span> {</span>
 <span class="line" id="L902">    <span class="tok-comment">// This test requires spawning threads</span>
 </span>
 <span class="line" id="L903">    <span class="tok-kw">if</span> (builtin.single_threaded) {</span>
@@ -1250,7 +1250,7 @@
 <span class="line" id="L952">    <span class="tok-kw">for</span> (paddles) |p| <span class="tok-kw">try</span> testing.expectEqual(p.current, num_iterations);</span>
 <span class="line" id="L953">}</span>
 <span class="line" id="L954"></span>
-<span class="line" id="L955"><span class="tok-kw">test</span> <span class="tok-str">&quot;Futex - broadcasting&quot;</span> {</span>
+<span class="line" id="L955"><span class="tok-kw">test</span> <span class="tok-str">&quot;broadcasting&quot;</span> {</span>
 <span class="line" id="L956">    <span class="tok-comment">// This test requires spawning threads</span>
 </span>
 <span class="line" id="L957">    <span class="tok-kw">if</span> (builtin.single_threaded) {</span>
@@ -1367,7 +1367,7 @@
 <span class="line" id="L1054">    }</span>
 <span class="line" id="L1055">};</span>
 <span class="line" id="L1056"></span>
-<span class="line" id="L1057"><span class="tok-kw">test</span> <span class="tok-str">&quot;Futex - Deadline&quot;</span> {</span>
+<span class="line" id="L1057"><span class="tok-kw">test</span> <span class="tok-str">&quot;Deadline&quot;</span> {</span>
 <span class="line" id="L1058">    <span class="tok-kw">var</span> deadline = Deadline.init(<span class="tok-number">100</span> * std.time.ns_per_ms);</span>
 <span class="line" id="L1059">    <span class="tok-kw">var</span> futex_word = atomic.Value(<span class="tok-type">u32</span>).init(<span class="tok-number">0</span>);</span>
 <span class="line" id="L1060"></span>

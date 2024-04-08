@@ -119,8 +119,8 @@
 <span class="line" id="L5"><span class="tok-kw">const</span> Complex = cmath.Complex;</span>
 <span class="line" id="L6"></span>
 <span class="line" id="L7"><span class="tok-comment">/// Returns the natural logarithm of z.</span></span>
-<span class="line" id="L8"><span class="tok-kw">pub</span> <span class="tok-kw">fn</span> <span class="tok-fn">log</span>(z: <span class="tok-kw">anytype</span>) Complex(<span class="tok-builtin">@TypeOf</span>(z.re)) {</span>
-<span class="line" id="L9">    <span class="tok-kw">const</span> T = <span class="tok-builtin">@TypeOf</span>(z.re);</span>
+<span class="line" id="L8"><span class="tok-kw">pub</span> <span class="tok-kw">fn</span> <span class="tok-fn">log</span>(z: <span class="tok-kw">anytype</span>) Complex(<span class="tok-builtin">@TypeOf</span>(z.re, z.im)) {</span>
+<span class="line" id="L9">    <span class="tok-kw">const</span> T = <span class="tok-builtin">@TypeOf</span>(z.re, z.im);</span>
 <span class="line" id="L10">    <span class="tok-kw">const</span> r = cmath.abs(z);</span>
 <span class="line" id="L11">    <span class="tok-kw">const</span> phi = cmath.arg(z);</span>
 <span class="line" id="L12"></span>
@@ -129,7 +129,7 @@
 <span class="line" id="L15"></span>
 <span class="line" id="L16"><span class="tok-kw">const</span> epsilon = <span class="tok-number">0.0001</span>;</span>
 <span class="line" id="L17"></span>
-<span class="line" id="L18"><span class="tok-kw">test</span> <span class="tok-str">&quot;complex.clog&quot;</span> {</span>
+<span class="line" id="L18"><span class="tok-kw">test</span> log {</span>
 <span class="line" id="L19">    <span class="tok-kw">const</span> a = Complex(<span class="tok-type">f32</span>).init(<span class="tok-number">5</span>, <span class="tok-number">3</span>);</span>
 <span class="line" id="L20">    <span class="tok-kw">const</span> c = log(a);</span>
 <span class="line" id="L21"></span>

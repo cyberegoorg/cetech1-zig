@@ -141,7 +141,7 @@
 <span class="line" id="L27">    <span class="tok-kw">return</span> .{ .child_reader = reader };</span>
 <span class="line" id="L28">}</span>
 <span class="line" id="L29"></span>
-<span class="line" id="L30"><span class="tok-kw">test</span> <span class="tok-str">&quot;io.CountingReader&quot;</span> {</span>
+<span class="line" id="L30"><span class="tok-kw">test</span> CountingReader {</span>
 <span class="line" id="L31">    <span class="tok-kw">const</span> bytes = <span class="tok-str">&quot;yay&quot;</span> ** <span class="tok-number">100</span>;</span>
 <span class="line" id="L32">    <span class="tok-kw">var</span> fbs = io.fixedBufferStream(bytes);</span>
 <span class="line" id="L33"></span>

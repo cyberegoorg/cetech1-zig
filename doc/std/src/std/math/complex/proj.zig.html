@@ -119,8 +119,8 @@
 <span class="line" id="L5"><span class="tok-kw">const</span> Complex = cmath.Complex;</span>
 <span class="line" id="L6"></span>
 <span class="line" id="L7"><span class="tok-comment">/// Returns the projection of z onto the riemann sphere.</span></span>
-<span class="line" id="L8"><span class="tok-kw">pub</span> <span class="tok-kw">fn</span> <span class="tok-fn">proj</span>(z: <span class="tok-kw">anytype</span>) Complex(<span class="tok-builtin">@TypeOf</span>(z.re)) {</span>
-<span class="line" id="L9">    <span class="tok-kw">const</span> T = <span class="tok-builtin">@TypeOf</span>(z.re);</span>
+<span class="line" id="L8"><span class="tok-kw">pub</span> <span class="tok-kw">fn</span> <span class="tok-fn">proj</span>(z: <span class="tok-kw">anytype</span>) Complex(<span class="tok-builtin">@TypeOf</span>(z.re, z.im)) {</span>
+<span class="line" id="L9">    <span class="tok-kw">const</span> T = <span class="tok-builtin">@TypeOf</span>(z.re, z.im);</span>
 <span class="line" id="L10"></span>
 <span class="line" id="L11">    <span class="tok-kw">if</span> (math.isInf(z.re) <span class="tok-kw">or</span> math.isInf(z.im)) {</span>
 <span class="line" id="L12">        <span class="tok-kw">return</span> Complex(T).init(math.inf(T), math.copysign(<span class="tok-builtin">@as</span>(T, <span class="tok-number">0.0</span>), z.re));</span>
@@ -129,14 +129,12 @@
 <span class="line" id="L15">    <span class="tok-kw">return</span> Complex(T).init(z.re, z.im);</span>
 <span class="line" id="L16">}</span>
 <span class="line" id="L17"></span>
-<span class="line" id="L18"><span class="tok-kw">const</span> epsilon = <span class="tok-number">0.0001</span>;</span>
-<span class="line" id="L19"></span>
-<span class="line" id="L20"><span class="tok-kw">test</span> <span class="tok-str">&quot;complex.cproj&quot;</span> {</span>
-<span class="line" id="L21">    <span class="tok-kw">const</span> a = Complex(<span class="tok-type">f32</span>).init(<span class="tok-number">5</span>, <span class="tok-number">3</span>);</span>
-<span class="line" id="L22">    <span class="tok-kw">const</span> c = proj(a);</span>
-<span class="line" id="L23"></span>
-<span class="line" id="L24">    <span class="tok-kw">try</span> testing.expect(c.re == <span class="tok-number">5</span> <span class="tok-kw">and</span> c.im == <span class="tok-number">3</span>);</span>
-<span class="line" id="L25">}</span>
-<span class="line" id="L26"></span>
+<span class="line" id="L18"><span class="tok-kw">test</span> proj {</span>
+<span class="line" id="L19">    <span class="tok-kw">const</span> a = Complex(<span class="tok-type">f32</span>).init(<span class="tok-number">5</span>, <span class="tok-number">3</span>);</span>
+<span class="line" id="L20">    <span class="tok-kw">const</span> c = proj(a);</span>
+<span class="line" id="L21"></span>
+<span class="line" id="L22">    <span class="tok-kw">try</span> testing.expect(c.re == <span class="tok-number">5</span> <span class="tok-kw">and</span> c.im == <span class="tok-number">3</span>);</span>
+<span class="line" id="L23">}</span>
+<span class="line" id="L24"></span>
 </code></pre></body>
 </html>

@@ -130,8 +130,8 @@
 <span class="line" id="L11"><span class="tok-kw">const</span> Complex = cmath.Complex;</span>
 <span class="line" id="L12"></span>
 <span class="line" id="L13"><span class="tok-comment">/// Returns the hyperbolic tangent of z.</span></span>
-<span class="line" id="L14"><span class="tok-kw">pub</span> <span class="tok-kw">fn</span> <span class="tok-fn">tanh</span>(z: <span class="tok-kw">anytype</span>) <span class="tok-builtin">@TypeOf</span>(z) {</span>
-<span class="line" id="L15">    <span class="tok-kw">const</span> T = <span class="tok-builtin">@TypeOf</span>(z.re);</span>
+<span class="line" id="L14"><span class="tok-kw">pub</span> <span class="tok-kw">fn</span> <span class="tok-fn">tanh</span>(z: <span class="tok-kw">anytype</span>) Complex(<span class="tok-builtin">@TypeOf</span>(z.re, z.im)) {</span>
+<span class="line" id="L15">    <span class="tok-kw">const</span> T = <span class="tok-builtin">@TypeOf</span>(z.re, z.im);</span>
 <span class="line" id="L16">    <span class="tok-kw">return</span> <span class="tok-kw">switch</span> (T) {</span>
 <span class="line" id="L17">        <span class="tok-type">f32</span> =&gt; tanh32(z),</span>
 <span class="line" id="L18">        <span class="tok-type">f64</span> =&gt; tanh64(z),</span>
@@ -228,7 +228,7 @@
 <span class="line" id="L103"></span>
 <span class="line" id="L104"><span class="tok-kw">const</span> epsilon = <span class="tok-number">0.0001</span>;</span>
 <span class="line" id="L105"></span>
-<span class="line" id="L106"><span class="tok-kw">test</span> <span class="tok-str">&quot;complex.ctanh32&quot;</span> {</span>
+<span class="line" id="L106"><span class="tok-kw">test</span> tanh32 {</span>
 <span class="line" id="L107">    <span class="tok-kw">const</span> a = Complex(<span class="tok-type">f32</span>).init(<span class="tok-number">5</span>, <span class="tok-number">3</span>);</span>
 <span class="line" id="L108">    <span class="tok-kw">const</span> c = tanh(a);</span>
 <span class="line" id="L109"></span>
@@ -236,7 +236,7 @@
 <span class="line" id="L111">    <span class="tok-kw">try</span> testing.expect(math.approxEqAbs(<span class="tok-type">f32</span>, c.im, -<span class="tok-number">0.000025</span>, epsilon));</span>
 <span class="line" id="L112">}</span>
 <span class="line" id="L113"></span>
-<span class="line" id="L114"><span class="tok-kw">test</span> <span class="tok-str">&quot;complex.ctanh64&quot;</span> {</span>
+<span class="line" id="L114"><span class="tok-kw">test</span> tanh64 {</span>
 <span class="line" id="L115">    <span class="tok-kw">const</span> a = Complex(<span class="tok-type">f64</span>).init(<span class="tok-number">5</span>, <span class="tok-number">3</span>);</span>
 <span class="line" id="L116">    <span class="tok-kw">const</span> c = tanh(a);</span>
 <span class="line" id="L117"></span>

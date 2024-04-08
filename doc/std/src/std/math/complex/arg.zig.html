@@ -119,18 +119,17 @@
 <span class="line" id="L5"><span class="tok-kw">const</span> Complex = cmath.Complex;</span>
 <span class="line" id="L6"></span>
 <span class="line" id="L7"><span class="tok-comment">/// Returns the angular component (in radians) of z.</span></span>
-<span class="line" id="L8"><span class="tok-kw">pub</span> <span class="tok-kw">fn</span> <span class="tok-fn">arg</span>(z: <span class="tok-kw">anytype</span>) <span class="tok-builtin">@TypeOf</span>(z.re) {</span>
-<span class="line" id="L9">    <span class="tok-kw">const</span> T = <span class="tok-builtin">@TypeOf</span>(z.re);</span>
-<span class="line" id="L10">    <span class="tok-kw">return</span> math.atan2(T, z.im, z.re);</span>
-<span class="line" id="L11">}</span>
-<span class="line" id="L12"></span>
-<span class="line" id="L13"><span class="tok-kw">const</span> epsilon = <span class="tok-number">0.0001</span>;</span>
-<span class="line" id="L14"></span>
-<span class="line" id="L15"><span class="tok-kw">test</span> <span class="tok-str">&quot;complex.carg&quot;</span> {</span>
-<span class="line" id="L16">    <span class="tok-kw">const</span> a = Complex(<span class="tok-type">f32</span>).init(<span class="tok-number">5</span>, <span class="tok-number">3</span>);</span>
-<span class="line" id="L17">    <span class="tok-kw">const</span> c = arg(a);</span>
-<span class="line" id="L18">    <span class="tok-kw">try</span> testing.expect(math.approxEqAbs(<span class="tok-type">f32</span>, c, <span class="tok-number">0.540420</span>, epsilon));</span>
-<span class="line" id="L19">}</span>
-<span class="line" id="L20"></span>
+<span class="line" id="L8"><span class="tok-kw">pub</span> <span class="tok-kw">fn</span> <span class="tok-fn">arg</span>(z: <span class="tok-kw">anytype</span>) <span class="tok-builtin">@TypeOf</span>(z.re, z.im) {</span>
+<span class="line" id="L9">    <span class="tok-kw">return</span> math.atan2(z.im, z.re);</span>
+<span class="line" id="L10">}</span>
+<span class="line" id="L11"></span>
+<span class="line" id="L12"><span class="tok-kw">const</span> epsilon = <span class="tok-number">0.0001</span>;</span>
+<span class="line" id="L13"></span>
+<span class="line" id="L14"><span class="tok-kw">test</span> arg {</span>
+<span class="line" id="L15">    <span class="tok-kw">const</span> a = Complex(<span class="tok-type">f32</span>).init(<span class="tok-number">5</span>, <span class="tok-number">3</span>);</span>
+<span class="line" id="L16">    <span class="tok-kw">const</span> c = arg(a);</span>
+<span class="line" id="L17">    <span class="tok-kw">try</span> testing.expect(math.approxEqAbs(<span class="tok-type">f32</span>, c, <span class="tok-number">0.540420</span>, epsilon));</span>
+<span class="line" id="L18">}</span>
+<span class="line" id="L19"></span>
 </code></pre></body>
 </html>

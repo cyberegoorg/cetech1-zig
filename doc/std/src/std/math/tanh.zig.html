@@ -236,12 +236,12 @@
 <span class="line" id="L104">    <span class="tok-kw">return</span> <span class="tok-kw">if</span> (sign) -t <span class="tok-kw">else</span> t;</span>
 <span class="line" id="L105">}</span>
 <span class="line" id="L106"></span>
-<span class="line" id="L107"><span class="tok-kw">test</span> <span class="tok-str">&quot;math.tanh&quot;</span> {</span>
+<span class="line" id="L107"><span class="tok-kw">test</span> tanh {</span>
 <span class="line" id="L108">    <span class="tok-kw">try</span> expect(tanh(<span class="tok-builtin">@as</span>(<span class="tok-type">f32</span>, <span class="tok-number">1.5</span>)) == tanh32(<span class="tok-number">1.5</span>));</span>
 <span class="line" id="L109">    <span class="tok-kw">try</span> expect(tanh(<span class="tok-builtin">@as</span>(<span class="tok-type">f64</span>, <span class="tok-number">1.5</span>)) == tanh64(<span class="tok-number">1.5</span>));</span>
 <span class="line" id="L110">}</span>
 <span class="line" id="L111"></span>
-<span class="line" id="L112"><span class="tok-kw">test</span> <span class="tok-str">&quot;math.tanh32&quot;</span> {</span>
+<span class="line" id="L112"><span class="tok-kw">test</span> tanh32 {</span>
 <span class="line" id="L113">    <span class="tok-kw">const</span> epsilon = <span class="tok-number">0.000001</span>;</span>
 <span class="line" id="L114"></span>
 <span class="line" id="L115">    <span class="tok-kw">try</span> expect(math.approxEqAbs(<span class="tok-type">f32</span>, tanh32(<span class="tok-number">0.0</span>), <span class="tok-number">0.0</span>, epsilon));</span>
@@ -254,7 +254,7 @@
 <span class="line" id="L122">    <span class="tok-kw">try</span> expect(math.approxEqAbs(<span class="tok-type">f32</span>, tanh32(-<span class="tok-number">37.45</span>), -<span class="tok-number">1.0</span>, epsilon));</span>
 <span class="line" id="L123">}</span>
 <span class="line" id="L124"></span>
-<span class="line" id="L125"><span class="tok-kw">test</span> <span class="tok-str">&quot;math.tanh64&quot;</span> {</span>
+<span class="line" id="L125"><span class="tok-kw">test</span> tanh64 {</span>
 <span class="line" id="L126">    <span class="tok-kw">const</span> epsilon = <span class="tok-number">0.000001</span>;</span>
 <span class="line" id="L127"></span>
 <span class="line" id="L128">    <span class="tok-kw">try</span> expect(math.approxEqAbs(<span class="tok-type">f64</span>, tanh64(<span class="tok-number">0.0</span>), <span class="tok-number">0.0</span>, epsilon));</span>
@@ -267,7 +267,7 @@
 <span class="line" id="L135">    <span class="tok-kw">try</span> expect(math.approxEqAbs(<span class="tok-type">f64</span>, tanh64(-<span class="tok-number">37.45</span>), -<span class="tok-number">1.0</span>, epsilon));</span>
 <span class="line" id="L136">}</span>
 <span class="line" id="L137"></span>
-<span class="line" id="L138"><span class="tok-kw">test</span> <span class="tok-str">&quot;math.tanh32.special&quot;</span> {</span>
+<span class="line" id="L138"><span class="tok-kw">test</span> <span class="tok-str">&quot;tanh32.special&quot;</span> {</span>
 <span class="line" id="L139">    <span class="tok-kw">try</span> expect(math.isPositiveZero(tanh32(<span class="tok-number">0.0</span>)));</span>
 <span class="line" id="L140">    <span class="tok-kw">try</span> expect(math.isNegativeZero(tanh32(-<span class="tok-number">0.0</span>)));</span>
 <span class="line" id="L141">    <span class="tok-kw">try</span> expect(tanh32(math.inf(<span class="tok-type">f32</span>)) == <span class="tok-number">1.0</span>);</span>
@@ -275,7 +275,7 @@
 <span class="line" id="L143">    <span class="tok-kw">try</span> expect(math.isNan(tanh32(math.nan(<span class="tok-type">f32</span>))));</span>
 <span class="line" id="L144">}</span>
 <span class="line" id="L145"></span>
-<span class="line" id="L146"><span class="tok-kw">test</span> <span class="tok-str">&quot;math.tanh64.special&quot;</span> {</span>
+<span class="line" id="L146"><span class="tok-kw">test</span> <span class="tok-str">&quot;tanh64.special&quot;</span> {</span>
 <span class="line" id="L147">    <span class="tok-kw">try</span> expect(math.isPositiveZero(tanh64(<span class="tok-number">0.0</span>)));</span>
 <span class="line" id="L148">    <span class="tok-kw">try</span> expect(math.isNegativeZero(tanh64(-<span class="tok-number">0.0</span>)));</span>
 <span class="line" id="L149">    <span class="tok-kw">try</span> expect(tanh64(math.inf(<span class="tok-type">f64</span>)) == <span class="tok-number">1.0</span>);</span>

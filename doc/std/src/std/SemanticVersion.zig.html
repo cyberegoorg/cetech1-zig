@@ -300,7 +300,7 @@
 <span class="line" id="L166"><span class="tok-kw">const</span> expect = std.testing.expect;</span>
 <span class="line" id="L167"><span class="tok-kw">const</span> expectError = std.testing.expectError;</span>
 <span class="line" id="L168"></span>
-<span class="line" id="L169"><span class="tok-kw">test</span> <span class="tok-str">&quot;SemanticVersion format&quot;</span> {</span>
+<span class="line" id="L169"><span class="tok-kw">test</span> format {</span>
 <span class="line" id="L170">    <span class="tok-comment">// Many of these test strings are from https://github.com/semver/semver.org/issues/59#issuecomment-390854010.</span>
 </span>
 <span class="line" id="L171"></span>
@@ -416,7 +416,7 @@
 <span class="line" id="L277">    <span class="tok-kw">if</span> (parse(big_invalid)) |ver| std.debug.panic(<span class="tok-str">&quot;expected error, found {}&quot;</span>, .{ver}) <span class="tok-kw">else</span> |_| {}</span>
 <span class="line" id="L278">}</span>
 <span class="line" id="L279"></span>
-<span class="line" id="L280"><span class="tok-kw">test</span> <span class="tok-str">&quot;SemanticVersion precedence&quot;</span> {</span>
+<span class="line" id="L280"><span class="tok-kw">test</span> <span class="tok-str">&quot;precedence&quot;</span> {</span>
 <span class="line" id="L281">    <span class="tok-comment">// SemVer 2 spec 11.2 example: 1.0.0 &lt; 2.0.0 &lt; 2.1.0 &lt; 2.1.1.</span>
 </span>
 <span class="line" id="L282">    <span class="tok-kw">try</span> expect(order(<span class="tok-kw">try</span> parse(<span class="tok-str">&quot;1.0.0&quot;</span>), <span class="tok-kw">try</span> parse(<span class="tok-str">&quot;2.0.0&quot;</span>)) == .lt);</span>

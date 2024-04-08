@@ -171,7 +171,7 @@
 <span class="line" id="L52">    <span class="tok-kw">var</span> argv: std.ArrayListUnmanaged([]<span class="tok-kw">const</span> <span class="tok-type">u8</span>) = .{};</span>
 <span class="line" id="L53">    <span class="tok-kw">try</span> argv.ensureUnusedCapacity(arena, <span class="tok-number">2</span> + <span class="tok-number">1</span> + self.paths.len + <span class="tok-number">2</span> * self.exclude_paths.len);</span>
 <span class="line" id="L54"></span>
-<span class="line" id="L55">    argv.appendAssumeCapacity(b.zig_exe);</span>
+<span class="line" id="L55">    argv.appendAssumeCapacity(b.graph.zig_exe);</span>
 <span class="line" id="L56">    argv.appendAssumeCapacity(<span class="tok-str">&quot;fmt&quot;</span>);</span>
 <span class="line" id="L57"></span>
 <span class="line" id="L58">    <span class="tok-kw">if</span> (self.check) {</span>

@@ -329,279 +329,283 @@
 <span class="line" id="L210"></span>
 <span class="line" id="L211"><span class="tok-comment">/// This function is intended to be used only in tests. When the formatted result of the template</span></span>
 <span class="line" id="L212"><span class="tok-comment">/// and its arguments does not equal the expected text, it prints diagnostics to stderr to show how</span></span>
-<span class="line" id="L213"><span class="tok-comment">/// they are not equal, then returns an error.</span></span>
-<span class="line" id="L214"><span class="tok-kw">pub</span> <span class="tok-kw">fn</span> <span class="tok-fn">expectFmt</span>(expected: []<span class="tok-kw">const</span> <span class="tok-type">u8</span>, <span class="tok-kw">comptime</span> template: []<span class="tok-kw">const</span> <span class="tok-type">u8</span>, args: <span class="tok-kw">anytype</span>) !<span class="tok-type">void</span> {</span>
-<span class="line" id="L215">    <span class="tok-kw">const</span> result = <span class="tok-kw">try</span> std.fmt.allocPrint(allocator, template, args);</span>
-<span class="line" id="L216">    <span class="tok-kw">defer</span> allocator.free(result);</span>
-<span class="line" id="L217">    <span class="tok-kw">if</span> (std.mem.eql(<span class="tok-type">u8</span>, result, expected)) <span class="tok-kw">return</span>;</span>
-<span class="line" id="L218"></span>
-<span class="line" id="L219">    print(<span class="tok-str">&quot;\n====== expected this output: =========\n&quot;</span>, .{});</span>
-<span class="line" id="L220">    print(<span class="tok-str">&quot;{s}&quot;</span>, .{expected});</span>
-<span class="line" id="L221">    print(<span class="tok-str">&quot;\n======== instead found this: =========\n&quot;</span>, .{});</span>
-<span class="line" id="L222">    print(<span class="tok-str">&quot;{s}&quot;</span>, .{result});</span>
-<span class="line" id="L223">    print(<span class="tok-str">&quot;\n======================================\n&quot;</span>, .{});</span>
-<span class="line" id="L224">    <span class="tok-kw">return</span> <span class="tok-kw">error</span>.TestExpectedFmt;</span>
-<span class="line" id="L225">}</span>
-<span class="line" id="L226"></span>
-<span class="line" id="L227"><span class="tok-comment">/// This function is intended to be used only in tests. When the actual value is</span></span>
-<span class="line" id="L228"><span class="tok-comment">/// not approximately equal to the expected value, prints diagnostics to stderr</span></span>
-<span class="line" id="L229"><span class="tok-comment">/// to show exactly how they are not equal, then returns a test failure error.</span></span>
-<span class="line" id="L230"><span class="tok-comment">/// See `math.approxEqAbs` for more information on the tolerance parameter.</span></span>
-<span class="line" id="L231"><span class="tok-comment">/// The types must be floating-point.</span></span>
-<span class="line" id="L232"><span class="tok-comment">/// `actual` and `expected` are coerced to a common type using peer type resolution.</span></span>
-<span class="line" id="L233"><span class="tok-kw">pub</span> <span class="tok-kw">inline</span> <span class="tok-kw">fn</span> <span class="tok-fn">expectApproxEqAbs</span>(expected: <span class="tok-kw">anytype</span>, actual: <span class="tok-kw">anytype</span>, tolerance: <span class="tok-kw">anytype</span>) !<span class="tok-type">void</span> {</span>
-<span class="line" id="L234">    <span class="tok-kw">const</span> T = <span class="tok-builtin">@TypeOf</span>(expected, actual, tolerance);</span>
-<span class="line" id="L235">    <span class="tok-kw">return</span> expectApproxEqAbsInner(T, expected, actual, tolerance);</span>
-<span class="line" id="L236">}</span>
-<span class="line" id="L237"></span>
-<span class="line" id="L238"><span class="tok-kw">fn</span> <span class="tok-fn">expectApproxEqAbsInner</span>(<span class="tok-kw">comptime</span> T: <span class="tok-type">type</span>, expected: T, actual: T, tolerance: T) !<span class="tok-type">void</span> {</span>
-<span class="line" id="L239">    <span class="tok-kw">switch</span> (<span class="tok-builtin">@typeInfo</span>(T)) {</span>
-<span class="line" id="L240">        .Float =&gt; <span class="tok-kw">if</span> (!math.approxEqAbs(T, expected, actual, tolerance)) {</span>
-<span class="line" id="L241">            print(<span class="tok-str">&quot;actual {}, not within absolute tolerance {} of expected {}\n&quot;</span>, .{ actual, tolerance, expected });</span>
-<span class="line" id="L242">            <span class="tok-kw">return</span> <span class="tok-kw">error</span>.TestExpectedApproxEqAbs;</span>
-<span class="line" id="L243">        },</span>
+<span class="line" id="L213"><span class="tok-comment">/// they are not equal, then returns an error. It depends on `expectEqualStrings()` for printing</span></span>
+<span class="line" id="L214"><span class="tok-comment">/// diagnostics.</span></span>
+<span class="line" id="L215"><span class="tok-kw">pub</span> <span class="tok-kw">fn</span> <span class="tok-fn">expectFmt</span>(expected: []<span class="tok-kw">const</span> <span class="tok-type">u8</span>, <span class="tok-kw">comptime</span> template: []<span class="tok-kw">const</span> <span class="tok-type">u8</span>, args: <span class="tok-kw">anytype</span>) !<span class="tok-type">void</span> {</span>
+<span class="line" id="L216">    <span class="tok-kw">const</span> actual = <span class="tok-kw">try</span> std.fmt.allocPrint(allocator, template, args);</span>
+<span class="line" id="L217">    <span class="tok-kw">defer</span> allocator.free(actual);</span>
+<span class="line" id="L218">    <span class="tok-kw">return</span> expectEqualStrings(expected, actual);</span>
+<span class="line" id="L219">}</span>
+<span class="line" id="L220"></span>
+<span class="line" id="L221"><span class="tok-comment">/// This function is intended to be used only in tests. When the actual value is</span></span>
+<span class="line" id="L222"><span class="tok-comment">/// not approximately equal to the expected value, prints diagnostics to stderr</span></span>
+<span class="line" id="L223"><span class="tok-comment">/// to show exactly how they are not equal, then returns a test failure error.</span></span>
+<span class="line" id="L224"><span class="tok-comment">/// See `math.approxEqAbs` for more information on the tolerance parameter.</span></span>
+<span class="line" id="L225"><span class="tok-comment">/// The types must be floating-point.</span></span>
+<span class="line" id="L226"><span class="tok-comment">/// `actual` and `expected` are coerced to a common type using peer type resolution.</span></span>
+<span class="line" id="L227"><span class="tok-kw">pub</span> <span class="tok-kw">inline</span> <span class="tok-kw">fn</span> <span class="tok-fn">expectApproxEqAbs</span>(expected: <span class="tok-kw">anytype</span>, actual: <span class="tok-kw">anytype</span>, tolerance: <span class="tok-kw">anytype</span>) !<span class="tok-type">void</span> {</span>
+<span class="line" id="L228">    <span class="tok-kw">const</span> T = <span class="tok-builtin">@TypeOf</span>(expected, actual, tolerance);</span>
+<span class="line" id="L229">    <span class="tok-kw">return</span> expectApproxEqAbsInner(T, expected, actual, tolerance);</span>
+<span class="line" id="L230">}</span>
+<span class="line" id="L231"></span>
+<span class="line" id="L232"><span class="tok-kw">fn</span> <span class="tok-fn">expectApproxEqAbsInner</span>(<span class="tok-kw">comptime</span> T: <span class="tok-type">type</span>, expected: T, actual: T, tolerance: T) !<span class="tok-type">void</span> {</span>
+<span class="line" id="L233">    <span class="tok-kw">switch</span> (<span class="tok-builtin">@typeInfo</span>(T)) {</span>
+<span class="line" id="L234">        .Float =&gt; <span class="tok-kw">if</span> (!math.approxEqAbs(T, expected, actual, tolerance)) {</span>
+<span class="line" id="L235">            print(<span class="tok-str">&quot;actual {}, not within absolute tolerance {} of expected {}\n&quot;</span>, .{ actual, tolerance, expected });</span>
+<span class="line" id="L236">            <span class="tok-kw">return</span> <span class="tok-kw">error</span>.TestExpectedApproxEqAbs;</span>
+<span class="line" id="L237">        },</span>
+<span class="line" id="L238"></span>
+<span class="line" id="L239">        .ComptimeFloat =&gt; <span class="tok-builtin">@compileError</span>(<span class="tok-str">&quot;Cannot approximately compare two comptime_float values&quot;</span>),</span>
+<span class="line" id="L240"></span>
+<span class="line" id="L241">        <span class="tok-kw">else</span> =&gt; <span class="tok-builtin">@compileError</span>(<span class="tok-str">&quot;Unable to compare non floating point values&quot;</span>),</span>
+<span class="line" id="L242">    }</span>
+<span class="line" id="L243">}</span>
 <span class="line" id="L244"></span>
-<span class="line" id="L245">        .ComptimeFloat =&gt; <span class="tok-builtin">@compileError</span>(<span class="tok-str">&quot;Cannot approximately compare two comptime_float values&quot;</span>),</span>
-<span class="line" id="L246"></span>
-<span class="line" id="L247">        <span class="tok-kw">else</span> =&gt; <span class="tok-builtin">@compileError</span>(<span class="tok-str">&quot;Unable to compare non floating point values&quot;</span>),</span>
-<span class="line" id="L248">    }</span>
-<span class="line" id="L249">}</span>
-<span class="line" id="L250"></span>
-<span class="line" id="L251"><span class="tok-kw">test</span> <span class="tok-str">&quot;expectApproxEqAbs&quot;</span> {</span>
-<span class="line" id="L252">    <span class="tok-kw">inline</span> <span class="tok-kw">for</span> ([_]<span class="tok-type">type</span>{ <span class="tok-type">f16</span>, <span class="tok-type">f32</span>, <span class="tok-type">f64</span>, <span class="tok-type">f128</span> }) |T| {</span>
-<span class="line" id="L253">        <span class="tok-kw">const</span> pos_x: T = <span class="tok-number">12.0</span>;</span>
-<span class="line" id="L254">        <span class="tok-kw">const</span> pos_y: T = <span class="tok-number">12.06</span>;</span>
-<span class="line" id="L255">        <span class="tok-kw">const</span> neg_x: T = -<span class="tok-number">12.0</span>;</span>
-<span class="line" id="L256">        <span class="tok-kw">const</span> neg_y: T = -<span class="tok-number">12.06</span>;</span>
-<span class="line" id="L257"></span>
-<span class="line" id="L258">        <span class="tok-kw">try</span> expectApproxEqAbs(pos_x, pos_y, <span class="tok-number">0.1</span>);</span>
-<span class="line" id="L259">        <span class="tok-kw">try</span> expectApproxEqAbs(neg_x, neg_y, <span class="tok-number">0.1</span>);</span>
-<span class="line" id="L260">    }</span>
-<span class="line" id="L261">}</span>
-<span class="line" id="L262"></span>
-<span class="line" id="L263"><span class="tok-comment">/// This function is intended to be used only in tests. When the actual value is</span></span>
-<span class="line" id="L264"><span class="tok-comment">/// not approximately equal to the expected value, prints diagnostics to stderr</span></span>
-<span class="line" id="L265"><span class="tok-comment">/// to show exactly how they are not equal, then returns a test failure error.</span></span>
-<span class="line" id="L266"><span class="tok-comment">/// See `math.approxEqRel` for more information on the tolerance parameter.</span></span>
-<span class="line" id="L267"><span class="tok-comment">/// The types must be floating-point.</span></span>
-<span class="line" id="L268"><span class="tok-comment">/// `actual` and `expected` are coerced to a common type using peer type resolution.</span></span>
-<span class="line" id="L269"><span class="tok-kw">pub</span> <span class="tok-kw">inline</span> <span class="tok-kw">fn</span> <span class="tok-fn">expectApproxEqRel</span>(expected: <span class="tok-kw">anytype</span>, actual: <span class="tok-kw">anytype</span>, tolerance: <span class="tok-kw">anytype</span>) !<span class="tok-type">void</span> {</span>
-<span class="line" id="L270">    <span class="tok-kw">const</span> T = <span class="tok-builtin">@TypeOf</span>(expected, actual, tolerance);</span>
-<span class="line" id="L271">    <span class="tok-kw">return</span> expectApproxEqRelInner(T, expected, actual, tolerance);</span>
-<span class="line" id="L272">}</span>
-<span class="line" id="L273"></span>
-<span class="line" id="L274"><span class="tok-kw">fn</span> <span class="tok-fn">expectApproxEqRelInner</span>(<span class="tok-kw">comptime</span> T: <span class="tok-type">type</span>, expected: T, actual: T, tolerance: T) !<span class="tok-type">void</span> {</span>
-<span class="line" id="L275">    <span class="tok-kw">switch</span> (<span class="tok-builtin">@typeInfo</span>(T)) {</span>
-<span class="line" id="L276">        .Float =&gt; <span class="tok-kw">if</span> (!math.approxEqRel(T, expected, actual, tolerance)) {</span>
-<span class="line" id="L277">            print(<span class="tok-str">&quot;actual {}, not within relative tolerance {} of expected {}\n&quot;</span>, .{ actual, tolerance, expected });</span>
-<span class="line" id="L278">            <span class="tok-kw">return</span> <span class="tok-kw">error</span>.TestExpectedApproxEqRel;</span>
-<span class="line" id="L279">        },</span>
+<span class="line" id="L245"><span class="tok-kw">test</span> <span class="tok-str">&quot;expectApproxEqAbs&quot;</span> {</span>
+<span class="line" id="L246">    <span class="tok-kw">inline</span> <span class="tok-kw">for</span> ([_]<span class="tok-type">type</span>{ <span class="tok-type">f16</span>, <span class="tok-type">f32</span>, <span class="tok-type">f64</span>, <span class="tok-type">f128</span> }) |T| {</span>
+<span class="line" id="L247">        <span class="tok-kw">const</span> pos_x: T = <span class="tok-number">12.0</span>;</span>
+<span class="line" id="L248">        <span class="tok-kw">const</span> pos_y: T = <span class="tok-number">12.06</span>;</span>
+<span class="line" id="L249">        <span class="tok-kw">const</span> neg_x: T = -<span class="tok-number">12.0</span>;</span>
+<span class="line" id="L250">        <span class="tok-kw">const</span> neg_y: T = -<span class="tok-number">12.06</span>;</span>
+<span class="line" id="L251"></span>
+<span class="line" id="L252">        <span class="tok-kw">try</span> expectApproxEqAbs(pos_x, pos_y, <span class="tok-number">0.1</span>);</span>
+<span class="line" id="L253">        <span class="tok-kw">try</span> expectApproxEqAbs(neg_x, neg_y, <span class="tok-number">0.1</span>);</span>
+<span class="line" id="L254">    }</span>
+<span class="line" id="L255">}</span>
+<span class="line" id="L256"></span>
+<span class="line" id="L257"><span class="tok-comment">/// This function is intended to be used only in tests. When the actual value is</span></span>
+<span class="line" id="L258"><span class="tok-comment">/// not approximately equal to the expected value, prints diagnostics to stderr</span></span>
+<span class="line" id="L259"><span class="tok-comment">/// to show exactly how they are not equal, then returns a test failure error.</span></span>
+<span class="line" id="L260"><span class="tok-comment">/// See `math.approxEqRel` for more information on the tolerance parameter.</span></span>
+<span class="line" id="L261"><span class="tok-comment">/// The types must be floating-point.</span></span>
+<span class="line" id="L262"><span class="tok-comment">/// `actual` and `expected` are coerced to a common type using peer type resolution.</span></span>
+<span class="line" id="L263"><span class="tok-kw">pub</span> <span class="tok-kw">inline</span> <span class="tok-kw">fn</span> <span class="tok-fn">expectApproxEqRel</span>(expected: <span class="tok-kw">anytype</span>, actual: <span class="tok-kw">anytype</span>, tolerance: <span class="tok-kw">anytype</span>) !<span class="tok-type">void</span> {</span>
+<span class="line" id="L264">    <span class="tok-kw">const</span> T = <span class="tok-builtin">@TypeOf</span>(expected, actual, tolerance);</span>
+<span class="line" id="L265">    <span class="tok-kw">return</span> expectApproxEqRelInner(T, expected, actual, tolerance);</span>
+<span class="line" id="L266">}</span>
+<span class="line" id="L267"></span>
+<span class="line" id="L268"><span class="tok-kw">fn</span> <span class="tok-fn">expectApproxEqRelInner</span>(<span class="tok-kw">comptime</span> T: <span class="tok-type">type</span>, expected: T, actual: T, tolerance: T) !<span class="tok-type">void</span> {</span>
+<span class="line" id="L269">    <span class="tok-kw">switch</span> (<span class="tok-builtin">@typeInfo</span>(T)) {</span>
+<span class="line" id="L270">        .Float =&gt; <span class="tok-kw">if</span> (!math.approxEqRel(T, expected, actual, tolerance)) {</span>
+<span class="line" id="L271">            print(<span class="tok-str">&quot;actual {}, not within relative tolerance {} of expected {}\n&quot;</span>, .{ actual, tolerance, expected });</span>
+<span class="line" id="L272">            <span class="tok-kw">return</span> <span class="tok-kw">error</span>.TestExpectedApproxEqRel;</span>
+<span class="line" id="L273">        },</span>
+<span class="line" id="L274"></span>
+<span class="line" id="L275">        .ComptimeFloat =&gt; <span class="tok-builtin">@compileError</span>(<span class="tok-str">&quot;Cannot approximately compare two comptime_float values&quot;</span>),</span>
+<span class="line" id="L276"></span>
+<span class="line" id="L277">        <span class="tok-kw">else</span> =&gt; <span class="tok-builtin">@compileError</span>(<span class="tok-str">&quot;Unable to compare non floating point values&quot;</span>),</span>
+<span class="line" id="L278">    }</span>
+<span class="line" id="L279">}</span>
 <span class="line" id="L280"></span>
-<span class="line" id="L281">        .ComptimeFloat =&gt; <span class="tok-builtin">@compileError</span>(<span class="tok-str">&quot;Cannot approximately compare two comptime_float values&quot;</span>),</span>
-<span class="line" id="L282"></span>
-<span class="line" id="L283">        <span class="tok-kw">else</span> =&gt; <span class="tok-builtin">@compileError</span>(<span class="tok-str">&quot;Unable to compare non floating point values&quot;</span>),</span>
-<span class="line" id="L284">    }</span>
-<span class="line" id="L285">}</span>
-<span class="line" id="L286"></span>
-<span class="line" id="L287"><span class="tok-kw">test</span> <span class="tok-str">&quot;expectApproxEqRel&quot;</span> {</span>
-<span class="line" id="L288">    <span class="tok-kw">inline</span> <span class="tok-kw">for</span> ([_]<span class="tok-type">type</span>{ <span class="tok-type">f16</span>, <span class="tok-type">f32</span>, <span class="tok-type">f64</span>, <span class="tok-type">f128</span> }) |T| {</span>
-<span class="line" id="L289">        <span class="tok-kw">const</span> eps_value = <span class="tok-kw">comptime</span> math.floatEps(T);</span>
-<span class="line" id="L290">        <span class="tok-kw">const</span> sqrt_eps_value = <span class="tok-kw">comptime</span> <span class="tok-builtin">@sqrt</span>(eps_value);</span>
-<span class="line" id="L291"></span>
-<span class="line" id="L292">        <span class="tok-kw">const</span> pos_x: T = <span class="tok-number">12.0</span>;</span>
-<span class="line" id="L293">        <span class="tok-kw">const</span> pos_y: T = pos_x + <span class="tok-number">2</span> * eps_value;</span>
-<span class="line" id="L294">        <span class="tok-kw">const</span> neg_x: T = -<span class="tok-number">12.0</span>;</span>
-<span class="line" id="L295">        <span class="tok-kw">const</span> neg_y: T = neg_x - <span class="tok-number">2</span> * eps_value;</span>
-<span class="line" id="L296"></span>
-<span class="line" id="L297">        <span class="tok-kw">try</span> expectApproxEqRel(pos_x, pos_y, sqrt_eps_value);</span>
-<span class="line" id="L298">        <span class="tok-kw">try</span> expectApproxEqRel(neg_x, neg_y, sqrt_eps_value);</span>
-<span class="line" id="L299">    }</span>
-<span class="line" id="L300">}</span>
-<span class="line" id="L301"></span>
-<span class="line" id="L302"><span class="tok-comment">/// This function is intended to be used only in tests. When the two slices are not</span></span>
-<span class="line" id="L303"><span class="tok-comment">/// equal, prints diagnostics to stderr to show exactly how they are not equal (with</span></span>
-<span class="line" id="L304"><span class="tok-comment">/// the differences highlighted in red), then returns a test failure error.</span></span>
-<span class="line" id="L305"><span class="tok-comment">/// The colorized output is optional and controlled by the return of `std.io.tty.detectConfig()`.</span></span>
-<span class="line" id="L306"><span class="tok-comment">/// If your inputs are UTF-8 encoded strings, consider calling `expectEqualStrings` instead.</span></span>
-<span class="line" id="L307"><span class="tok-kw">pub</span> <span class="tok-kw">fn</span> <span class="tok-fn">expectEqualSlices</span>(<span class="tok-kw">comptime</span> T: <span class="tok-type">type</span>, expected: []<span class="tok-kw">const</span> T, actual: []<span class="tok-kw">const</span> T) !<span class="tok-type">void</span> {</span>
-<span class="line" id="L308">    <span class="tok-kw">if</span> (expected.ptr == actual.ptr <span class="tok-kw">and</span> expected.len == actual.len) {</span>
-<span class="line" id="L309">        <span class="tok-kw">return</span>;</span>
-<span class="line" id="L310">    }</span>
-<span class="line" id="L311">    <span class="tok-kw">const</span> diff_index: <span class="tok-type">usize</span> = diff_index: {</span>
-<span class="line" id="L312">        <span class="tok-kw">const</span> shortest = <span class="tok-builtin">@min</span>(expected.len, actual.len);</span>
-<span class="line" id="L313">        <span class="tok-kw">var</span> index: <span class="tok-type">usize</span> = <span class="tok-number">0</span>;</span>
-<span class="line" id="L314">        <span class="tok-kw">while</span> (index &lt; shortest) : (index += <span class="tok-number">1</span>) {</span>
-<span class="line" id="L315">            <span class="tok-kw">if</span> (!std.meta.eql(actual[index], expected[index])) <span class="tok-kw">break</span> :diff_index index;</span>
-<span class="line" id="L316">        }</span>
-<span class="line" id="L317">        <span class="tok-kw">break</span> :diff_index <span class="tok-kw">if</span> (expected.len == actual.len) <span class="tok-kw">return</span> <span class="tok-kw">else</span> shortest;</span>
-<span class="line" id="L318">    };</span>
+<span class="line" id="L281"><span class="tok-kw">test</span> <span class="tok-str">&quot;expectApproxEqRel&quot;</span> {</span>
+<span class="line" id="L282">    <span class="tok-kw">inline</span> <span class="tok-kw">for</span> ([_]<span class="tok-type">type</span>{ <span class="tok-type">f16</span>, <span class="tok-type">f32</span>, <span class="tok-type">f64</span>, <span class="tok-type">f128</span> }) |T| {</span>
+<span class="line" id="L283">        <span class="tok-kw">const</span> eps_value = <span class="tok-kw">comptime</span> math.floatEps(T);</span>
+<span class="line" id="L284">        <span class="tok-kw">const</span> sqrt_eps_value = <span class="tok-kw">comptime</span> <span class="tok-builtin">@sqrt</span>(eps_value);</span>
+<span class="line" id="L285"></span>
+<span class="line" id="L286">        <span class="tok-kw">const</span> pos_x: T = <span class="tok-number">12.0</span>;</span>
+<span class="line" id="L287">        <span class="tok-kw">const</span> pos_y: T = pos_x + <span class="tok-number">2</span> * eps_value;</span>
+<span class="line" id="L288">        <span class="tok-kw">const</span> neg_x: T = -<span class="tok-number">12.0</span>;</span>
+<span class="line" id="L289">        <span class="tok-kw">const</span> neg_y: T = neg_x - <span class="tok-number">2</span> * eps_value;</span>
+<span class="line" id="L290"></span>
+<span class="line" id="L291">        <span class="tok-kw">try</span> expectApproxEqRel(pos_x, pos_y, sqrt_eps_value);</span>
+<span class="line" id="L292">        <span class="tok-kw">try</span> expectApproxEqRel(neg_x, neg_y, sqrt_eps_value);</span>
+<span class="line" id="L293">    }</span>
+<span class="line" id="L294">}</span>
+<span class="line" id="L295"></span>
+<span class="line" id="L296"><span class="tok-comment">/// This function is intended to be used only in tests. When the two slices are not</span></span>
+<span class="line" id="L297"><span class="tok-comment">/// equal, prints diagnostics to stderr to show exactly how they are not equal (with</span></span>
+<span class="line" id="L298"><span class="tok-comment">/// the differences highlighted in red), then returns a test failure error.</span></span>
+<span class="line" id="L299"><span class="tok-comment">/// The colorized output is optional and controlled by the return of `std.io.tty.detectConfig()`.</span></span>
+<span class="line" id="L300"><span class="tok-comment">/// If your inputs are UTF-8 encoded strings, consider calling `expectEqualStrings` instead.</span></span>
+<span class="line" id="L301"><span class="tok-kw">pub</span> <span class="tok-kw">fn</span> <span class="tok-fn">expectEqualSlices</span>(<span class="tok-kw">comptime</span> T: <span class="tok-type">type</span>, expected: []<span class="tok-kw">const</span> T, actual: []<span class="tok-kw">const</span> T) !<span class="tok-type">void</span> {</span>
+<span class="line" id="L302">    <span class="tok-kw">if</span> (expected.ptr == actual.ptr <span class="tok-kw">and</span> expected.len == actual.len) {</span>
+<span class="line" id="L303">        <span class="tok-kw">return</span>;</span>
+<span class="line" id="L304">    }</span>
+<span class="line" id="L305">    <span class="tok-kw">const</span> diff_index: <span class="tok-type">usize</span> = diff_index: {</span>
+<span class="line" id="L306">        <span class="tok-kw">const</span> shortest = <span class="tok-builtin">@min</span>(expected.len, actual.len);</span>
+<span class="line" id="L307">        <span class="tok-kw">var</span> index: <span class="tok-type">usize</span> = <span class="tok-number">0</span>;</span>
+<span class="line" id="L308">        <span class="tok-kw">while</span> (index &lt; shortest) : (index += <span class="tok-number">1</span>) {</span>
+<span class="line" id="L309">            <span class="tok-kw">if</span> (!std.meta.eql(actual[index], expected[index])) <span class="tok-kw">break</span> :diff_index index;</span>
+<span class="line" id="L310">        }</span>
+<span class="line" id="L311">        <span class="tok-kw">break</span> :diff_index <span class="tok-kw">if</span> (expected.len == actual.len) <span class="tok-kw">return</span> <span class="tok-kw">else</span> shortest;</span>
+<span class="line" id="L312">    };</span>
+<span class="line" id="L313"></span>
+<span class="line" id="L314">    <span class="tok-kw">if</span> (!backend_can_print) {</span>
+<span class="line" id="L315">        <span class="tok-kw">return</span> <span class="tok-kw">error</span>.TestExpectedEqual;</span>
+<span class="line" id="L316">    }</span>
+<span class="line" id="L317"></span>
+<span class="line" id="L318">    print(<span class="tok-str">&quot;slices differ. first difference occurs at index {d} (0x{X})\n&quot;</span>, .{ diff_index, diff_index });</span>
 <span class="line" id="L319"></span>
-<span class="line" id="L320">    <span class="tok-kw">if</span> (!backend_can_print) {</span>
-<span class="line" id="L321">        <span class="tok-kw">return</span> <span class="tok-kw">error</span>.TestExpectedEqual;</span>
-<span class="line" id="L322">    }</span>
+<span class="line" id="L320">    <span class="tok-comment">// TODO: Should this be configurable by the caller?</span>
+</span>
+<span class="line" id="L321">    <span class="tok-kw">const</span> max_lines: <span class="tok-type">usize</span> = <span class="tok-number">16</span>;</span>
+<span class="line" id="L322">    <span class="tok-kw">const</span> max_window_size: <span class="tok-type">usize</span> = <span class="tok-kw">if</span> (T == <span class="tok-type">u8</span>) max_lines * <span class="tok-number">16</span> <span class="tok-kw">else</span> max_lines;</span>
 <span class="line" id="L323"></span>
-<span class="line" id="L324">    print(<span class="tok-str">&quot;slices differ. first difference occurs at index {d} (0x{X})\n&quot;</span>, .{ diff_index, diff_index });</span>
-<span class="line" id="L325"></span>
-<span class="line" id="L326">    <span class="tok-comment">// TODO: Should this be configurable by the caller?</span>
+<span class="line" id="L324">    <span class="tok-comment">// Print a maximum of max_window_size items of each input, starting just before the</span>
 </span>
-<span class="line" id="L327">    <span class="tok-kw">const</span> max_lines: <span class="tok-type">usize</span> = <span class="tok-number">16</span>;</span>
-<span class="line" id="L328">    <span class="tok-kw">const</span> max_window_size: <span class="tok-type">usize</span> = <span class="tok-kw">if</span> (T == <span class="tok-type">u8</span>) max_lines * <span class="tok-number">16</span> <span class="tok-kw">else</span> max_lines;</span>
-<span class="line" id="L329"></span>
-<span class="line" id="L330">    <span class="tok-comment">// Print a maximum of max_window_size items of each input, starting just before the</span>
+<span class="line" id="L325">    <span class="tok-comment">// first difference to give a bit of context.</span>
 </span>
-<span class="line" id="L331">    <span class="tok-comment">// first difference to give a bit of context.</span>
-</span>
-<span class="line" id="L332">    <span class="tok-kw">var</span> window_start: <span class="tok-type">usize</span> = <span class="tok-number">0</span>;</span>
-<span class="line" id="L333">    <span class="tok-kw">if</span> (<span class="tok-builtin">@max</span>(actual.len, expected.len) &gt; max_window_size) {</span>
-<span class="line" id="L334">        <span class="tok-kw">const</span> alignment = <span class="tok-kw">if</span> (T == <span class="tok-type">u8</span>) <span class="tok-number">16</span> <span class="tok-kw">else</span> <span class="tok-number">2</span>;</span>
-<span class="line" id="L335">        window_start = std.mem.alignBackward(<span class="tok-type">usize</span>, diff_index - <span class="tok-builtin">@min</span>(diff_index, alignment), alignment);</span>
-<span class="line" id="L336">    }</span>
-<span class="line" id="L337">    <span class="tok-kw">const</span> expected_window = expected[window_start..<span class="tok-builtin">@min</span>(expected.len, window_start + max_window_size)];</span>
-<span class="line" id="L338">    <span class="tok-kw">const</span> expected_truncated = window_start + expected_window.len &lt; expected.len;</span>
-<span class="line" id="L339">    <span class="tok-kw">const</span> actual_window = actual[window_start..<span class="tok-builtin">@min</span>(actual.len, window_start + max_window_size)];</span>
-<span class="line" id="L340">    <span class="tok-kw">const</span> actual_truncated = window_start + actual_window.len &lt; actual.len;</span>
-<span class="line" id="L341"></span>
-<span class="line" id="L342">    <span class="tok-kw">const</span> ttyconf = std.io.tty.detectConfig(std.io.getStdErr());</span>
-<span class="line" id="L343">    <span class="tok-kw">var</span> differ = <span class="tok-kw">if</span> (T == <span class="tok-type">u8</span>) BytesDiffer{</span>
+<span class="line" id="L326">    <span class="tok-kw">var</span> window_start: <span class="tok-type">usize</span> = <span class="tok-number">0</span>;</span>
+<span class="line" id="L327">    <span class="tok-kw">if</span> (<span class="tok-builtin">@max</span>(actual.len, expected.len) &gt; max_window_size) {</span>
+<span class="line" id="L328">        <span class="tok-kw">const</span> alignment = <span class="tok-kw">if</span> (T == <span class="tok-type">u8</span>) <span class="tok-number">16</span> <span class="tok-kw">else</span> <span class="tok-number">2</span>;</span>
+<span class="line" id="L329">        window_start = std.mem.alignBackward(<span class="tok-type">usize</span>, diff_index - <span class="tok-builtin">@min</span>(diff_index, alignment), alignment);</span>
+<span class="line" id="L330">    }</span>
+<span class="line" id="L331">    <span class="tok-kw">const</span> expected_window = expected[window_start..<span class="tok-builtin">@min</span>(expected.len, window_start + max_window_size)];</span>
+<span class="line" id="L332">    <span class="tok-kw">const</span> expected_truncated = window_start + expected_window.len &lt; expected.len;</span>
+<span class="line" id="L333">    <span class="tok-kw">const</span> actual_window = actual[window_start..<span class="tok-builtin">@min</span>(actual.len, window_start + max_window_size)];</span>
+<span class="line" id="L334">    <span class="tok-kw">const</span> actual_truncated = window_start + actual_window.len &lt; actual.len;</span>
+<span class="line" id="L335"></span>
+<span class="line" id="L336">    <span class="tok-kw">const</span> stderr = std.io.getStdErr();</span>
+<span class="line" id="L337">    <span class="tok-kw">const</span> ttyconf = std.io.tty.detectConfig(stderr);</span>
+<span class="line" id="L338">    <span class="tok-kw">var</span> differ = <span class="tok-kw">if</span> (T == <span class="tok-type">u8</span>) BytesDiffer{</span>
+<span class="line" id="L339">        .expected = expected_window,</span>
+<span class="line" id="L340">        .actual = actual_window,</span>
+<span class="line" id="L341">        .ttyconf = ttyconf,</span>
+<span class="line" id="L342">    } <span class="tok-kw">else</span> SliceDiffer(T){</span>
+<span class="line" id="L343">        .start_index = window_start,</span>
 <span class="line" id="L344">        .expected = expected_window,</span>
 <span class="line" id="L345">        .actual = actual_window,</span>
 <span class="line" id="L346">        .ttyconf = ttyconf,</span>
-<span class="line" id="L347">    } <span class="tok-kw">else</span> SliceDiffer(T){</span>
-<span class="line" id="L348">        .start_index = window_start,</span>
-<span class="line" id="L349">        .expected = expected_window,</span>
-<span class="line" id="L350">        .actual = actual_window,</span>
-<span class="line" id="L351">        .ttyconf = ttyconf,</span>
-<span class="line" id="L352">    };</span>
-<span class="line" id="L353">    <span class="tok-kw">const</span> stderr = std.io.getStdErr();</span>
-<span class="line" id="L354"></span>
-<span class="line" id="L355">    <span class="tok-comment">// Print indexes as hex for slices of u8 since it's more likely to be binary data where</span>
+<span class="line" id="L347">    };</span>
+<span class="line" id="L348"></span>
+<span class="line" id="L349">    <span class="tok-comment">// Print indexes as hex for slices of u8 since it's more likely to be binary data where</span>
 </span>
-<span class="line" id="L356">    <span class="tok-comment">// that is usually useful.</span>
+<span class="line" id="L350">    <span class="tok-comment">// that is usually useful.</span>
 </span>
-<span class="line" id="L357">    <span class="tok-kw">const</span> index_fmt = <span class="tok-kw">if</span> (T == <span class="tok-type">u8</span>) <span class="tok-str">&quot;0x{X}&quot;</span> <span class="tok-kw">else</span> <span class="tok-str">&quot;{}&quot;</span>;</span>
-<span class="line" id="L358"></span>
-<span class="line" id="L359">    print(<span class="tok-str">&quot;\n============ expected this output: =============  len: {} (0x{X})\n\n&quot;</span>, .{ expected.len, expected.len });</span>
-<span class="line" id="L360">    <span class="tok-kw">if</span> (window_start &gt; <span class="tok-number">0</span>) {</span>
-<span class="line" id="L361">        <span class="tok-kw">if</span> (T == <span class="tok-type">u8</span>) {</span>
-<span class="line" id="L362">            print(<span class="tok-str">&quot;... truncated, start index: &quot;</span> ++ index_fmt ++ <span class="tok-str">&quot; ...\n&quot;</span>, .{window_start});</span>
-<span class="line" id="L363">        } <span class="tok-kw">else</span> {</span>
-<span class="line" id="L364">            print(<span class="tok-str">&quot;... truncated ...\n&quot;</span>, .{});</span>
-<span class="line" id="L365">        }</span>
-<span class="line" id="L366">    }</span>
-<span class="line" id="L367">    differ.write(stderr.writer()) <span class="tok-kw">catch</span> {};</span>
-<span class="line" id="L368">    <span class="tok-kw">if</span> (expected_truncated) {</span>
-<span class="line" id="L369">        <span class="tok-kw">const</span> end_offset = window_start + expected_window.len;</span>
-<span class="line" id="L370">        <span class="tok-kw">const</span> num_missing_items = expected.len - (window_start + expected_window.len);</span>
-<span class="line" id="L371">        <span class="tok-kw">if</span> (T == <span class="tok-type">u8</span>) {</span>
-<span class="line" id="L372">            print(<span class="tok-str">&quot;... truncated, indexes [&quot;</span> ++ index_fmt ++ <span class="tok-str">&quot;..] not shown, remaining bytes: &quot;</span> ++ index_fmt ++ <span class="tok-str">&quot; ...\n&quot;</span>, .{ end_offset, num_missing_items });</span>
-<span class="line" id="L373">        } <span class="tok-kw">else</span> {</span>
-<span class="line" id="L374">            print(<span class="tok-str">&quot;... truncated, remaining items: &quot;</span> ++ index_fmt ++ <span class="tok-str">&quot; ...\n&quot;</span>, .{num_missing_items});</span>
-<span class="line" id="L375">        }</span>
-<span class="line" id="L376">    }</span>
-<span class="line" id="L377"></span>
-<span class="line" id="L378">    <span class="tok-comment">// now reverse expected/actual and print again</span>
+<span class="line" id="L351">    <span class="tok-kw">const</span> index_fmt = <span class="tok-kw">if</span> (T == <span class="tok-type">u8</span>) <span class="tok-str">&quot;0x{X}&quot;</span> <span class="tok-kw">else</span> <span class="tok-str">&quot;{}&quot;</span>;</span>
+<span class="line" id="L352"></span>
+<span class="line" id="L353">    print(<span class="tok-str">&quot;\n============ expected this output: =============  len: {} (0x{X})\n\n&quot;</span>, .{ expected.len, expected.len });</span>
+<span class="line" id="L354">    <span class="tok-kw">if</span> (window_start &gt; <span class="tok-number">0</span>) {</span>
+<span class="line" id="L355">        <span class="tok-kw">if</span> (T == <span class="tok-type">u8</span>) {</span>
+<span class="line" id="L356">            print(<span class="tok-str">&quot;... truncated, start index: &quot;</span> ++ index_fmt ++ <span class="tok-str">&quot; ...\n&quot;</span>, .{window_start});</span>
+<span class="line" id="L357">        } <span class="tok-kw">else</span> {</span>
+<span class="line" id="L358">            print(<span class="tok-str">&quot;... truncated ...\n&quot;</span>, .{});</span>
+<span class="line" id="L359">        }</span>
+<span class="line" id="L360">    }</span>
+<span class="line" id="L361">    differ.write(stderr.writer()) <span class="tok-kw">catch</span> {};</span>
+<span class="line" id="L362">    <span class="tok-kw">if</span> (expected_truncated) {</span>
+<span class="line" id="L363">        <span class="tok-kw">const</span> end_offset = window_start + expected_window.len;</span>
+<span class="line" id="L364">        <span class="tok-kw">const</span> num_missing_items = expected.len - (window_start + expected_window.len);</span>
+<span class="line" id="L365">        <span class="tok-kw">if</span> (T == <span class="tok-type">u8</span>) {</span>
+<span class="line" id="L366">            print(<span class="tok-str">&quot;... truncated, indexes [&quot;</span> ++ index_fmt ++ <span class="tok-str">&quot;..] not shown, remaining bytes: &quot;</span> ++ index_fmt ++ <span class="tok-str">&quot; ...\n&quot;</span>, .{ end_offset, num_missing_items });</span>
+<span class="line" id="L367">        } <span class="tok-kw">else</span> {</span>
+<span class="line" id="L368">            print(<span class="tok-str">&quot;... truncated, remaining items: &quot;</span> ++ index_fmt ++ <span class="tok-str">&quot; ...\n&quot;</span>, .{num_missing_items});</span>
+<span class="line" id="L369">        }</span>
+<span class="line" id="L370">    }</span>
+<span class="line" id="L371"></span>
+<span class="line" id="L372">    <span class="tok-comment">// now reverse expected/actual and print again</span>
 </span>
-<span class="line" id="L379">    differ.expected = actual_window;</span>
-<span class="line" id="L380">    differ.actual = expected_window;</span>
-<span class="line" id="L381">    print(<span class="tok-str">&quot;\n============= instead found this: ==============  len: {} (0x{X})\n\n&quot;</span>, .{ actual.len, actual.len });</span>
-<span class="line" id="L382">    <span class="tok-kw">if</span> (window_start &gt; <span class="tok-number">0</span>) {</span>
-<span class="line" id="L383">        <span class="tok-kw">if</span> (T == <span class="tok-type">u8</span>) {</span>
-<span class="line" id="L384">            print(<span class="tok-str">&quot;... truncated, start index: &quot;</span> ++ index_fmt ++ <span class="tok-str">&quot; ...\n&quot;</span>, .{window_start});</span>
-<span class="line" id="L385">        } <span class="tok-kw">else</span> {</span>
-<span class="line" id="L386">            print(<span class="tok-str">&quot;... truncated ...\n&quot;</span>, .{});</span>
-<span class="line" id="L387">        }</span>
-<span class="line" id="L388">    }</span>
-<span class="line" id="L389">    differ.write(stderr.writer()) <span class="tok-kw">catch</span> {};</span>
-<span class="line" id="L390">    <span class="tok-kw">if</span> (actual_truncated) {</span>
-<span class="line" id="L391">        <span class="tok-kw">const</span> end_offset = window_start + actual_window.len;</span>
-<span class="line" id="L392">        <span class="tok-kw">const</span> num_missing_items = actual.len - (window_start + actual_window.len);</span>
-<span class="line" id="L393">        <span class="tok-kw">if</span> (T == <span class="tok-type">u8</span>) {</span>
-<span class="line" id="L394">            print(<span class="tok-str">&quot;... truncated, indexes [&quot;</span> ++ index_fmt ++ <span class="tok-str">&quot;..] not shown, remaining bytes: &quot;</span> ++ index_fmt ++ <span class="tok-str">&quot; ...\n&quot;</span>, .{ end_offset, num_missing_items });</span>
-<span class="line" id="L395">        } <span class="tok-kw">else</span> {</span>
-<span class="line" id="L396">            print(<span class="tok-str">&quot;... truncated, remaining items: &quot;</span> ++ index_fmt ++ <span class="tok-str">&quot; ...\n&quot;</span>, .{num_missing_items});</span>
-<span class="line" id="L397">        }</span>
-<span class="line" id="L398">    }</span>
-<span class="line" id="L399">    print(<span class="tok-str">&quot;\n================================================\n\n&quot;</span>, .{});</span>
-<span class="line" id="L400"></span>
-<span class="line" id="L401">    <span class="tok-kw">return</span> <span class="tok-kw">error</span>.TestExpectedEqual;</span>
-<span class="line" id="L402">}</span>
-<span class="line" id="L403"></span>
-<span class="line" id="L404"><span class="tok-kw">fn</span> <span class="tok-fn">SliceDiffer</span>(<span class="tok-kw">comptime</span> T: <span class="tok-type">type</span>) <span class="tok-type">type</span> {</span>
-<span class="line" id="L405">    <span class="tok-kw">return</span> <span class="tok-kw">struct</span> {</span>
-<span class="line" id="L406">        start_index: <span class="tok-type">usize</span>,</span>
-<span class="line" id="L407">        expected: []<span class="tok-kw">const</span> T,</span>
-<span class="line" id="L408">        actual: []<span class="tok-kw">const</span> T,</span>
-<span class="line" id="L409">        ttyconf: std.io.tty.Config,</span>
-<span class="line" id="L410"></span>
-<span class="line" id="L411">        <span class="tok-kw">const</span> Self = <span class="tok-builtin">@This</span>();</span>
-<span class="line" id="L412"></span>
-<span class="line" id="L413">        <span class="tok-kw">pub</span> <span class="tok-kw">fn</span> <span class="tok-fn">write</span>(self: Self, writer: <span class="tok-kw">anytype</span>) !<span class="tok-type">void</span> {</span>
-<span class="line" id="L414">            <span class="tok-kw">for</span> (self.expected, <span class="tok-number">0</span>..) |value, i| {</span>
-<span class="line" id="L415">                <span class="tok-kw">const</span> full_index = self.start_index + i;</span>
-<span class="line" id="L416">                <span class="tok-kw">const</span> diff = <span class="tok-kw">if</span> (i &lt; self.actual.len) !std.meta.eql(self.actual[i], value) <span class="tok-kw">else</span> <span class="tok-null">true</span>;</span>
-<span class="line" id="L417">                <span class="tok-kw">if</span> (diff) <span class="tok-kw">try</span> self.ttyconf.setColor(writer, .red);</span>
-<span class="line" id="L418">                <span class="tok-kw">if</span> (<span class="tok-builtin">@typeInfo</span>(T) == .Pointer) {</span>
-<span class="line" id="L419">                    <span class="tok-kw">try</span> writer.print(<span class="tok-str">&quot;[{}]{*}: {any}\n&quot;</span>, .{ full_index, value, value });</span>
-<span class="line" id="L420">                } <span class="tok-kw">else</span> {</span>
-<span class="line" id="L421">                    <span class="tok-kw">try</span> writer.print(<span class="tok-str">&quot;[{}]: {any}\n&quot;</span>, .{ full_index, value });</span>
-<span class="line" id="L422">                }</span>
-<span class="line" id="L423">                <span class="tok-kw">if</span> (diff) <span class="tok-kw">try</span> self.ttyconf.setColor(writer, .reset);</span>
-<span class="line" id="L424">            }</span>
-<span class="line" id="L425">        }</span>
-<span class="line" id="L426">    };</span>
-<span class="line" id="L427">}</span>
-<span class="line" id="L428"></span>
-<span class="line" id="L429"><span class="tok-kw">const</span> BytesDiffer = <span class="tok-kw">struct</span> {</span>
-<span class="line" id="L430">    expected: []<span class="tok-kw">const</span> <span class="tok-type">u8</span>,</span>
-<span class="line" id="L431">    actual: []<span class="tok-kw">const</span> <span class="tok-type">u8</span>,</span>
-<span class="line" id="L432">    ttyconf: std.io.tty.Config,</span>
-<span class="line" id="L433"></span>
-<span class="line" id="L434">    <span class="tok-kw">pub</span> <span class="tok-kw">fn</span> <span class="tok-fn">write</span>(self: BytesDiffer, writer: <span class="tok-kw">anytype</span>) !<span class="tok-type">void</span> {</span>
-<span class="line" id="L435">        <span class="tok-kw">var</span> expected_iterator = ChunkIterator{ .bytes = self.expected };</span>
-<span class="line" id="L436">        <span class="tok-kw">while</span> (expected_iterator.next()) |chunk| {</span>
-<span class="line" id="L437">            <span class="tok-comment">// to avoid having to calculate diffs twice per chunk</span>
+<span class="line" id="L373">    differ.expected = actual_window;</span>
+<span class="line" id="L374">    differ.actual = expected_window;</span>
+<span class="line" id="L375">    print(<span class="tok-str">&quot;\n============= instead found this: ==============  len: {} (0x{X})\n\n&quot;</span>, .{ actual.len, actual.len });</span>
+<span class="line" id="L376">    <span class="tok-kw">if</span> (window_start &gt; <span class="tok-number">0</span>) {</span>
+<span class="line" id="L377">        <span class="tok-kw">if</span> (T == <span class="tok-type">u8</span>) {</span>
+<span class="line" id="L378">            print(<span class="tok-str">&quot;... truncated, start index: &quot;</span> ++ index_fmt ++ <span class="tok-str">&quot; ...\n&quot;</span>, .{window_start});</span>
+<span class="line" id="L379">        } <span class="tok-kw">else</span> {</span>
+<span class="line" id="L380">            print(<span class="tok-str">&quot;... truncated ...\n&quot;</span>, .{});</span>
+<span class="line" id="L381">        }</span>
+<span class="line" id="L382">    }</span>
+<span class="line" id="L383">    differ.write(stderr.writer()) <span class="tok-kw">catch</span> {};</span>
+<span class="line" id="L384">    <span class="tok-kw">if</span> (actual_truncated) {</span>
+<span class="line" id="L385">        <span class="tok-kw">const</span> end_offset = window_start + actual_window.len;</span>
+<span class="line" id="L386">        <span class="tok-kw">const</span> num_missing_items = actual.len - (window_start + actual_window.len);</span>
+<span class="line" id="L387">        <span class="tok-kw">if</span> (T == <span class="tok-type">u8</span>) {</span>
+<span class="line" id="L388">            print(<span class="tok-str">&quot;... truncated, indexes [&quot;</span> ++ index_fmt ++ <span class="tok-str">&quot;..] not shown, remaining bytes: &quot;</span> ++ index_fmt ++ <span class="tok-str">&quot; ...\n&quot;</span>, .{ end_offset, num_missing_items });</span>
+<span class="line" id="L389">        } <span class="tok-kw">else</span> {</span>
+<span class="line" id="L390">            print(<span class="tok-str">&quot;... truncated, remaining items: &quot;</span> ++ index_fmt ++ <span class="tok-str">&quot; ...\n&quot;</span>, .{num_missing_items});</span>
+<span class="line" id="L391">        }</span>
+<span class="line" id="L392">    }</span>
+<span class="line" id="L393">    print(<span class="tok-str">&quot;\n================================================\n\n&quot;</span>, .{});</span>
+<span class="line" id="L394"></span>
+<span class="line" id="L395">    <span class="tok-kw">return</span> <span class="tok-kw">error</span>.TestExpectedEqual;</span>
+<span class="line" id="L396">}</span>
+<span class="line" id="L397"></span>
+<span class="line" id="L398"><span class="tok-kw">fn</span> <span class="tok-fn">SliceDiffer</span>(<span class="tok-kw">comptime</span> T: <span class="tok-type">type</span>) <span class="tok-type">type</span> {</span>
+<span class="line" id="L399">    <span class="tok-kw">return</span> <span class="tok-kw">struct</span> {</span>
+<span class="line" id="L400">        start_index: <span class="tok-type">usize</span>,</span>
+<span class="line" id="L401">        expected: []<span class="tok-kw">const</span> T,</span>
+<span class="line" id="L402">        actual: []<span class="tok-kw">const</span> T,</span>
+<span class="line" id="L403">        ttyconf: std.io.tty.Config,</span>
+<span class="line" id="L404"></span>
+<span class="line" id="L405">        <span class="tok-kw">const</span> Self = <span class="tok-builtin">@This</span>();</span>
+<span class="line" id="L406"></span>
+<span class="line" id="L407">        <span class="tok-kw">pub</span> <span class="tok-kw">fn</span> <span class="tok-fn">write</span>(self: Self, writer: <span class="tok-kw">anytype</span>) !<span class="tok-type">void</span> {</span>
+<span class="line" id="L408">            <span class="tok-kw">for</span> (self.expected, <span class="tok-number">0</span>..) |value, i| {</span>
+<span class="line" id="L409">                <span class="tok-kw">const</span> full_index = self.start_index + i;</span>
+<span class="line" id="L410">                <span class="tok-kw">const</span> diff = <span class="tok-kw">if</span> (i &lt; self.actual.len) !std.meta.eql(self.actual[i], value) <span class="tok-kw">else</span> <span class="tok-null">true</span>;</span>
+<span class="line" id="L411">                <span class="tok-kw">if</span> (diff) <span class="tok-kw">try</span> self.ttyconf.setColor(writer, .red);</span>
+<span class="line" id="L412">                <span class="tok-kw">if</span> (<span class="tok-builtin">@typeInfo</span>(T) == .Pointer) {</span>
+<span class="line" id="L413">                    <span class="tok-kw">try</span> writer.print(<span class="tok-str">&quot;[{}]{*}: {any}\n&quot;</span>, .{ full_index, value, value });</span>
+<span class="line" id="L414">                } <span class="tok-kw">else</span> {</span>
+<span class="line" id="L415">                    <span class="tok-kw">try</span> writer.print(<span class="tok-str">&quot;[{}]: {any}\n&quot;</span>, .{ full_index, value });</span>
+<span class="line" id="L416">                }</span>
+<span class="line" id="L417">                <span class="tok-kw">if</span> (diff) <span class="tok-kw">try</span> self.ttyconf.setColor(writer, .reset);</span>
+<span class="line" id="L418">            }</span>
+<span class="line" id="L419">        }</span>
+<span class="line" id="L420">    };</span>
+<span class="line" id="L421">}</span>
+<span class="line" id="L422"></span>
+<span class="line" id="L423"><span class="tok-kw">const</span> BytesDiffer = <span class="tok-kw">struct</span> {</span>
+<span class="line" id="L424">    expected: []<span class="tok-kw">const</span> <span class="tok-type">u8</span>,</span>
+<span class="line" id="L425">    actual: []<span class="tok-kw">const</span> <span class="tok-type">u8</span>,</span>
+<span class="line" id="L426">    ttyconf: std.io.tty.Config,</span>
+<span class="line" id="L427"></span>
+<span class="line" id="L428">    <span class="tok-kw">pub</span> <span class="tok-kw">fn</span> <span class="tok-fn">write</span>(self: BytesDiffer, writer: <span class="tok-kw">anytype</span>) !<span class="tok-type">void</span> {</span>
+<span class="line" id="L429">        <span class="tok-kw">var</span> expected_iterator = std.mem.window(<span class="tok-type">u8</span>, self.expected, <span class="tok-number">16</span>, <span class="tok-number">16</span>);</span>
+<span class="line" id="L430">        <span class="tok-kw">var</span> row: <span class="tok-type">usize</span> = <span class="tok-number">0</span>;</span>
+<span class="line" id="L431">        <span class="tok-kw">while</span> (expected_iterator.next()) |chunk| {</span>
+<span class="line" id="L432">            <span class="tok-comment">// to avoid having to calculate diffs twice per chunk</span>
 </span>
-<span class="line" id="L438">            <span class="tok-kw">var</span> diffs: std.bit_set.IntegerBitSet(<span class="tok-number">16</span>) = .{ .mask = <span class="tok-number">0</span> };</span>
-<span class="line" id="L439">            <span class="tok-kw">for</span> (chunk, <span class="tok-number">0</span>..) |byte, i| {</span>
-<span class="line" id="L440">                <span class="tok-kw">const</span> absolute_byte_index = (expected_iterator.index - chunk.len) + i;</span>
-<span class="line" id="L441">                <span class="tok-kw">const</span> diff = <span class="tok-kw">if</span> (absolute_byte_index &lt; self.actual.len) self.actual[absolute_byte_index] != byte <span class="tok-kw">else</span> <span class="tok-null">true</span>;</span>
-<span class="line" id="L442">                <span class="tok-kw">if</span> (diff) diffs.set(i);</span>
-<span class="line" id="L443">                <span class="tok-kw">try</span> self.writeByteDiff(writer, <span class="tok-str">&quot;{X:0&gt;2} &quot;</span>, byte, diff);</span>
-<span class="line" id="L444">                <span class="tok-kw">if</span> (i == <span class="tok-number">7</span>) <span class="tok-kw">try</span> writer.writeByte(<span class="tok-str">' '</span>);</span>
-<span class="line" id="L445">            }</span>
-<span class="line" id="L446">            <span class="tok-kw">try</span> writer.writeByte(<span class="tok-str">' '</span>);</span>
-<span class="line" id="L447">            <span class="tok-kw">if</span> (chunk.len &lt; <span class="tok-number">16</span>) {</span>
-<span class="line" id="L448">                <span class="tok-kw">var</span> missing_columns = (<span class="tok-number">16</span> - chunk.len) * <span class="tok-number">3</span>;</span>
-<span class="line" id="L449">                <span class="tok-kw">if</span> (chunk.len &lt; <span class="tok-number">8</span>) missing_columns += <span class="tok-number">1</span>;</span>
-<span class="line" id="L450">                <span class="tok-kw">try</span> writer.writeByteNTimes(<span class="tok-str">' '</span>, missing_columns);</span>
-<span class="line" id="L451">            }</span>
-<span class="line" id="L452">            <span class="tok-kw">for</span> (chunk, <span class="tok-number">0</span>..) |byte, i| {</span>
-<span class="line" id="L453">                <span class="tok-kw">const</span> byte_to_print = <span class="tok-kw">if</span> (std.ascii.isPrint(byte)) byte <span class="tok-kw">else</span> <span class="tok-str">'.'</span>;</span>
-<span class="line" id="L454">                <span class="tok-kw">try</span> self.writeByteDiff(writer, <span class="tok-str">&quot;{c}&quot;</span>, byte_to_print, diffs.isSet(i));</span>
-<span class="line" id="L455">            }</span>
-<span class="line" id="L456">            <span class="tok-kw">try</span> writer.writeByte(<span class="tok-str">'\n'</span>);</span>
-<span class="line" id="L457">        }</span>
-<span class="line" id="L458">    }</span>
-<span class="line" id="L459"></span>
-<span class="line" id="L460">    <span class="tok-kw">fn</span> <span class="tok-fn">writeByteDiff</span>(self: BytesDiffer, writer: <span class="tok-kw">anytype</span>, <span class="tok-kw">comptime</span> fmt: []<span class="tok-kw">const</span> <span class="tok-type">u8</span>, byte: <span class="tok-type">u8</span>, diff: <span class="tok-type">bool</span>) !<span class="tok-type">void</span> {</span>
-<span class="line" id="L461">        <span class="tok-kw">if</span> (diff) <span class="tok-kw">try</span> self.ttyconf.setColor(writer, .red);</span>
-<span class="line" id="L462">        <span class="tok-kw">try</span> writer.print(fmt, .{byte});</span>
-<span class="line" id="L463">        <span class="tok-kw">if</span> (diff) <span class="tok-kw">try</span> self.ttyconf.setColor(writer, .reset);</span>
-<span class="line" id="L464">    }</span>
-<span class="line" id="L465"></span>
-<span class="line" id="L466">    <span class="tok-kw">const</span> ChunkIterator = <span class="tok-kw">struct</span> {</span>
-<span class="line" id="L467">        bytes: []<span class="tok-kw">const</span> <span class="tok-type">u8</span>,</span>
-<span class="line" id="L468">        index: <span class="tok-type">usize</span> = <span class="tok-number">0</span>,</span>
-<span class="line" id="L469"></span>
-<span class="line" id="L470">        <span class="tok-kw">pub</span> <span class="tok-kw">fn</span> <span class="tok-fn">next</span>(self: *ChunkIterator) ?[]<span class="tok-kw">const</span> <span class="tok-type">u8</span> {</span>
-<span class="line" id="L471">            <span class="tok-kw">if</span> (self.index == self.bytes.len) <span class="tok-kw">return</span> <span class="tok-null">null</span>;</span>
-<span class="line" id="L472"></span>
-<span class="line" id="L473">            <span class="tok-kw">const</span> start_index = self.index;</span>
-<span class="line" id="L474">            <span class="tok-kw">const</span> end_index = <span class="tok-builtin">@min</span>(self.bytes.len, start_index + <span class="tok-number">16</span>);</span>
-<span class="line" id="L475">            self.index = end_index;</span>
-<span class="line" id="L476">            <span class="tok-kw">return</span> self.bytes[start_index..end_index];</span>
-<span class="line" id="L477">        }</span>
-<span class="line" id="L478">    };</span>
+<span class="line" id="L433">            <span class="tok-kw">var</span> diffs: std.bit_set.IntegerBitSet(<span class="tok-number">16</span>) = .{ .mask = <span class="tok-number">0</span> };</span>
+<span class="line" id="L434">            <span class="tok-kw">for</span> (chunk, <span class="tok-number">0</span>..) |byte, col| {</span>
+<span class="line" id="L435">                <span class="tok-kw">const</span> absolute_byte_index = col + row * <span class="tok-number">16</span>;</span>
+<span class="line" id="L436">                <span class="tok-kw">const</span> diff = <span class="tok-kw">if</span> (absolute_byte_index &lt; self.actual.len) self.actual[absolute_byte_index] != byte <span class="tok-kw">else</span> <span class="tok-null">true</span>;</span>
+<span class="line" id="L437">                <span class="tok-kw">if</span> (diff) diffs.set(col);</span>
+<span class="line" id="L438">                <span class="tok-kw">try</span> self.writeDiff(writer, <span class="tok-str">&quot;{X:0&gt;2} &quot;</span>, .{byte}, diff);</span>
+<span class="line" id="L439">                <span class="tok-kw">if</span> (col == <span class="tok-number">7</span>) <span class="tok-kw">try</span> writer.writeByte(<span class="tok-str">' '</span>);</span>
+<span class="line" id="L440">            }</span>
+<span class="line" id="L441">            <span class="tok-kw">try</span> writer.writeByte(<span class="tok-str">' '</span>);</span>
+<span class="line" id="L442">            <span class="tok-kw">if</span> (chunk.len &lt; <span class="tok-number">16</span>) {</span>
+<span class="line" id="L443">                <span class="tok-kw">var</span> missing_columns = (<span class="tok-number">16</span> - chunk.len) * <span class="tok-number">3</span>;</span>
+<span class="line" id="L444">                <span class="tok-kw">if</span> (chunk.len &lt; <span class="tok-number">8</span>) missing_columns += <span class="tok-number">1</span>;</span>
+<span class="line" id="L445">                <span class="tok-kw">try</span> writer.writeByteNTimes(<span class="tok-str">' '</span>, missing_columns);</span>
+<span class="line" id="L446">            }</span>
+<span class="line" id="L447">            <span class="tok-kw">for</span> (chunk, <span class="tok-number">0</span>..) |byte, col| {</span>
+<span class="line" id="L448">                <span class="tok-kw">const</span> diff = diffs.isSet(col);</span>
+<span class="line" id="L449">                <span class="tok-kw">if</span> (std.ascii.isPrint(byte)) {</span>
+<span class="line" id="L450">                    <span class="tok-kw">try</span> self.writeDiff(writer, <span class="tok-str">&quot;{c}&quot;</span>, .{byte}, diff);</span>
+<span class="line" id="L451">                } <span class="tok-kw">else</span> {</span>
+<span class="line" id="L452">                    <span class="tok-comment">// TODO: remove this `if` when https://github.com/ziglang/zig/issues/7600 is fixed</span>
+</span>
+<span class="line" id="L453">                    <span class="tok-kw">if</span> (self.ttyconf == .windows_api) {</span>
+<span class="line" id="L454">                        <span class="tok-kw">try</span> self.writeDiff(writer, <span class="tok-str">&quot;.&quot;</span>, .{}, diff);</span>
+<span class="line" id="L455">                        <span class="tok-kw">continue</span>;</span>
+<span class="line" id="L456">                    }</span>
+<span class="line" id="L457"></span>
+<span class="line" id="L458">                    <span class="tok-comment">// Let's print some common control codes as graphical Unicode symbols.</span>
+</span>
+<span class="line" id="L459">                    <span class="tok-comment">// We don't want to do this for all control codes because most control codes apart from</span>
+</span>
+<span class="line" id="L460">                    <span class="tok-comment">// the ones that Zig has escape sequences for are likely not very useful to print as symbols.</span>
+</span>
+<span class="line" id="L461">                    <span class="tok-kw">switch</span> (byte) {</span>
+<span class="line" id="L462">                        <span class="tok-str">'\n'</span> =&gt; <span class="tok-kw">try</span> self.writeDiff(writer, <span class="tok-str">&quot;␊&quot;</span>, .{}, diff),</span>
+<span class="line" id="L463">                        <span class="tok-str">'\r'</span> =&gt; <span class="tok-kw">try</span> self.writeDiff(writer, <span class="tok-str">&quot;␍&quot;</span>, .{}, diff),</span>
+<span class="line" id="L464">                        <span class="tok-str">'\t'</span> =&gt; <span class="tok-kw">try</span> self.writeDiff(writer, <span class="tok-str">&quot;␉&quot;</span>, .{}, diff),</span>
+<span class="line" id="L465">                        <span class="tok-kw">else</span> =&gt; <span class="tok-kw">try</span> self.writeDiff(writer, <span class="tok-str">&quot;.&quot;</span>, .{}, diff),</span>
+<span class="line" id="L466">                    }</span>
+<span class="line" id="L467">                }</span>
+<span class="line" id="L468">            }</span>
+<span class="line" id="L469">            <span class="tok-kw">try</span> writer.writeByte(<span class="tok-str">'\n'</span>);</span>
+<span class="line" id="L470">            row += <span class="tok-number">1</span>;</span>
+<span class="line" id="L471">        }</span>
+<span class="line" id="L472">    }</span>
+<span class="line" id="L473"></span>
+<span class="line" id="L474">    <span class="tok-kw">fn</span> <span class="tok-fn">writeDiff</span>(self: BytesDiffer, writer: <span class="tok-kw">anytype</span>, <span class="tok-kw">comptime</span> fmt: []<span class="tok-kw">const</span> <span class="tok-type">u8</span>, args: <span class="tok-kw">anytype</span>, diff: <span class="tok-type">bool</span>) !<span class="tok-type">void</span> {</span>
+<span class="line" id="L475">        <span class="tok-kw">if</span> (diff) <span class="tok-kw">try</span> self.ttyconf.setColor(writer, .red);</span>
+<span class="line" id="L476">        <span class="tok-kw">try</span> writer.print(fmt, args);</span>
+<span class="line" id="L477">        <span class="tok-kw">if</span> (diff) <span class="tok-kw">try</span> self.ttyconf.setColor(writer, .reset);</span>
+<span class="line" id="L478">    }</span>
 <span class="line" id="L479">};</span>
 <span class="line" id="L480"></span>
 <span class="line" id="L481"><span class="tok-kw">test</span> {</span>
@@ -1059,218 +1063,215 @@
 <span class="line" id="L926">        source.len;</span>
 <span class="line" id="L927"></span>
 <span class="line" id="L928">    printLine(source[line_begin_index..line_end_index]);</span>
-<span class="line" id="L929">    {</span>
-<span class="line" id="L930">        <span class="tok-kw">var</span> i: <span class="tok-type">usize</span> = line_begin_index;</span>
-<span class="line" id="L931">        <span class="tok-kw">while</span> (i &lt; indicator_index) : (i += <span class="tok-number">1</span>)</span>
-<span class="line" id="L932">            print(<span class="tok-str">&quot; &quot;</span>, .{});</span>
-<span class="line" id="L933">    }</span>
-<span class="line" id="L934">    <span class="tok-kw">if</span> (indicator_index &gt;= source.len)</span>
-<span class="line" id="L935">        print(<span class="tok-str">&quot;^ (end of string)\n&quot;</span>, .{})</span>
-<span class="line" id="L936">    <span class="tok-kw">else</span></span>
-<span class="line" id="L937">        print(<span class="tok-str">&quot;^ ('\\x{x:0&gt;2}')\n&quot;</span>, .{source[indicator_index]});</span>
-<span class="line" id="L938">}</span>
-<span class="line" id="L939"></span>
-<span class="line" id="L940"><span class="tok-kw">fn</span> <span class="tok-fn">printWithVisibleNewlines</span>(source: []<span class="tok-kw">const</span> <span class="tok-type">u8</span>) <span class="tok-type">void</span> {</span>
-<span class="line" id="L941">    <span class="tok-kw">var</span> i: <span class="tok-type">usize</span> = <span class="tok-number">0</span>;</span>
-<span class="line" id="L942">    <span class="tok-kw">while</span> (std.mem.indexOfScalar(<span class="tok-type">u8</span>, source[i..], <span class="tok-str">'\n'</span>)) |nl| : (i += nl + <span class="tok-number">1</span>) {</span>
-<span class="line" id="L943">        printLine(source[i..][<span class="tok-number">0</span>..nl]);</span>
-<span class="line" id="L944">    }</span>
-<span class="line" id="L945">    print(<span class="tok-str">&quot;{s}␃\n&quot;</span>, .{source[i..]}); <span class="tok-comment">// End of Text symbol (ETX)</span>
+<span class="line" id="L929">    <span class="tok-kw">for</span> (line_begin_index..indicator_index) |_|</span>
+<span class="line" id="L930">        print(<span class="tok-str">&quot; &quot;</span>, .{});</span>
+<span class="line" id="L931">    <span class="tok-kw">if</span> (indicator_index &gt;= source.len)</span>
+<span class="line" id="L932">        print(<span class="tok-str">&quot;^ (end of string)\n&quot;</span>, .{})</span>
+<span class="line" id="L933">    <span class="tok-kw">else</span></span>
+<span class="line" id="L934">        print(<span class="tok-str">&quot;^ ('\\x{x:0&gt;2}')\n&quot;</span>, .{source[indicator_index]});</span>
+<span class="line" id="L935">}</span>
+<span class="line" id="L936"></span>
+<span class="line" id="L937"><span class="tok-kw">fn</span> <span class="tok-fn">printWithVisibleNewlines</span>(source: []<span class="tok-kw">const</span> <span class="tok-type">u8</span>) <span class="tok-type">void</span> {</span>
+<span class="line" id="L938">    <span class="tok-kw">var</span> i: <span class="tok-type">usize</span> = <span class="tok-number">0</span>;</span>
+<span class="line" id="L939">    <span class="tok-kw">while</span> (std.mem.indexOfScalar(<span class="tok-type">u8</span>, source[i..], <span class="tok-str">'\n'</span>)) |nl| : (i += nl + <span class="tok-number">1</span>) {</span>
+<span class="line" id="L940">        printLine(source[i..][<span class="tok-number">0</span>..nl]);</span>
+<span class="line" id="L941">    }</span>
+<span class="line" id="L942">    print(<span class="tok-str">&quot;{s}␃\n&quot;</span>, .{source[i..]}); <span class="tok-comment">// End of Text symbol (ETX)</span>
 </span>
-<span class="line" id="L946">}</span>
-<span class="line" id="L947"></span>
-<span class="line" id="L948"><span class="tok-kw">fn</span> <span class="tok-fn">printLine</span>(line: []<span class="tok-kw">const</span> <span class="tok-type">u8</span>) <span class="tok-type">void</span> {</span>
-<span class="line" id="L949">    <span class="tok-kw">if</span> (line.len != <span class="tok-number">0</span>) <span class="tok-kw">switch</span> (line[line.len - <span class="tok-number">1</span>]) {</span>
-<span class="line" id="L950">        <span class="tok-str">' '</span>, <span class="tok-str">'\t'</span> =&gt; <span class="tok-kw">return</span> print(<span class="tok-str">&quot;{s}⏎\n&quot;</span>, .{line}), <span class="tok-comment">// Carriage return symbol,</span>
+<span class="line" id="L943">}</span>
+<span class="line" id="L944"></span>
+<span class="line" id="L945"><span class="tok-kw">fn</span> <span class="tok-fn">printLine</span>(line: []<span class="tok-kw">const</span> <span class="tok-type">u8</span>) <span class="tok-type">void</span> {</span>
+<span class="line" id="L946">    <span class="tok-kw">if</span> (line.len != <span class="tok-number">0</span>) <span class="tok-kw">switch</span> (line[line.len - <span class="tok-number">1</span>]) {</span>
+<span class="line" id="L947">        <span class="tok-str">' '</span>, <span class="tok-str">'\t'</span> =&gt; <span class="tok-kw">return</span> print(<span class="tok-str">&quot;{s}⏎\n&quot;</span>, .{line}), <span class="tok-comment">// Return symbol</span>
 </span>
-<span class="line" id="L951">        <span class="tok-kw">else</span> =&gt; {},</span>
-<span class="line" id="L952">    };</span>
-<span class="line" id="L953">    print(<span class="tok-str">&quot;{s}\n&quot;</span>, .{line});</span>
-<span class="line" id="L954">}</span>
-<span class="line" id="L955"></span>
-<span class="line" id="L956"><span class="tok-kw">test</span> {</span>
-<span class="line" id="L957">    <span class="tok-kw">try</span> expectEqualStrings(<span class="tok-str">&quot;foo&quot;</span>, <span class="tok-str">&quot;foo&quot;</span>);</span>
-<span class="line" id="L958">}</span>
-<span class="line" id="L959"></span>
-<span class="line" id="L960"><span class="tok-comment">/// Exhaustively check that allocation failures within `test_fn` are handled without</span></span>
-<span class="line" id="L961"><span class="tok-comment">/// introducing memory leaks. If used with the `testing.allocator` as the `backing_allocator`,</span></span>
-<span class="line" id="L962"><span class="tok-comment">/// it will also be able to detect double frees, etc (when runtime safety is enabled).</span></span>
-<span class="line" id="L963"><span class="tok-comment">///</span></span>
-<span class="line" id="L964"><span class="tok-comment">/// The provided `test_fn` must have a `std.mem.Allocator` as its first argument,</span></span>
-<span class="line" id="L965"><span class="tok-comment">/// and must have a return type of `!void`. Any extra arguments of `test_fn` can</span></span>
-<span class="line" id="L966"><span class="tok-comment">/// be provided via the `extra_args` tuple.</span></span>
-<span class="line" id="L967"><span class="tok-comment">///</span></span>
-<span class="line" id="L968"><span class="tok-comment">/// Any relevant state shared between runs of `test_fn` *must* be reset within `test_fn`.</span></span>
-<span class="line" id="L969"><span class="tok-comment">///</span></span>
-<span class="line" id="L970"><span class="tok-comment">/// The strategy employed is to:</span></span>
-<span class="line" id="L971"><span class="tok-comment">/// - Run the test function once to get the total number of allocations.</span></span>
-<span class="line" id="L972"><span class="tok-comment">/// - Then, iterate and run the function X more times, incrementing</span></span>
-<span class="line" id="L973"><span class="tok-comment">///   the failing index each iteration (where X is the total number of</span></span>
-<span class="line" id="L974"><span class="tok-comment">///   allocations determined previously)</span></span>
-<span class="line" id="L975"><span class="tok-comment">///</span></span>
-<span class="line" id="L976"><span class="tok-comment">/// Expects that `test_fn` has a deterministic number of memory allocations:</span></span>
-<span class="line" id="L977"><span class="tok-comment">/// - If an allocation was made to fail during a run of `test_fn`, but `test_fn`</span></span>
-<span class="line" id="L978"><span class="tok-comment">///   didn't return `error.OutOfMemory`, then `error.SwallowedOutOfMemoryError`</span></span>
-<span class="line" id="L979"><span class="tok-comment">///   is returned from `checkAllAllocationFailures`. You may want to ignore this</span></span>
-<span class="line" id="L980"><span class="tok-comment">///   depending on whether or not the code you're testing includes some strategies</span></span>
-<span class="line" id="L981"><span class="tok-comment">///   for recovering from `error.OutOfMemory`.</span></span>
-<span class="line" id="L982"><span class="tok-comment">/// - If a run of `test_fn` with an expected allocation failure executes without</span></span>
-<span class="line" id="L983"><span class="tok-comment">///   an allocation failure being induced, then `error.NondeterministicMemoryUsage`</span></span>
-<span class="line" id="L984"><span class="tok-comment">///   is returned. This error means that there are allocation points that won't be</span></span>
-<span class="line" id="L985"><span class="tok-comment">///   tested by the strategy this function employs (that is, there are sometimes more</span></span>
-<span class="line" id="L986"><span class="tok-comment">///   points of allocation than the initial run of `test_fn` detects).</span></span>
-<span class="line" id="L987"><span class="tok-comment">///</span></span>
-<span class="line" id="L988"><span class="tok-comment">/// ---</span></span>
+<span class="line" id="L948">        <span class="tok-kw">else</span> =&gt; {},</span>
+<span class="line" id="L949">    };</span>
+<span class="line" id="L950">    print(<span class="tok-str">&quot;{s}\n&quot;</span>, .{line});</span>
+<span class="line" id="L951">}</span>
+<span class="line" id="L952"></span>
+<span class="line" id="L953"><span class="tok-kw">test</span> {</span>
+<span class="line" id="L954">    <span class="tok-kw">try</span> expectEqualStrings(<span class="tok-str">&quot;foo&quot;</span>, <span class="tok-str">&quot;foo&quot;</span>);</span>
+<span class="line" id="L955">}</span>
+<span class="line" id="L956"></span>
+<span class="line" id="L957"><span class="tok-comment">/// Exhaustively check that allocation failures within `test_fn` are handled without</span></span>
+<span class="line" id="L958"><span class="tok-comment">/// introducing memory leaks. If used with the `testing.allocator` as the `backing_allocator`,</span></span>
+<span class="line" id="L959"><span class="tok-comment">/// it will also be able to detect double frees, etc (when runtime safety is enabled).</span></span>
+<span class="line" id="L960"><span class="tok-comment">///</span></span>
+<span class="line" id="L961"><span class="tok-comment">/// The provided `test_fn` must have a `std.mem.Allocator` as its first argument,</span></span>
+<span class="line" id="L962"><span class="tok-comment">/// and must have a return type of `!void`. Any extra arguments of `test_fn` can</span></span>
+<span class="line" id="L963"><span class="tok-comment">/// be provided via the `extra_args` tuple.</span></span>
+<span class="line" id="L964"><span class="tok-comment">///</span></span>
+<span class="line" id="L965"><span class="tok-comment">/// Any relevant state shared between runs of `test_fn` *must* be reset within `test_fn`.</span></span>
+<span class="line" id="L966"><span class="tok-comment">///</span></span>
+<span class="line" id="L967"><span class="tok-comment">/// The strategy employed is to:</span></span>
+<span class="line" id="L968"><span class="tok-comment">/// - Run the test function once to get the total number of allocations.</span></span>
+<span class="line" id="L969"><span class="tok-comment">/// - Then, iterate and run the function X more times, incrementing</span></span>
+<span class="line" id="L970"><span class="tok-comment">///   the failing index each iteration (where X is the total number of</span></span>
+<span class="line" id="L971"><span class="tok-comment">///   allocations determined previously)</span></span>
+<span class="line" id="L972"><span class="tok-comment">///</span></span>
+<span class="line" id="L973"><span class="tok-comment">/// Expects that `test_fn` has a deterministic number of memory allocations:</span></span>
+<span class="line" id="L974"><span class="tok-comment">/// - If an allocation was made to fail during a run of `test_fn`, but `test_fn`</span></span>
+<span class="line" id="L975"><span class="tok-comment">///   didn't return `error.OutOfMemory`, then `error.SwallowedOutOfMemoryError`</span></span>
+<span class="line" id="L976"><span class="tok-comment">///   is returned from `checkAllAllocationFailures`. You may want to ignore this</span></span>
+<span class="line" id="L977"><span class="tok-comment">///   depending on whether or not the code you're testing includes some strategies</span></span>
+<span class="line" id="L978"><span class="tok-comment">///   for recovering from `error.OutOfMemory`.</span></span>
+<span class="line" id="L979"><span class="tok-comment">/// - If a run of `test_fn` with an expected allocation failure executes without</span></span>
+<span class="line" id="L980"><span class="tok-comment">///   an allocation failure being induced, then `error.NondeterministicMemoryUsage`</span></span>
+<span class="line" id="L981"><span class="tok-comment">///   is returned. This error means that there are allocation points that won't be</span></span>
+<span class="line" id="L982"><span class="tok-comment">///   tested by the strategy this function employs (that is, there are sometimes more</span></span>
+<span class="line" id="L983"><span class="tok-comment">///   points of allocation than the initial run of `test_fn` detects).</span></span>
+<span class="line" id="L984"><span class="tok-comment">///</span></span>
+<span class="line" id="L985"><span class="tok-comment">/// ---</span></span>
+<span class="line" id="L986"><span class="tok-comment">///</span></span>
+<span class="line" id="L987"><span class="tok-comment">/// Here's an example using a simple test case that will cause a leak when the</span></span>
+<span class="line" id="L988"><span class="tok-comment">/// allocation of `bar` fails (but will pass normally):</span></span>
 <span class="line" id="L989"><span class="tok-comment">///</span></span>
-<span class="line" id="L990"><span class="tok-comment">/// Here's an example using a simple test case that will cause a leak when the</span></span>
-<span class="line" id="L991"><span class="tok-comment">/// allocation of `bar` fails (but will pass normally):</span></span>
-<span class="line" id="L992"><span class="tok-comment">///</span></span>
-<span class="line" id="L993"><span class="tok-comment">/// ```zig</span></span>
-<span class="line" id="L994"><span class="tok-comment">/// test {</span></span>
-<span class="line" id="L995"><span class="tok-comment">///     const length: usize = 10;</span></span>
-<span class="line" id="L996"><span class="tok-comment">///     const allocator = std.testing.allocator;</span></span>
-<span class="line" id="L997"><span class="tok-comment">///     var foo = try allocator.alloc(u8, length);</span></span>
-<span class="line" id="L998"><span class="tok-comment">///     var bar = try allocator.alloc(u8, length);</span></span>
-<span class="line" id="L999"><span class="tok-comment">///</span></span>
-<span class="line" id="L1000"><span class="tok-comment">///     allocator.free(foo);</span></span>
-<span class="line" id="L1001"><span class="tok-comment">///     allocator.free(bar);</span></span>
-<span class="line" id="L1002"><span class="tok-comment">/// }</span></span>
-<span class="line" id="L1003"><span class="tok-comment">/// ```</span></span>
+<span class="line" id="L990"><span class="tok-comment">/// ```zig</span></span>
+<span class="line" id="L991"><span class="tok-comment">/// test {</span></span>
+<span class="line" id="L992"><span class="tok-comment">///     const length: usize = 10;</span></span>
+<span class="line" id="L993"><span class="tok-comment">///     const allocator = std.testing.allocator;</span></span>
+<span class="line" id="L994"><span class="tok-comment">///     var foo = try allocator.alloc(u8, length);</span></span>
+<span class="line" id="L995"><span class="tok-comment">///     var bar = try allocator.alloc(u8, length);</span></span>
+<span class="line" id="L996"><span class="tok-comment">///</span></span>
+<span class="line" id="L997"><span class="tok-comment">///     allocator.free(foo);</span></span>
+<span class="line" id="L998"><span class="tok-comment">///     allocator.free(bar);</span></span>
+<span class="line" id="L999"><span class="tok-comment">/// }</span></span>
+<span class="line" id="L1000"><span class="tok-comment">/// ```</span></span>
+<span class="line" id="L1001"><span class="tok-comment">///</span></span>
+<span class="line" id="L1002"><span class="tok-comment">/// The test case can be converted to something that this function can use by</span></span>
+<span class="line" id="L1003"><span class="tok-comment">/// doing:</span></span>
 <span class="line" id="L1004"><span class="tok-comment">///</span></span>
-<span class="line" id="L1005"><span class="tok-comment">/// The test case can be converted to something that this function can use by</span></span>
-<span class="line" id="L1006"><span class="tok-comment">/// doing:</span></span>
-<span class="line" id="L1007"><span class="tok-comment">///</span></span>
-<span class="line" id="L1008"><span class="tok-comment">/// ```zig</span></span>
-<span class="line" id="L1009"><span class="tok-comment">/// fn testImpl(allocator: std.mem.Allocator, length: usize) !void {</span></span>
-<span class="line" id="L1010"><span class="tok-comment">///     var foo = try allocator.alloc(u8, length);</span></span>
-<span class="line" id="L1011"><span class="tok-comment">///     var bar = try allocator.alloc(u8, length);</span></span>
-<span class="line" id="L1012"><span class="tok-comment">///</span></span>
-<span class="line" id="L1013"><span class="tok-comment">///     allocator.free(foo);</span></span>
-<span class="line" id="L1014"><span class="tok-comment">///     allocator.free(bar);</span></span>
-<span class="line" id="L1015"><span class="tok-comment">/// }</span></span>
-<span class="line" id="L1016"><span class="tok-comment">///</span></span>
-<span class="line" id="L1017"><span class="tok-comment">/// test {</span></span>
-<span class="line" id="L1018"><span class="tok-comment">///     const length: usize = 10;</span></span>
-<span class="line" id="L1019"><span class="tok-comment">///     const allocator = std.testing.allocator;</span></span>
-<span class="line" id="L1020"><span class="tok-comment">///     try std.testing.checkAllAllocationFailures(allocator, testImpl, .{length});</span></span>
-<span class="line" id="L1021"><span class="tok-comment">/// }</span></span>
-<span class="line" id="L1022"><span class="tok-comment">/// ```</span></span>
+<span class="line" id="L1005"><span class="tok-comment">/// ```zig</span></span>
+<span class="line" id="L1006"><span class="tok-comment">/// fn testImpl(allocator: std.mem.Allocator, length: usize) !void {</span></span>
+<span class="line" id="L1007"><span class="tok-comment">///     var foo = try allocator.alloc(u8, length);</span></span>
+<span class="line" id="L1008"><span class="tok-comment">///     var bar = try allocator.alloc(u8, length);</span></span>
+<span class="line" id="L1009"><span class="tok-comment">///</span></span>
+<span class="line" id="L1010"><span class="tok-comment">///     allocator.free(foo);</span></span>
+<span class="line" id="L1011"><span class="tok-comment">///     allocator.free(bar);</span></span>
+<span class="line" id="L1012"><span class="tok-comment">/// }</span></span>
+<span class="line" id="L1013"><span class="tok-comment">///</span></span>
+<span class="line" id="L1014"><span class="tok-comment">/// test {</span></span>
+<span class="line" id="L1015"><span class="tok-comment">///     const length: usize = 10;</span></span>
+<span class="line" id="L1016"><span class="tok-comment">///     const allocator = std.testing.allocator;</span></span>
+<span class="line" id="L1017"><span class="tok-comment">///     try std.testing.checkAllAllocationFailures(allocator, testImpl, .{length});</span></span>
+<span class="line" id="L1018"><span class="tok-comment">/// }</span></span>
+<span class="line" id="L1019"><span class="tok-comment">/// ```</span></span>
+<span class="line" id="L1020"><span class="tok-comment">///</span></span>
+<span class="line" id="L1021"><span class="tok-comment">/// Running this test will show that `foo` is leaked when the allocation of</span></span>
+<span class="line" id="L1022"><span class="tok-comment">/// `bar` fails. The simplest fix, in this case, would be to use defer like so:</span></span>
 <span class="line" id="L1023"><span class="tok-comment">///</span></span>
-<span class="line" id="L1024"><span class="tok-comment">/// Running this test will show that `foo` is leaked when the allocation of</span></span>
-<span class="line" id="L1025"><span class="tok-comment">/// `bar` fails. The simplest fix, in this case, would be to use defer like so:</span></span>
-<span class="line" id="L1026"><span class="tok-comment">///</span></span>
-<span class="line" id="L1027"><span class="tok-comment">/// ```zig</span></span>
-<span class="line" id="L1028"><span class="tok-comment">/// fn testImpl(allocator: std.mem.Allocator, length: usize) !void {</span></span>
-<span class="line" id="L1029"><span class="tok-comment">///     var foo = try allocator.alloc(u8, length);</span></span>
-<span class="line" id="L1030"><span class="tok-comment">///     defer allocator.free(foo);</span></span>
-<span class="line" id="L1031"><span class="tok-comment">///     var bar = try allocator.alloc(u8, length);</span></span>
-<span class="line" id="L1032"><span class="tok-comment">///     defer allocator.free(bar);</span></span>
-<span class="line" id="L1033"><span class="tok-comment">/// }</span></span>
-<span class="line" id="L1034"><span class="tok-comment">/// ```</span></span>
-<span class="line" id="L1035"><span class="tok-kw">pub</span> <span class="tok-kw">fn</span> <span class="tok-fn">checkAllAllocationFailures</span>(backing_allocator: std.mem.Allocator, <span class="tok-kw">comptime</span> test_fn: <span class="tok-kw">anytype</span>, extra_args: <span class="tok-kw">anytype</span>) !<span class="tok-type">void</span> {</span>
-<span class="line" id="L1036">    <span class="tok-kw">switch</span> (<span class="tok-builtin">@typeInfo</span>(<span class="tok-builtin">@typeInfo</span>(<span class="tok-builtin">@TypeOf</span>(test_fn)).Fn.return_type.?)) {</span>
-<span class="line" id="L1037">        .ErrorUnion =&gt; |info| {</span>
-<span class="line" id="L1038">            <span class="tok-kw">if</span> (info.payload != <span class="tok-type">void</span>) {</span>
-<span class="line" id="L1039">                <span class="tok-builtin">@compileError</span>(<span class="tok-str">&quot;Return type must be !void&quot;</span>);</span>
-<span class="line" id="L1040">            }</span>
-<span class="line" id="L1041">        },</span>
-<span class="line" id="L1042">        <span class="tok-kw">else</span> =&gt; <span class="tok-builtin">@compileError</span>(<span class="tok-str">&quot;Return type must be !void&quot;</span>),</span>
+<span class="line" id="L1024"><span class="tok-comment">/// ```zig</span></span>
+<span class="line" id="L1025"><span class="tok-comment">/// fn testImpl(allocator: std.mem.Allocator, length: usize) !void {</span></span>
+<span class="line" id="L1026"><span class="tok-comment">///     var foo = try allocator.alloc(u8, length);</span></span>
+<span class="line" id="L1027"><span class="tok-comment">///     defer allocator.free(foo);</span></span>
+<span class="line" id="L1028"><span class="tok-comment">///     var bar = try allocator.alloc(u8, length);</span></span>
+<span class="line" id="L1029"><span class="tok-comment">///     defer allocator.free(bar);</span></span>
+<span class="line" id="L1030"><span class="tok-comment">/// }</span></span>
+<span class="line" id="L1031"><span class="tok-comment">/// ```</span></span>
+<span class="line" id="L1032"><span class="tok-kw">pub</span> <span class="tok-kw">fn</span> <span class="tok-fn">checkAllAllocationFailures</span>(backing_allocator: std.mem.Allocator, <span class="tok-kw">comptime</span> test_fn: <span class="tok-kw">anytype</span>, extra_args: <span class="tok-kw">anytype</span>) !<span class="tok-type">void</span> {</span>
+<span class="line" id="L1033">    <span class="tok-kw">switch</span> (<span class="tok-builtin">@typeInfo</span>(<span class="tok-builtin">@typeInfo</span>(<span class="tok-builtin">@TypeOf</span>(test_fn)).Fn.return_type.?)) {</span>
+<span class="line" id="L1034">        .ErrorUnion =&gt; |info| {</span>
+<span class="line" id="L1035">            <span class="tok-kw">if</span> (info.payload != <span class="tok-type">void</span>) {</span>
+<span class="line" id="L1036">                <span class="tok-builtin">@compileError</span>(<span class="tok-str">&quot;Return type must be !void&quot;</span>);</span>
+<span class="line" id="L1037">            }</span>
+<span class="line" id="L1038">        },</span>
+<span class="line" id="L1039">        <span class="tok-kw">else</span> =&gt; <span class="tok-builtin">@compileError</span>(<span class="tok-str">&quot;Return type must be !void&quot;</span>),</span>
+<span class="line" id="L1040">    }</span>
+<span class="line" id="L1041">    <span class="tok-kw">if</span> (<span class="tok-builtin">@typeInfo</span>(<span class="tok-builtin">@TypeOf</span>(extra_args)) != .Struct) {</span>
+<span class="line" id="L1042">        <span class="tok-builtin">@compileError</span>(<span class="tok-str">&quot;Expected tuple or struct argument, found &quot;</span> ++ <span class="tok-builtin">@typeName</span>(<span class="tok-builtin">@TypeOf</span>(extra_args)));</span>
 <span class="line" id="L1043">    }</span>
-<span class="line" id="L1044">    <span class="tok-kw">if</span> (<span class="tok-builtin">@typeInfo</span>(<span class="tok-builtin">@TypeOf</span>(extra_args)) != .Struct) {</span>
-<span class="line" id="L1045">        <span class="tok-builtin">@compileError</span>(<span class="tok-str">&quot;Expected tuple or struct argument, found &quot;</span> ++ <span class="tok-builtin">@typeName</span>(<span class="tok-builtin">@TypeOf</span>(extra_args)));</span>
-<span class="line" id="L1046">    }</span>
-<span class="line" id="L1047"></span>
-<span class="line" id="L1048">    <span class="tok-kw">const</span> ArgsTuple = std.meta.ArgsTuple(<span class="tok-builtin">@TypeOf</span>(test_fn));</span>
-<span class="line" id="L1049">    <span class="tok-kw">const</span> fn_args_fields = <span class="tok-builtin">@typeInfo</span>(ArgsTuple).Struct.fields;</span>
-<span class="line" id="L1050">    <span class="tok-kw">if</span> (fn_args_fields.len == <span class="tok-number">0</span> <span class="tok-kw">or</span> fn_args_fields[<span class="tok-number">0</span>].<span class="tok-type">type</span> != std.mem.Allocator) {</span>
-<span class="line" id="L1051">        <span class="tok-builtin">@compileError</span>(<span class="tok-str">&quot;The provided function must have an &quot;</span> ++ <span class="tok-builtin">@typeName</span>(std.mem.Allocator) ++ <span class="tok-str">&quot; as its first argument&quot;</span>);</span>
-<span class="line" id="L1052">    }</span>
-<span class="line" id="L1053">    <span class="tok-kw">const</span> expected_args_tuple_len = fn_args_fields.len - <span class="tok-number">1</span>;</span>
-<span class="line" id="L1054">    <span class="tok-kw">if</span> (extra_args.len != expected_args_tuple_len) {</span>
-<span class="line" id="L1055">        <span class="tok-builtin">@compileError</span>(<span class="tok-str">&quot;The provided function expects &quot;</span> ++ std.fmt.comptimePrint(<span class="tok-str">&quot;{d}&quot;</span>, .{expected_args_tuple_len}) ++ <span class="tok-str">&quot; extra arguments, but the provided tuple contains &quot;</span> ++ std.fmt.comptimePrint(<span class="tok-str">&quot;{d}&quot;</span>, .{extra_args.len}));</span>
-<span class="line" id="L1056">    }</span>
-<span class="line" id="L1057"></span>
-<span class="line" id="L1058">    <span class="tok-comment">// Setup the tuple that will actually be used with @call (we'll need to insert</span>
+<span class="line" id="L1044"></span>
+<span class="line" id="L1045">    <span class="tok-kw">const</span> ArgsTuple = std.meta.ArgsTuple(<span class="tok-builtin">@TypeOf</span>(test_fn));</span>
+<span class="line" id="L1046">    <span class="tok-kw">const</span> fn_args_fields = <span class="tok-builtin">@typeInfo</span>(ArgsTuple).Struct.fields;</span>
+<span class="line" id="L1047">    <span class="tok-kw">if</span> (fn_args_fields.len == <span class="tok-number">0</span> <span class="tok-kw">or</span> fn_args_fields[<span class="tok-number">0</span>].<span class="tok-type">type</span> != std.mem.Allocator) {</span>
+<span class="line" id="L1048">        <span class="tok-builtin">@compileError</span>(<span class="tok-str">&quot;The provided function must have an &quot;</span> ++ <span class="tok-builtin">@typeName</span>(std.mem.Allocator) ++ <span class="tok-str">&quot; as its first argument&quot;</span>);</span>
+<span class="line" id="L1049">    }</span>
+<span class="line" id="L1050">    <span class="tok-kw">const</span> expected_args_tuple_len = fn_args_fields.len - <span class="tok-number">1</span>;</span>
+<span class="line" id="L1051">    <span class="tok-kw">if</span> (extra_args.len != expected_args_tuple_len) {</span>
+<span class="line" id="L1052">        <span class="tok-builtin">@compileError</span>(<span class="tok-str">&quot;The provided function expects &quot;</span> ++ std.fmt.comptimePrint(<span class="tok-str">&quot;{d}&quot;</span>, .{expected_args_tuple_len}) ++ <span class="tok-str">&quot; extra arguments, but the provided tuple contains &quot;</span> ++ std.fmt.comptimePrint(<span class="tok-str">&quot;{d}&quot;</span>, .{extra_args.len}));</span>
+<span class="line" id="L1053">    }</span>
+<span class="line" id="L1054"></span>
+<span class="line" id="L1055">    <span class="tok-comment">// Setup the tuple that will actually be used with @call (we'll need to insert</span>
 </span>
-<span class="line" id="L1059">    <span class="tok-comment">// the failing allocator in field @&quot;0&quot; before each @call)</span>
+<span class="line" id="L1056">    <span class="tok-comment">// the failing allocator in field @&quot;0&quot; before each @call)</span>
 </span>
-<span class="line" id="L1060">    <span class="tok-kw">var</span> args: ArgsTuple = <span class="tok-null">undefined</span>;</span>
-<span class="line" id="L1061">    <span class="tok-kw">inline</span> <span class="tok-kw">for</span> (<span class="tok-builtin">@typeInfo</span>(<span class="tok-builtin">@TypeOf</span>(extra_args)).Struct.fields, <span class="tok-number">0</span>..) |field, i| {</span>
-<span class="line" id="L1062">        <span class="tok-kw">const</span> arg_i_str = <span class="tok-kw">comptime</span> str: {</span>
-<span class="line" id="L1063">            <span class="tok-kw">var</span> str_buf: [<span class="tok-number">100</span>]<span class="tok-type">u8</span> = <span class="tok-null">undefined</span>;</span>
-<span class="line" id="L1064">            <span class="tok-kw">const</span> args_i = i + <span class="tok-number">1</span>;</span>
-<span class="line" id="L1065">            <span class="tok-kw">const</span> str_len = std.fmt.formatIntBuf(&amp;str_buf, args_i, <span class="tok-number">10</span>, .lower, .{});</span>
-<span class="line" id="L1066">            <span class="tok-kw">break</span> :str str_buf[<span class="tok-number">0</span>..str_len];</span>
-<span class="line" id="L1067">        };</span>
-<span class="line" id="L1068">        <span class="tok-builtin">@field</span>(args, arg_i_str) = <span class="tok-builtin">@field</span>(extra_args, field.name);</span>
-<span class="line" id="L1069">    }</span>
-<span class="line" id="L1070"></span>
-<span class="line" id="L1071">    <span class="tok-comment">// Try it once with unlimited memory, make sure it works</span>
+<span class="line" id="L1057">    <span class="tok-kw">var</span> args: ArgsTuple = <span class="tok-null">undefined</span>;</span>
+<span class="line" id="L1058">    <span class="tok-kw">inline</span> <span class="tok-kw">for</span> (<span class="tok-builtin">@typeInfo</span>(<span class="tok-builtin">@TypeOf</span>(extra_args)).Struct.fields, <span class="tok-number">0</span>..) |field, i| {</span>
+<span class="line" id="L1059">        <span class="tok-kw">const</span> arg_i_str = <span class="tok-kw">comptime</span> str: {</span>
+<span class="line" id="L1060">            <span class="tok-kw">var</span> str_buf: [<span class="tok-number">100</span>]<span class="tok-type">u8</span> = <span class="tok-null">undefined</span>;</span>
+<span class="line" id="L1061">            <span class="tok-kw">const</span> args_i = i + <span class="tok-number">1</span>;</span>
+<span class="line" id="L1062">            <span class="tok-kw">const</span> str_len = std.fmt.formatIntBuf(&amp;str_buf, args_i, <span class="tok-number">10</span>, .lower, .{});</span>
+<span class="line" id="L1063">            <span class="tok-kw">break</span> :str str_buf[<span class="tok-number">0</span>..str_len];</span>
+<span class="line" id="L1064">        };</span>
+<span class="line" id="L1065">        <span class="tok-builtin">@field</span>(args, arg_i_str) = <span class="tok-builtin">@field</span>(extra_args, field.name);</span>
+<span class="line" id="L1066">    }</span>
+<span class="line" id="L1067"></span>
+<span class="line" id="L1068">    <span class="tok-comment">// Try it once with unlimited memory, make sure it works</span>
 </span>
-<span class="line" id="L1072">    <span class="tok-kw">const</span> needed_alloc_count = x: {</span>
-<span class="line" id="L1073">        <span class="tok-kw">var</span> failing_allocator_inst = std.testing.FailingAllocator.init(backing_allocator, .{});</span>
-<span class="line" id="L1074">        args.@&quot;0&quot; = failing_allocator_inst.allocator();</span>
-<span class="line" id="L1075"></span>
-<span class="line" id="L1076">        <span class="tok-kw">try</span> <span class="tok-builtin">@call</span>(.auto, test_fn, args);</span>
-<span class="line" id="L1077">        <span class="tok-kw">break</span> :x failing_allocator_inst.alloc_index;</span>
-<span class="line" id="L1078">    };</span>
-<span class="line" id="L1079"></span>
-<span class="line" id="L1080">    <span class="tok-kw">var</span> fail_index: <span class="tok-type">usize</span> = <span class="tok-number">0</span>;</span>
-<span class="line" id="L1081">    <span class="tok-kw">while</span> (fail_index &lt; needed_alloc_count) : (fail_index += <span class="tok-number">1</span>) {</span>
-<span class="line" id="L1082">        <span class="tok-kw">var</span> failing_allocator_inst = std.testing.FailingAllocator.init(backing_allocator, .{ .fail_index = fail_index });</span>
-<span class="line" id="L1083">        args.@&quot;0&quot; = failing_allocator_inst.allocator();</span>
-<span class="line" id="L1084"></span>
-<span class="line" id="L1085">        <span class="tok-kw">if</span> (<span class="tok-builtin">@call</span>(.auto, test_fn, args)) |_| {</span>
-<span class="line" id="L1086">            <span class="tok-kw">if</span> (failing_allocator_inst.has_induced_failure) {</span>
-<span class="line" id="L1087">                <span class="tok-kw">return</span> <span class="tok-kw">error</span>.SwallowedOutOfMemoryError;</span>
-<span class="line" id="L1088">            } <span class="tok-kw">else</span> {</span>
-<span class="line" id="L1089">                <span class="tok-kw">return</span> <span class="tok-kw">error</span>.NondeterministicMemoryUsage;</span>
-<span class="line" id="L1090">            }</span>
-<span class="line" id="L1091">        } <span class="tok-kw">else</span> |err| <span class="tok-kw">switch</span> (err) {</span>
-<span class="line" id="L1092">            <span class="tok-kw">error</span>.OutOfMemory =&gt; {</span>
-<span class="line" id="L1093">                <span class="tok-kw">if</span> (failing_allocator_inst.allocated_bytes != failing_allocator_inst.freed_bytes) {</span>
-<span class="line" id="L1094">                    print(</span>
-<span class="line" id="L1095">                        <span class="tok-str">&quot;\nfail_index: {d}/{d}\nallocated bytes: {d}\nfreed bytes: {d}\nallocations: {d}\ndeallocations: {d}\nallocation that was made to fail: {}&quot;</span>,</span>
-<span class="line" id="L1096">                        .{</span>
-<span class="line" id="L1097">                            fail_index,</span>
-<span class="line" id="L1098">                            needed_alloc_count,</span>
-<span class="line" id="L1099">                            failing_allocator_inst.allocated_bytes,</span>
-<span class="line" id="L1100">                            failing_allocator_inst.freed_bytes,</span>
-<span class="line" id="L1101">                            failing_allocator_inst.allocations,</span>
-<span class="line" id="L1102">                            failing_allocator_inst.deallocations,</span>
-<span class="line" id="L1103">                            failing_allocator_inst.getStackTrace(),</span>
-<span class="line" id="L1104">                        },</span>
-<span class="line" id="L1105">                    );</span>
-<span class="line" id="L1106">                    <span class="tok-kw">return</span> <span class="tok-kw">error</span>.MemoryLeakDetected;</span>
-<span class="line" id="L1107">                }</span>
-<span class="line" id="L1108">            },</span>
-<span class="line" id="L1109">            <span class="tok-kw">else</span> =&gt; <span class="tok-kw">return</span> err,</span>
-<span class="line" id="L1110">        }</span>
-<span class="line" id="L1111">    }</span>
-<span class="line" id="L1112">}</span>
-<span class="line" id="L1113"></span>
-<span class="line" id="L1114"><span class="tok-comment">/// Given a type, references all the declarations inside, so that the semantic analyzer sees them.</span></span>
-<span class="line" id="L1115"><span class="tok-kw">pub</span> <span class="tok-kw">fn</span> <span class="tok-fn">refAllDecls</span>(<span class="tok-kw">comptime</span> T: <span class="tok-type">type</span>) <span class="tok-type">void</span> {</span>
-<span class="line" id="L1116">    <span class="tok-kw">if</span> (!builtin.is_test) <span class="tok-kw">return</span>;</span>
-<span class="line" id="L1117">    <span class="tok-kw">inline</span> <span class="tok-kw">for</span> (<span class="tok-kw">comptime</span> std.meta.declarations(T)) |decl| {</span>
-<span class="line" id="L1118">        _ = &amp;<span class="tok-builtin">@field</span>(T, decl.name);</span>
-<span class="line" id="L1119">    }</span>
-<span class="line" id="L1120">}</span>
-<span class="line" id="L1121"></span>
-<span class="line" id="L1122"><span class="tok-comment">/// Given a type, recursively references all the declarations inside, so that the semantic analyzer sees them.</span></span>
-<span class="line" id="L1123"><span class="tok-comment">/// For deep types, you may use `@setEvalBranchQuota`.</span></span>
-<span class="line" id="L1124"><span class="tok-kw">pub</span> <span class="tok-kw">fn</span> <span class="tok-fn">refAllDeclsRecursive</span>(<span class="tok-kw">comptime</span> T: <span class="tok-type">type</span>) <span class="tok-type">void</span> {</span>
-<span class="line" id="L1125">    <span class="tok-kw">if</span> (!builtin.is_test) <span class="tok-kw">return</span>;</span>
-<span class="line" id="L1126">    <span class="tok-kw">inline</span> <span class="tok-kw">for</span> (<span class="tok-kw">comptime</span> std.meta.declarations(T)) |decl| {</span>
-<span class="line" id="L1127">        <span class="tok-kw">if</span> (<span class="tok-builtin">@TypeOf</span>(<span class="tok-builtin">@field</span>(T, decl.name)) == <span class="tok-type">type</span>) {</span>
-<span class="line" id="L1128">            <span class="tok-kw">switch</span> (<span class="tok-builtin">@typeInfo</span>(<span class="tok-builtin">@field</span>(T, decl.name))) {</span>
-<span class="line" id="L1129">                .Struct, .Enum, .Union, .Opaque =&gt; refAllDeclsRecursive(<span class="tok-builtin">@field</span>(T, decl.name)),</span>
-<span class="line" id="L1130">                <span class="tok-kw">else</span> =&gt; {},</span>
-<span class="line" id="L1131">            }</span>
-<span class="line" id="L1132">        }</span>
-<span class="line" id="L1133">        _ = &amp;<span class="tok-builtin">@field</span>(T, decl.name);</span>
-<span class="line" id="L1134">    }</span>
-<span class="line" id="L1135">}</span>
-<span class="line" id="L1136"></span>
+<span class="line" id="L1069">    <span class="tok-kw">const</span> needed_alloc_count = x: {</span>
+<span class="line" id="L1070">        <span class="tok-kw">var</span> failing_allocator_inst = std.testing.FailingAllocator.init(backing_allocator, .{});</span>
+<span class="line" id="L1071">        args.@&quot;0&quot; = failing_allocator_inst.allocator();</span>
+<span class="line" id="L1072"></span>
+<span class="line" id="L1073">        <span class="tok-kw">try</span> <span class="tok-builtin">@call</span>(.auto, test_fn, args);</span>
+<span class="line" id="L1074">        <span class="tok-kw">break</span> :x failing_allocator_inst.alloc_index;</span>
+<span class="line" id="L1075">    };</span>
+<span class="line" id="L1076"></span>
+<span class="line" id="L1077">    <span class="tok-kw">var</span> fail_index: <span class="tok-type">usize</span> = <span class="tok-number">0</span>;</span>
+<span class="line" id="L1078">    <span class="tok-kw">while</span> (fail_index &lt; needed_alloc_count) : (fail_index += <span class="tok-number">1</span>) {</span>
+<span class="line" id="L1079">        <span class="tok-kw">var</span> failing_allocator_inst = std.testing.FailingAllocator.init(backing_allocator, .{ .fail_index = fail_index });</span>
+<span class="line" id="L1080">        args.@&quot;0&quot; = failing_allocator_inst.allocator();</span>
+<span class="line" id="L1081"></span>
+<span class="line" id="L1082">        <span class="tok-kw">if</span> (<span class="tok-builtin">@call</span>(.auto, test_fn, args)) |_| {</span>
+<span class="line" id="L1083">            <span class="tok-kw">if</span> (failing_allocator_inst.has_induced_failure) {</span>
+<span class="line" id="L1084">                <span class="tok-kw">return</span> <span class="tok-kw">error</span>.SwallowedOutOfMemoryError;</span>
+<span class="line" id="L1085">            } <span class="tok-kw">else</span> {</span>
+<span class="line" id="L1086">                <span class="tok-kw">return</span> <span class="tok-kw">error</span>.NondeterministicMemoryUsage;</span>
+<span class="line" id="L1087">            }</span>
+<span class="line" id="L1088">        } <span class="tok-kw">else</span> |err| <span class="tok-kw">switch</span> (err) {</span>
+<span class="line" id="L1089">            <span class="tok-kw">error</span>.OutOfMemory =&gt; {</span>
+<span class="line" id="L1090">                <span class="tok-kw">if</span> (failing_allocator_inst.allocated_bytes != failing_allocator_inst.freed_bytes) {</span>
+<span class="line" id="L1091">                    print(</span>
+<span class="line" id="L1092">                        <span class="tok-str">&quot;\nfail_index: {d}/{d}\nallocated bytes: {d}\nfreed bytes: {d}\nallocations: {d}\ndeallocations: {d}\nallocation that was made to fail: {}&quot;</span>,</span>
+<span class="line" id="L1093">                        .{</span>
+<span class="line" id="L1094">                            fail_index,</span>
+<span class="line" id="L1095">                            needed_alloc_count,</span>
+<span class="line" id="L1096">                            failing_allocator_inst.allocated_bytes,</span>
+<span class="line" id="L1097">                            failing_allocator_inst.freed_bytes,</span>
+<span class="line" id="L1098">                            failing_allocator_inst.allocations,</span>
+<span class="line" id="L1099">                            failing_allocator_inst.deallocations,</span>
+<span class="line" id="L1100">                            failing_allocator_inst.getStackTrace(),</span>
+<span class="line" id="L1101">                        },</span>
+<span class="line" id="L1102">                    );</span>
+<span class="line" id="L1103">                    <span class="tok-kw">return</span> <span class="tok-kw">error</span>.MemoryLeakDetected;</span>
+<span class="line" id="L1104">                }</span>
+<span class="line" id="L1105">            },</span>
+<span class="line" id="L1106">            <span class="tok-kw">else</span> =&gt; <span class="tok-kw">return</span> err,</span>
+<span class="line" id="L1107">        }</span>
+<span class="line" id="L1108">    }</span>
+<span class="line" id="L1109">}</span>
+<span class="line" id="L1110"></span>
+<span class="line" id="L1111"><span class="tok-comment">/// Given a type, references all the declarations inside, so that the semantic analyzer sees them.</span></span>
+<span class="line" id="L1112"><span class="tok-kw">pub</span> <span class="tok-kw">fn</span> <span class="tok-fn">refAllDecls</span>(<span class="tok-kw">comptime</span> T: <span class="tok-type">type</span>) <span class="tok-type">void</span> {</span>
+<span class="line" id="L1113">    <span class="tok-kw">if</span> (!builtin.is_test) <span class="tok-kw">return</span>;</span>
+<span class="line" id="L1114">    <span class="tok-kw">inline</span> <span class="tok-kw">for</span> (<span class="tok-kw">comptime</span> std.meta.declarations(T)) |decl| {</span>
+<span class="line" id="L1115">        _ = &amp;<span class="tok-builtin">@field</span>(T, decl.name);</span>
+<span class="line" id="L1116">    }</span>
+<span class="line" id="L1117">}</span>
+<span class="line" id="L1118"></span>
+<span class="line" id="L1119"><span class="tok-comment">/// Given a type, recursively references all the declarations inside, so that the semantic analyzer sees them.</span></span>
+<span class="line" id="L1120"><span class="tok-comment">/// For deep types, you may use `@setEvalBranchQuota`.</span></span>
+<span class="line" id="L1121"><span class="tok-kw">pub</span> <span class="tok-kw">fn</span> <span class="tok-fn">refAllDeclsRecursive</span>(<span class="tok-kw">comptime</span> T: <span class="tok-type">type</span>) <span class="tok-type">void</span> {</span>
+<span class="line" id="L1122">    <span class="tok-kw">if</span> (!builtin.is_test) <span class="tok-kw">return</span>;</span>
+<span class="line" id="L1123">    <span class="tok-kw">inline</span> <span class="tok-kw">for</span> (<span class="tok-kw">comptime</span> std.meta.declarations(T)) |decl| {</span>
+<span class="line" id="L1124">        <span class="tok-kw">if</span> (<span class="tok-builtin">@TypeOf</span>(<span class="tok-builtin">@field</span>(T, decl.name)) == <span class="tok-type">type</span>) {</span>
+<span class="line" id="L1125">            <span class="tok-kw">switch</span> (<span class="tok-builtin">@typeInfo</span>(<span class="tok-builtin">@field</span>(T, decl.name))) {</span>
+<span class="line" id="L1126">                .Struct, .Enum, .Union, .Opaque =&gt; refAllDeclsRecursive(<span class="tok-builtin">@field</span>(T, decl.name)),</span>
+<span class="line" id="L1127">                <span class="tok-kw">else</span> =&gt; {},</span>
+<span class="line" id="L1128">            }</span>
+<span class="line" id="L1129">        }</span>
+<span class="line" id="L1130">        _ = &amp;<span class="tok-builtin">@field</span>(T, decl.name);</span>
+<span class="line" id="L1131">    }</span>
+<span class="line" id="L1132">}</span>
+<span class="line" id="L1133"></span>
 </code></pre></body>
 </html>

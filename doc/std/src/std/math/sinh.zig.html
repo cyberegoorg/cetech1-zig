@@ -218,12 +218,12 @@
 <span class="line" id="L91">    <span class="tok-kw">return</span> <span class="tok-number">2</span> * h * expo2(ax);</span>
 <span class="line" id="L92">}</span>
 <span class="line" id="L93"></span>
-<span class="line" id="L94"><span class="tok-kw">test</span> <span class="tok-str">&quot;math.sinh&quot;</span> {</span>
+<span class="line" id="L94"><span class="tok-kw">test</span> sinh {</span>
 <span class="line" id="L95">    <span class="tok-kw">try</span> expect(sinh(<span class="tok-builtin">@as</span>(<span class="tok-type">f32</span>, <span class="tok-number">1.5</span>)) == sinh32(<span class="tok-number">1.5</span>));</span>
 <span class="line" id="L96">    <span class="tok-kw">try</span> expect(sinh(<span class="tok-builtin">@as</span>(<span class="tok-type">f64</span>, <span class="tok-number">1.5</span>)) == sinh64(<span class="tok-number">1.5</span>));</span>
 <span class="line" id="L97">}</span>
 <span class="line" id="L98"></span>
-<span class="line" id="L99"><span class="tok-kw">test</span> <span class="tok-str">&quot;math.sinh32&quot;</span> {</span>
+<span class="line" id="L99"><span class="tok-kw">test</span> sinh32 {</span>
 <span class="line" id="L100">    <span class="tok-kw">const</span> epsilon = <span class="tok-number">0.000001</span>;</span>
 <span class="line" id="L101"></span>
 <span class="line" id="L102">    <span class="tok-kw">try</span> expect(math.approxEqAbs(<span class="tok-type">f32</span>, sinh32(<span class="tok-number">0.0</span>), <span class="tok-number">0.0</span>, epsilon));</span>
@@ -236,7 +236,7 @@
 <span class="line" id="L109">    <span class="tok-kw">try</span> expect(math.approxEqAbs(<span class="tok-type">f32</span>, sinh32(-<span class="tok-number">1.5</span>), -<span class="tok-number">2.129279</span>, epsilon));</span>
 <span class="line" id="L110">}</span>
 <span class="line" id="L111"></span>
-<span class="line" id="L112"><span class="tok-kw">test</span> <span class="tok-str">&quot;math.sinh64&quot;</span> {</span>
+<span class="line" id="L112"><span class="tok-kw">test</span> sinh64 {</span>
 <span class="line" id="L113">    <span class="tok-kw">const</span> epsilon = <span class="tok-number">0.000001</span>;</span>
 <span class="line" id="L114"></span>
 <span class="line" id="L115">    <span class="tok-kw">try</span> expect(math.approxEqAbs(<span class="tok-type">f64</span>, sinh64(<span class="tok-number">0.0</span>), <span class="tok-number">0.0</span>, epsilon));</span>
@@ -249,7 +249,7 @@
 <span class="line" id="L122">    <span class="tok-kw">try</span> expect(math.approxEqAbs(<span class="tok-type">f64</span>, sinh64(-<span class="tok-number">1.5</span>), -<span class="tok-number">2.129279</span>, epsilon));</span>
 <span class="line" id="L123">}</span>
 <span class="line" id="L124"></span>
-<span class="line" id="L125"><span class="tok-kw">test</span> <span class="tok-str">&quot;math.sinh32.special&quot;</span> {</span>
+<span class="line" id="L125"><span class="tok-kw">test</span> <span class="tok-str">&quot;sinh32.special&quot;</span> {</span>
 <span class="line" id="L126">    <span class="tok-kw">try</span> expect(math.isPositiveZero(sinh32(<span class="tok-number">0.0</span>)));</span>
 <span class="line" id="L127">    <span class="tok-kw">try</span> expect(math.isNegativeZero(sinh32(-<span class="tok-number">0.0</span>)));</span>
 <span class="line" id="L128">    <span class="tok-kw">try</span> expect(math.isPositiveInf(sinh32(math.inf(<span class="tok-type">f32</span>))));</span>
@@ -257,7 +257,7 @@
 <span class="line" id="L130">    <span class="tok-kw">try</span> expect(math.isNan(sinh32(math.nan(<span class="tok-type">f32</span>))));</span>
 <span class="line" id="L131">}</span>
 <span class="line" id="L132"></span>
-<span class="line" id="L133"><span class="tok-kw">test</span> <span class="tok-str">&quot;math.sinh64.special&quot;</span> {</span>
+<span class="line" id="L133"><span class="tok-kw">test</span> <span class="tok-str">&quot;sinh64.special&quot;</span> {</span>
 <span class="line" id="L134">    <span class="tok-kw">try</span> expect(math.isPositiveZero(sinh64(<span class="tok-number">0.0</span>)));</span>
 <span class="line" id="L135">    <span class="tok-kw">try</span> expect(math.isNegativeZero(sinh64(-<span class="tok-number">0.0</span>)));</span>
 <span class="line" id="L136">    <span class="tok-kw">try</span> expect(math.isPositiveInf(sinh64(math.inf(<span class="tok-type">f64</span>))));</span>

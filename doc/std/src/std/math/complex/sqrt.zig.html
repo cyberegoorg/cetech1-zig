@@ -131,8 +131,8 @@
 <span class="line" id="L12"></span>
 <span class="line" id="L13"><span class="tok-comment">/// Returns the square root of z. The real and imaginary parts of the result have the same sign</span></span>
 <span class="line" id="L14"><span class="tok-comment">/// as the imaginary part of z.</span></span>
-<span class="line" id="L15"><span class="tok-kw">pub</span> <span class="tok-kw">fn</span> <span class="tok-fn">sqrt</span>(z: <span class="tok-kw">anytype</span>) <span class="tok-builtin">@TypeOf</span>(z) {</span>
-<span class="line" id="L16">    <span class="tok-kw">const</span> T = <span class="tok-builtin">@TypeOf</span>(z.re);</span>
+<span class="line" id="L15"><span class="tok-kw">pub</span> <span class="tok-kw">fn</span> <span class="tok-fn">sqrt</span>(z: <span class="tok-kw">anytype</span>) Complex(<span class="tok-builtin">@TypeOf</span>(z.re, z.im)) {</span>
+<span class="line" id="L16">    <span class="tok-kw">const</span> T = <span class="tok-builtin">@TypeOf</span>(z.re, z.im);</span>
 <span class="line" id="L17"></span>
 <span class="line" id="L18">    <span class="tok-kw">return</span> <span class="tok-kw">switch</span> (T) {</span>
 <span class="line" id="L19">        <span class="tok-type">f32</span> =&gt; sqrt32(z),</span>
@@ -182,13 +182,13 @@
 <span class="line" id="L56">    <span class="tok-kw">const</span> dy = <span class="tok-builtin">@as</span>(<span class="tok-type">f64</span>, y);</span>
 <span class="line" id="L57"></span>
 <span class="line" id="L58">    <span class="tok-kw">if</span> (dx &gt;= <span class="tok-number">0</span>) {</span>
-<span class="line" id="L59">        <span class="tok-kw">const</span> t = <span class="tok-builtin">@sqrt</span>((dx + math.hypot(<span class="tok-type">f64</span>, dx, dy)) * <span class="tok-number">0.5</span>);</span>
+<span class="line" id="L59">        <span class="tok-kw">const</span> t = <span class="tok-builtin">@sqrt</span>((dx + math.hypot(dx, dy)) * <span class="tok-number">0.5</span>);</span>
 <span class="line" id="L60">        <span class="tok-kw">return</span> Complex(<span class="tok-type">f32</span>).init(</span>
 <span class="line" id="L61">            <span class="tok-builtin">@as</span>(<span class="tok-type">f32</span>, <span class="tok-builtin">@floatCast</span>(t)),</span>
 <span class="line" id="L62">            <span class="tok-builtin">@as</span>(<span class="tok-type">f32</span>, <span class="tok-builtin">@floatCast</span>(dy / (<span class="tok-number">2.0</span> * t))),</span>
 <span class="line" id="L63">        );</span>
 <span class="line" id="L64">    } <span class="tok-kw">else</span> {</span>
-<span class="line" id="L65">        <span class="tok-kw">const</span> t = <span class="tok-builtin">@sqrt</span>((-dx + math.hypot(<span class="tok-type">f64</span>, dx, dy)) * <span class="tok-number">0.5</span>);</span>
+<span class="line" id="L65">        <span class="tok-kw">const</span> t = <span class="tok-builtin">@sqrt</span>((-dx + math.hypot(dx, dy)) * <span class="tok-number">0.5</span>);</span>
 <span class="line" id="L66">        <span class="tok-kw">return</span> Complex(<span class="tok-type">f32</span>).init(</span>
 <span class="line" id="L67">            <span class="tok-builtin">@as</span>(<span class="tok-type">f32</span>, <span class="tok-builtin">@floatCast</span>(<span class="tok-builtin">@abs</span>(y) / (<span class="tok-number">2.0</span> * t))),</span>
 <span class="line" id="L68">            <span class="tok-builtin">@as</span>(<span class="tok-type">f32</span>, <span class="tok-builtin">@floatCast</span>(math.copysign(t, y))),</span>
@@ -246,10 +246,10 @@
 <span class="line" id="L112"></span>
 <span class="line" id="L113">    <span class="tok-kw">var</span> result: Complex(<span class="tok-type">f64</span>) = <span class="tok-null">undefined</span>;</span>
 <span class="line" id="L114">    <span class="tok-kw">if</span> (x &gt;= <span class="tok-number">0</span>) {</span>
-<span class="line" id="L115">        <span class="tok-kw">const</span> t = <span class="tok-builtin">@sqrt</span>((x + math.hypot(<span class="tok-type">f64</span>, x, y)) * <span class="tok-number">0.5</span>);</span>
+<span class="line" id="L115">        <span class="tok-kw">const</span> t = <span class="tok-builtin">@sqrt</span>((x + math.hypot(x, y)) * <span class="tok-number">0.5</span>);</span>
 <span class="line" id="L116">        result = Complex(<span class="tok-type">f64</span>).init(t, y / (<span class="tok-number">2.0</span> * t));</span>
 <span class="line" id="L117">    } <span class="tok-kw">else</span> {</span>
-<span class="line" id="L118">        <span class="tok-kw">const</span> t = <span class="tok-builtin">@sqrt</span>((-x + math.hypot(<span class="tok-type">f64</span>, x, y)) * <span class="tok-number">0.5</span>);</span>
+<span class="line" id="L118">        <span class="tok-kw">const</span> t = <span class="tok-builtin">@sqrt</span>((-x + math.hypot(x, y)) * <span class="tok-number">0.5</span>);</span>
 <span class="line" id="L119">        result = Complex(<span class="tok-type">f64</span>).init(<span class="tok-builtin">@abs</span>(y) / (<span class="tok-number">2.0</span> * t), math.copysign(t, y));</span>
 <span class="line" id="L120">    }</span>
 <span class="line" id="L121"></span>
@@ -263,7 +263,7 @@
 <span class="line" id="L129"></span>
 <span class="line" id="L130"><span class="tok-kw">const</span> epsilon = <span class="tok-number">0.0001</span>;</span>
 <span class="line" id="L131"></span>
-<span class="line" id="L132"><span class="tok-kw">test</span> <span class="tok-str">&quot;complex.csqrt32&quot;</span> {</span>
+<span class="line" id="L132"><span class="tok-kw">test</span> sqrt32 {</span>
 <span class="line" id="L133">    <span class="tok-kw">const</span> a = Complex(<span class="tok-type">f32</span>).init(<span class="tok-number">5</span>, <span class="tok-number">3</span>);</span>
 <span class="line" id="L134">    <span class="tok-kw">const</span> c = sqrt(a);</span>
 <span class="line" id="L135"></span>
@@ -271,7 +271,7 @@
 <span class="line" id="L137">    <span class="tok-kw">try</span> testing.expect(math.approxEqAbs(<span class="tok-type">f32</span>, c.im, <span class="tok-number">0.644574</span>, epsilon));</span>
 <span class="line" id="L138">}</span>
 <span class="line" id="L139"></span>
-<span class="line" id="L140"><span class="tok-kw">test</span> <span class="tok-str">&quot;complex.csqrt64&quot;</span> {</span>
+<span class="line" id="L140"><span class="tok-kw">test</span> sqrt64 {</span>
 <span class="line" id="L141">    <span class="tok-kw">const</span> a = Complex(<span class="tok-type">f64</span>).init(<span class="tok-number">5</span>, <span class="tok-number">3</span>);</span>
 <span class="line" id="L142">    <span class="tok-kw">const</span> c = sqrt(a);</span>
 <span class="line" id="L143"></span>

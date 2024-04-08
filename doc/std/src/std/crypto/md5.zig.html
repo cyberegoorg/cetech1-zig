@@ -355,7 +355,7 @@
 <span class="line" id="L232"></span>
 <span class="line" id="L233"><span class="tok-kw">const</span> htest = <span class="tok-builtin">@import</span>(<span class="tok-str">&quot;test.zig&quot;</span>);</span>
 <span class="line" id="L234"></span>
-<span class="line" id="L235"><span class="tok-kw">test</span> <span class="tok-str">&quot;md5 single&quot;</span> {</span>
+<span class="line" id="L235"><span class="tok-kw">test</span> <span class="tok-str">&quot;single&quot;</span> {</span>
 <span class="line" id="L236">    <span class="tok-kw">try</span> htest.assertEqualHash(Md5, <span class="tok-str">&quot;d41d8cd98f00b204e9800998ecf8427e&quot;</span>, <span class="tok-str">&quot;&quot;</span>);</span>
 <span class="line" id="L237">    <span class="tok-kw">try</span> htest.assertEqualHash(Md5, <span class="tok-str">&quot;0cc175b9c0f1b6a831c399e269772661&quot;</span>, <span class="tok-str">&quot;a&quot;</span>);</span>
 <span class="line" id="L238">    <span class="tok-kw">try</span> htest.assertEqualHash(Md5, <span class="tok-str">&quot;900150983cd24fb0d6963f7d28e17f72&quot;</span>, <span class="tok-str">&quot;abc&quot;</span>);</span>
@@ -365,7 +365,7 @@
 <span class="line" id="L242">    <span class="tok-kw">try</span> htest.assertEqualHash(Md5, <span class="tok-str">&quot;57edf4a22be3c955ac49da2e2107b67a&quot;</span>, <span class="tok-str">&quot;12345678901234567890123456789012345678901234567890123456789012345678901234567890&quot;</span>);</span>
 <span class="line" id="L243">}</span>
 <span class="line" id="L244"></span>
-<span class="line" id="L245"><span class="tok-kw">test</span> <span class="tok-str">&quot;md5 streaming&quot;</span> {</span>
+<span class="line" id="L245"><span class="tok-kw">test</span> <span class="tok-str">&quot;streaming&quot;</span> {</span>
 <span class="line" id="L246">    <span class="tok-kw">var</span> h = Md5.init(.{});</span>
 <span class="line" id="L247">    <span class="tok-kw">var</span> out: [<span class="tok-number">16</span>]<span class="tok-type">u8</span> = <span class="tok-null">undefined</span>;</span>
 <span class="line" id="L248"></span>
@@ -386,7 +386,7 @@
 <span class="line" id="L263">    <span class="tok-kw">try</span> htest.assertEqual(<span class="tok-str">&quot;900150983cd24fb0d6963f7d28e17f72&quot;</span>, out[<span class="tok-number">0</span>..]);</span>
 <span class="line" id="L264">}</span>
 <span class="line" id="L265"></span>
-<span class="line" id="L266"><span class="tok-kw">test</span> <span class="tok-str">&quot;md5 aligned final&quot;</span> {</span>
+<span class="line" id="L266"><span class="tok-kw">test</span> <span class="tok-str">&quot;aligned final&quot;</span> {</span>
 <span class="line" id="L267">    <span class="tok-kw">var</span> block = [_]<span class="tok-type">u8</span>{<span class="tok-number">0</span>} ** Md5.block_length;</span>
 <span class="line" id="L268">    <span class="tok-kw">var</span> out: [Md5.digest_length]<span class="tok-type">u8</span> = <span class="tok-null">undefined</span>;</span>
 <span class="line" id="L269"></span>

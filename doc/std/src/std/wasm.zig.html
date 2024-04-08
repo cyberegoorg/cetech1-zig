@@ -316,7 +316,7 @@
 <span class="line" id="L201">    <span class="tok-kw">return</span> <span class="tok-builtin">@intFromEnum</span>(op);</span>
 <span class="line" id="L202">}</span>
 <span class="line" id="L203"></span>
-<span class="line" id="L204"><span class="tok-kw">test</span> <span class="tok-str">&quot;Wasm - opcodes&quot;</span> {</span>
+<span class="line" id="L204"><span class="tok-kw">test</span> <span class="tok-str">&quot;opcodes&quot;</span> {</span>
 <span class="line" id="L205">    <span class="tok-comment">// Ensure our opcodes values remain intact as certain values are skipped due to them being reserved</span>
 </span>
 <span class="line" id="L206">    <span class="tok-kw">const</span> i32_const = opcode(.i32_const);</span>
@@ -635,7 +635,7 @@
 <span class="line" id="L518">    <span class="tok-kw">return</span> <span class="tok-builtin">@intFromEnum</span>(op);</span>
 <span class="line" id="L519">}</span>
 <span class="line" id="L520"></span>
-<span class="line" id="L521"><span class="tok-comment">/// Simd opcodes that require a prefix `0xFE`.</span></span>
+<span class="line" id="L521"><span class="tok-comment">/// Atomic opcodes that require a prefix `0xFE`.</span></span>
 <span class="line" id="L522"><span class="tok-comment">/// Each opcode represents a varuint32, meaning</span></span>
 <span class="line" id="L523"><span class="tok-comment">/// they are encoded as leb128 in binary.</span></span>
 <span class="line" id="L524"><span class="tok-kw">pub</span> <span class="tok-kw">const</span> AtomicsOpcode = <span class="tok-kw">enum</span>(<span class="tok-type">u32</span>) {</span>
@@ -742,7 +742,7 @@
 <span class="line" id="L625">    <span class="tok-kw">return</span> <span class="tok-builtin">@intFromEnum</span>(value);</span>
 <span class="line" id="L626">}</span>
 <span class="line" id="L627"></span>
-<span class="line" id="L628"><span class="tok-kw">test</span> <span class="tok-str">&quot;Wasm - valtypes&quot;</span> {</span>
+<span class="line" id="L628"><span class="tok-kw">test</span> <span class="tok-str">&quot;valtypes&quot;</span> {</span>
 <span class="line" id="L629">    <span class="tok-kw">const</span> _i32 = valtype(.<span class="tok-type">i32</span>);</span>
 <span class="line" id="L630">    <span class="tok-kw">const</span> _i64 = valtype(.<span class="tok-type">i64</span>);</span>
 <span class="line" id="L631">    <span class="tok-kw">const</span> _f32 = valtype(.<span class="tok-type">f32</span>);</span>

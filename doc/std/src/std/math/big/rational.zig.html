@@ -634,7 +634,7 @@
 <span class="line" id="L493">    }</span>
 <span class="line" id="L494">}</span>
 <span class="line" id="L495"></span>
-<span class="line" id="L496"><span class="tok-kw">test</span> <span class="tok-str">&quot;big.rational extractLowBits&quot;</span> {</span>
+<span class="line" id="L496"><span class="tok-kw">test</span> extractLowBits {</span>
 <span class="line" id="L497">    <span class="tok-kw">var</span> a = <span class="tok-kw">try</span> Int.initSet(testing.allocator, <span class="tok-number">0x11112222333344441234567887654321</span>);</span>
 <span class="line" id="L498">    <span class="tok-kw">defer</span> a.deinit();</span>
 <span class="line" id="L499"></span>
@@ -654,7 +654,7 @@
 <span class="line" id="L513">    <span class="tok-kw">try</span> testing.expect(a5 == <span class="tok-number">0x11112222333344441234567887654321</span>);</span>
 <span class="line" id="L514">}</span>
 <span class="line" id="L515"></span>
-<span class="line" id="L516"><span class="tok-kw">test</span> <span class="tok-str">&quot;big.rational set&quot;</span> {</span>
+<span class="line" id="L516"><span class="tok-kw">test</span> <span class="tok-str">&quot;set&quot;</span> {</span>
 <span class="line" id="L517">    <span class="tok-kw">var</span> a = <span class="tok-kw">try</span> Rational.init(testing.allocator);</span>
 <span class="line" id="L518">    <span class="tok-kw">defer</span> a.deinit();</span>
 <span class="line" id="L519"></span>
@@ -683,7 +683,7 @@
 <span class="line" id="L542">    <span class="tok-kw">try</span> testing.expect((<span class="tok-kw">try</span> a.q.to(<span class="tok-type">i32</span>)) == <span class="tok-number">1</span>);</span>
 <span class="line" id="L543">}</span>
 <span class="line" id="L544"></span>
-<span class="line" id="L545"><span class="tok-kw">test</span> <span class="tok-str">&quot;big.rational setFloat&quot;</span> {</span>
+<span class="line" id="L545"><span class="tok-kw">test</span> <span class="tok-str">&quot;setFloat&quot;</span> {</span>
 <span class="line" id="L546">    <span class="tok-kw">var</span> a = <span class="tok-kw">try</span> Rational.init(testing.allocator);</span>
 <span class="line" id="L547">    <span class="tok-kw">defer</span> a.deinit();</span>
 <span class="line" id="L548"></span>
@@ -710,7 +710,7 @@
 <span class="line" id="L567">    <span class="tok-kw">try</span> testing.expect((<span class="tok-kw">try</span> a.q.to(<span class="tok-type">u128</span>)) == <span class="tok-number">70368744177664</span>);</span>
 <span class="line" id="L568">}</span>
 <span class="line" id="L569"></span>
-<span class="line" id="L570"><span class="tok-kw">test</span> <span class="tok-str">&quot;big.rational setFloatString&quot;</span> {</span>
+<span class="line" id="L570"><span class="tok-kw">test</span> <span class="tok-str">&quot;setFloatString&quot;</span> {</span>
 <span class="line" id="L571">    <span class="tok-kw">var</span> a = <span class="tok-kw">try</span> Rational.init(testing.allocator);</span>
 <span class="line" id="L572">    <span class="tok-kw">defer</span> a.deinit();</span>
 <span class="line" id="L573"></span>
@@ -722,7 +722,7 @@
 <span class="line" id="L578">    <span class="tok-kw">try</span> testing.expect((<span class="tok-kw">try</span> a.q.to(<span class="tok-type">u128</span>)) == <span class="tok-number">100000000000000000000000000000000000</span>);</span>
 <span class="line" id="L579">}</span>
 <span class="line" id="L580"></span>
-<span class="line" id="L581"><span class="tok-kw">test</span> <span class="tok-str">&quot;big.rational toFloat&quot;</span> {</span>
+<span class="line" id="L581"><span class="tok-kw">test</span> <span class="tok-str">&quot;toFloat&quot;</span> {</span>
 <span class="line" id="L582">    <span class="tok-kw">var</span> a = <span class="tok-kw">try</span> Rational.init(testing.allocator);</span>
 <span class="line" id="L583">    <span class="tok-kw">defer</span> a.deinit();</span>
 <span class="line" id="L584"></span>
@@ -737,10 +737,10 @@
 <span class="line" id="L591">    <span class="tok-kw">try</span> testing.expect((<span class="tok-kw">try</span> a.toFloat(<span class="tok-type">f64</span>)) == <span class="tok-number">72.141593120712409172417410926841290461290467124</span>);</span>
 <span class="line" id="L592">}</span>
 <span class="line" id="L593"></span>
-<span class="line" id="L594"><span class="tok-kw">test</span> <span class="tok-str">&quot;big.rational set/to Float round-trip&quot;</span> {</span>
+<span class="line" id="L594"><span class="tok-kw">test</span> <span class="tok-str">&quot;set/to Float round-trip&quot;</span> {</span>
 <span class="line" id="L595">    <span class="tok-kw">var</span> a = <span class="tok-kw">try</span> Rational.init(testing.allocator);</span>
 <span class="line" id="L596">    <span class="tok-kw">defer</span> a.deinit();</span>
-<span class="line" id="L597">    <span class="tok-kw">var</span> prng = std.rand.DefaultPrng.init(<span class="tok-number">0x5EED</span>);</span>
+<span class="line" id="L597">    <span class="tok-kw">var</span> prng = std.Random.DefaultPrng.init(<span class="tok-number">0x5EED</span>);</span>
 <span class="line" id="L598">    <span class="tok-kw">const</span> random = prng.random();</span>
 <span class="line" id="L599">    <span class="tok-kw">var</span> i: <span class="tok-type">usize</span> = <span class="tok-number">0</span>;</span>
 <span class="line" id="L600">    <span class="tok-kw">while</span> (i &lt; <span class="tok-number">512</span>) : (i += <span class="tok-number">1</span>) {</span>
@@ -750,7 +750,7 @@
 <span class="line" id="L604">    }</span>
 <span class="line" id="L605">}</span>
 <span class="line" id="L606"></span>
-<span class="line" id="L607"><span class="tok-kw">test</span> <span class="tok-str">&quot;big.rational copy&quot;</span> {</span>
+<span class="line" id="L607"><span class="tok-kw">test</span> <span class="tok-str">&quot;copy&quot;</span> {</span>
 <span class="line" id="L608">    <span class="tok-kw">var</span> a = <span class="tok-kw">try</span> Rational.init(testing.allocator);</span>
 <span class="line" id="L609">    <span class="tok-kw">defer</span> a.deinit();</span>
 <span class="line" id="L610"></span>
@@ -780,7 +780,7 @@
 <span class="line" id="L634">    <span class="tok-kw">try</span> testing.expect((<span class="tok-kw">try</span> a.q.to(<span class="tok-type">u32</span>)) == <span class="tok-number">1</span>);</span>
 <span class="line" id="L635">}</span>
 <span class="line" id="L636"></span>
-<span class="line" id="L637"><span class="tok-kw">test</span> <span class="tok-str">&quot;big.rational negate&quot;</span> {</span>
+<span class="line" id="L637"><span class="tok-kw">test</span> <span class="tok-str">&quot;negate&quot;</span> {</span>
 <span class="line" id="L638">    <span class="tok-kw">var</span> a = <span class="tok-kw">try</span> Rational.init(testing.allocator);</span>
 <span class="line" id="L639">    <span class="tok-kw">defer</span> a.deinit();</span>
 <span class="line" id="L640"></span>
@@ -797,7 +797,7 @@
 <span class="line" id="L651">    <span class="tok-kw">try</span> testing.expect((<span class="tok-kw">try</span> a.q.to(<span class="tok-type">i32</span>)) == <span class="tok-number">1</span>);</span>
 <span class="line" id="L652">}</span>
 <span class="line" id="L653"></span>
-<span class="line" id="L654"><span class="tok-kw">test</span> <span class="tok-str">&quot;big.rational abs&quot;</span> {</span>
+<span class="line" id="L654"><span class="tok-kw">test</span> <span class="tok-str">&quot;abs&quot;</span> {</span>
 <span class="line" id="L655">    <span class="tok-kw">var</span> a = <span class="tok-kw">try</span> Rational.init(testing.allocator);</span>
 <span class="line" id="L656">    <span class="tok-kw">defer</span> a.deinit();</span>
 <span class="line" id="L657"></span>
@@ -814,7 +814,7 @@
 <span class="line" id="L668">    <span class="tok-kw">try</span> testing.expect((<span class="tok-kw">try</span> a.q.to(<span class="tok-type">i32</span>)) == <span class="tok-number">1</span>);</span>
 <span class="line" id="L669">}</span>
 <span class="line" id="L670"></span>
-<span class="line" id="L671"><span class="tok-kw">test</span> <span class="tok-str">&quot;big.rational swap&quot;</span> {</span>
+<span class="line" id="L671"><span class="tok-kw">test</span> <span class="tok-str">&quot;swap&quot;</span> {</span>
 <span class="line" id="L672">    <span class="tok-kw">var</span> a = <span class="tok-kw">try</span> Rational.init(testing.allocator);</span>
 <span class="line" id="L673">    <span class="tok-kw">defer</span> a.deinit();</span>
 <span class="line" id="L674">    <span class="tok-kw">var</span> b = <span class="tok-kw">try</span> Rational.init(testing.allocator);</span>
@@ -838,7 +838,7 @@
 <span class="line" id="L692">    <span class="tok-kw">try</span> testing.expect((<span class="tok-kw">try</span> b.q.to(<span class="tok-type">u32</span>)) == <span class="tok-number">23</span>);</span>
 <span class="line" id="L693">}</span>
 <span class="line" id="L694"></span>
-<span class="line" id="L695"><span class="tok-kw">test</span> <span class="tok-str">&quot;big.rational order&quot;</span> {</span>
+<span class="line" id="L695"><span class="tok-kw">test</span> <span class="tok-str">&quot;order&quot;</span> {</span>
 <span class="line" id="L696">    <span class="tok-kw">var</span> a = <span class="tok-kw">try</span> Rational.init(testing.allocator);</span>
 <span class="line" id="L697">    <span class="tok-kw">defer</span> a.deinit();</span>
 <span class="line" id="L698">    <span class="tok-kw">var</span> b = <span class="tok-kw">try</span> Rational.init(testing.allocator);</span>
@@ -853,7 +853,7 @@
 <span class="line" id="L707">    <span class="tok-kw">try</span> testing.expect((<span class="tok-kw">try</span> a.order(b)) == .eq);</span>
 <span class="line" id="L708">}</span>
 <span class="line" id="L709"></span>
-<span class="line" id="L710"><span class="tok-kw">test</span> <span class="tok-str">&quot;big.rational order/orderAbs with negative&quot;</span> {</span>
+<span class="line" id="L710"><span class="tok-kw">test</span> <span class="tok-str">&quot;order/orderAbs with negative&quot;</span> {</span>
 <span class="line" id="L711">    <span class="tok-kw">var</span> a = <span class="tok-kw">try</span> Rational.init(testing.allocator);</span>
 <span class="line" id="L712">    <span class="tok-kw">defer</span> a.deinit();</span>
 <span class="line" id="L713">    <span class="tok-kw">var</span> b = <span class="tok-kw">try</span> Rational.init(testing.allocator);</span>
@@ -865,7 +865,7 @@
 <span class="line" id="L719">    <span class="tok-kw">try</span> testing.expect((<span class="tok-kw">try</span> a.orderAbs(b)) == .lt);</span>
 <span class="line" id="L720">}</span>
 <span class="line" id="L721"></span>
-<span class="line" id="L722"><span class="tok-kw">test</span> <span class="tok-str">&quot;big.rational add single-limb&quot;</span> {</span>
+<span class="line" id="L722"><span class="tok-kw">test</span> <span class="tok-str">&quot;add single-limb&quot;</span> {</span>
 <span class="line" id="L723">    <span class="tok-kw">var</span> a = <span class="tok-kw">try</span> Rational.init(testing.allocator);</span>
 <span class="line" id="L724">    <span class="tok-kw">defer</span> a.deinit();</span>
 <span class="line" id="L725">    <span class="tok-kw">var</span> b = <span class="tok-kw">try</span> Rational.init(testing.allocator);</span>
@@ -880,7 +880,7 @@
 <span class="line" id="L734">    <span class="tok-kw">try</span> testing.expect((<span class="tok-kw">try</span> a.order(b)) == .eq);</span>
 <span class="line" id="L735">}</span>
 <span class="line" id="L736"></span>
-<span class="line" id="L737"><span class="tok-kw">test</span> <span class="tok-str">&quot;big.rational add&quot;</span> {</span>
+<span class="line" id="L737"><span class="tok-kw">test</span> <span class="tok-str">&quot;add&quot;</span> {</span>
 <span class="line" id="L738">    <span class="tok-kw">var</span> a = <span class="tok-kw">try</span> Rational.init(testing.allocator);</span>
 <span class="line" id="L739">    <span class="tok-kw">defer</span> a.deinit();</span>
 <span class="line" id="L740">    <span class="tok-kw">var</span> b = <span class="tok-kw">try</span> Rational.init(testing.allocator);</span>
@@ -896,7 +896,7 @@
 <span class="line" id="L750">    <span class="tok-kw">try</span> testing.expect((<span class="tok-kw">try</span> a.order(r)) == .eq);</span>
 <span class="line" id="L751">}</span>
 <span class="line" id="L752"></span>
-<span class="line" id="L753"><span class="tok-kw">test</span> <span class="tok-str">&quot;big.rational sub&quot;</span> {</span>
+<span class="line" id="L753"><span class="tok-kw">test</span> <span class="tok-str">&quot;sub&quot;</span> {</span>
 <span class="line" id="L754">    <span class="tok-kw">var</span> a = <span class="tok-kw">try</span> Rational.init(testing.allocator);</span>
 <span class="line" id="L755">    <span class="tok-kw">defer</span> a.deinit();</span>
 <span class="line" id="L756">    <span class="tok-kw">var</span> b = <span class="tok-kw">try</span> Rational.init(testing.allocator);</span>
@@ -912,7 +912,7 @@
 <span class="line" id="L766">    <span class="tok-kw">try</span> testing.expect((<span class="tok-kw">try</span> a.order(r)) == .eq);</span>
 <span class="line" id="L767">}</span>
 <span class="line" id="L768"></span>
-<span class="line" id="L769"><span class="tok-kw">test</span> <span class="tok-str">&quot;big.rational mul&quot;</span> {</span>
+<span class="line" id="L769"><span class="tok-kw">test</span> <span class="tok-str">&quot;mul&quot;</span> {</span>
 <span class="line" id="L770">    <span class="tok-kw">var</span> a = <span class="tok-kw">try</span> Rational.init(testing.allocator);</span>
 <span class="line" id="L771">    <span class="tok-kw">defer</span> a.deinit();</span>
 <span class="line" id="L772">    <span class="tok-kw">var</span> b = <span class="tok-kw">try</span> Rational.init(testing.allocator);</span>
@@ -928,7 +928,7 @@
 <span class="line" id="L782">    <span class="tok-kw">try</span> testing.expect((<span class="tok-kw">try</span> a.order(r)) == .eq);</span>
 <span class="line" id="L783">}</span>
 <span class="line" id="L784"></span>
-<span class="line" id="L785"><span class="tok-kw">test</span> <span class="tok-str">&quot;big.rational div&quot;</span> {</span>
+<span class="line" id="L785"><span class="tok-kw">test</span> <span class="tok-str">&quot;div&quot;</span> {</span>
 <span class="line" id="L786">    {</span>
 <span class="line" id="L787">        <span class="tok-kw">var</span> a = <span class="tok-kw">try</span> Rational.init(testing.allocator);</span>
 <span class="line" id="L788">        <span class="tok-kw">defer</span> a.deinit();</span>

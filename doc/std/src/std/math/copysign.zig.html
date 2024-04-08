@@ -126,7 +126,7 @@
 <span class="line" id="L12">    <span class="tok-kw">return</span> <span class="tok-builtin">@as</span>(T, <span class="tok-builtin">@bitCast</span>(mag | sgn));</span>
 <span class="line" id="L13">}</span>
 <span class="line" id="L14"></span>
-<span class="line" id="L15"><span class="tok-kw">test</span> <span class="tok-str">&quot;math.copysign&quot;</span> {</span>
+<span class="line" id="L15"><span class="tok-kw">test</span> copysign {</span>
 <span class="line" id="L16">    <span class="tok-kw">inline</span> <span class="tok-kw">for</span> ([_]<span class="tok-type">type</span>{ <span class="tok-type">f16</span>, <span class="tok-type">f32</span>, <span class="tok-type">f64</span>, <span class="tok-type">f80</span>, <span class="tok-type">f128</span> }) |T| {</span>
 <span class="line" id="L17">        <span class="tok-kw">try</span> expect(copysign(<span class="tok-builtin">@as</span>(T, <span class="tok-number">1.0</span>), <span class="tok-builtin">@as</span>(T, <span class="tok-number">1.0</span>)) == <span class="tok-number">1.0</span>);</span>
 <span class="line" id="L18">        <span class="tok-kw">try</span> expect(copysign(<span class="tok-builtin">@as</span>(T, <span class="tok-number">2.0</span>), <span class="tok-builtin">@as</span>(T, -<span class="tok-number">2.0</span>)) == -<span class="tok-number">2.0</span>);</span>

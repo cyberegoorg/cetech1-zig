@@ -119,15 +119,15 @@
 <span class="line" id="L5"><span class="tok-kw">const</span> Complex = cmath.Complex;</span>
 <span class="line" id="L6"></span>
 <span class="line" id="L7"><span class="tok-comment">/// Returns the arc-cosine of z.</span></span>
-<span class="line" id="L8"><span class="tok-kw">pub</span> <span class="tok-kw">fn</span> <span class="tok-fn">acos</span>(z: <span class="tok-kw">anytype</span>) Complex(<span class="tok-builtin">@TypeOf</span>(z.re)) {</span>
-<span class="line" id="L9">    <span class="tok-kw">const</span> T = <span class="tok-builtin">@TypeOf</span>(z.re);</span>
+<span class="line" id="L8"><span class="tok-kw">pub</span> <span class="tok-kw">fn</span> <span class="tok-fn">acos</span>(z: <span class="tok-kw">anytype</span>) Complex(<span class="tok-builtin">@TypeOf</span>(z.re, z.im)) {</span>
+<span class="line" id="L9">    <span class="tok-kw">const</span> T = <span class="tok-builtin">@TypeOf</span>(z.re, z.im);</span>
 <span class="line" id="L10">    <span class="tok-kw">const</span> q = cmath.asin(z);</span>
 <span class="line" id="L11">    <span class="tok-kw">return</span> Complex(T).init(<span class="tok-builtin">@as</span>(T, math.pi) / <span class="tok-number">2</span> - q.re, -q.im);</span>
 <span class="line" id="L12">}</span>
 <span class="line" id="L13"></span>
 <span class="line" id="L14"><span class="tok-kw">const</span> epsilon = <span class="tok-number">0.0001</span>;</span>
 <span class="line" id="L15"></span>
-<span class="line" id="L16"><span class="tok-kw">test</span> <span class="tok-str">&quot;complex.cacos&quot;</span> {</span>
+<span class="line" id="L16"><span class="tok-kw">test</span> acos {</span>
 <span class="line" id="L17">    <span class="tok-kw">const</span> a = Complex(<span class="tok-type">f32</span>).init(<span class="tok-number">5</span>, <span class="tok-number">3</span>);</span>
 <span class="line" id="L18">    <span class="tok-kw">const</span> c = acos(a);</span>
 <span class="line" id="L19"></span>

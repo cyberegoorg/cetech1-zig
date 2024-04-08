@@ -422,12 +422,12 @@
 <span class="line" id="L286">    }</span>
 <span class="line" id="L287">}</span>
 <span class="line" id="L288"></span>
-<span class="line" id="L289"><span class="tok-kw">test</span> <span class="tok-str">&quot;math.exp1m&quot;</span> {</span>
+<span class="line" id="L289"><span class="tok-kw">test</span> expm1 {</span>
 <span class="line" id="L290">    <span class="tok-kw">try</span> expect(expm1(<span class="tok-builtin">@as</span>(<span class="tok-type">f32</span>, <span class="tok-number">0.0</span>)) == expm1_32(<span class="tok-number">0.0</span>));</span>
 <span class="line" id="L291">    <span class="tok-kw">try</span> expect(expm1(<span class="tok-builtin">@as</span>(<span class="tok-type">f64</span>, <span class="tok-number">0.0</span>)) == expm1_64(<span class="tok-number">0.0</span>));</span>
 <span class="line" id="L292">}</span>
 <span class="line" id="L293"></span>
-<span class="line" id="L294"><span class="tok-kw">test</span> <span class="tok-str">&quot;math.expm1_32&quot;</span> {</span>
+<span class="line" id="L294"><span class="tok-kw">test</span> expm1_32 {</span>
 <span class="line" id="L295">    <span class="tok-kw">const</span> epsilon = <span class="tok-number">0.000001</span>;</span>
 <span class="line" id="L296"></span>
 <span class="line" id="L297">    <span class="tok-kw">try</span> expect(math.isPositiveZero(expm1_32(<span class="tok-number">0.0</span>)));</span>
@@ -437,7 +437,7 @@
 <span class="line" id="L301">    <span class="tok-kw">try</span> expect(math.approxEqAbs(<span class="tok-type">f32</span>, expm1_32(<span class="tok-number">1.5</span>), <span class="tok-number">3.481689</span>, epsilon));</span>
 <span class="line" id="L302">}</span>
 <span class="line" id="L303"></span>
-<span class="line" id="L304"><span class="tok-kw">test</span> <span class="tok-str">&quot;math.expm1_64&quot;</span> {</span>
+<span class="line" id="L304"><span class="tok-kw">test</span> expm1_64 {</span>
 <span class="line" id="L305">    <span class="tok-kw">const</span> epsilon = <span class="tok-number">0.000001</span>;</span>
 <span class="line" id="L306"></span>
 <span class="line" id="L307">    <span class="tok-kw">try</span> expect(math.isPositiveZero(expm1_64(<span class="tok-number">0.0</span>)));</span>
@@ -447,13 +447,13 @@
 <span class="line" id="L311">    <span class="tok-kw">try</span> expect(math.approxEqAbs(<span class="tok-type">f64</span>, expm1_64(<span class="tok-number">1.5</span>), <span class="tok-number">3.481689</span>, epsilon));</span>
 <span class="line" id="L312">}</span>
 <span class="line" id="L313"></span>
-<span class="line" id="L314"><span class="tok-kw">test</span> <span class="tok-str">&quot;math.expm1_32.special&quot;</span> {</span>
+<span class="line" id="L314"><span class="tok-kw">test</span> <span class="tok-str">&quot;expm1_32.special&quot;</span> {</span>
 <span class="line" id="L315">    <span class="tok-kw">try</span> expect(math.isPositiveInf(expm1_32(math.inf(<span class="tok-type">f32</span>))));</span>
 <span class="line" id="L316">    <span class="tok-kw">try</span> expect(expm1_32(-math.inf(<span class="tok-type">f32</span>)) == -<span class="tok-number">1.0</span>);</span>
 <span class="line" id="L317">    <span class="tok-kw">try</span> expect(math.isNan(expm1_32(math.nan(<span class="tok-type">f32</span>))));</span>
 <span class="line" id="L318">}</span>
 <span class="line" id="L319"></span>
-<span class="line" id="L320"><span class="tok-kw">test</span> <span class="tok-str">&quot;math.expm1_64.special&quot;</span> {</span>
+<span class="line" id="L320"><span class="tok-kw">test</span> <span class="tok-str">&quot;expm1_64.special&quot;</span> {</span>
 <span class="line" id="L321">    <span class="tok-kw">try</span> expect(math.isPositiveInf(expm1_64(math.inf(<span class="tok-type">f64</span>))));</span>
 <span class="line" id="L322">    <span class="tok-kw">try</span> expect(expm1_64(-math.inf(<span class="tok-type">f64</span>)) == -<span class="tok-number">1.0</span>);</span>
 <span class="line" id="L323">    <span class="tok-kw">try</span> expect(math.isNan(expm1_64(math.nan(<span class="tok-type">f64</span>))));</span>

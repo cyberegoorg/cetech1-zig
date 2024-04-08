@@ -185,12 +185,12 @@
 <span class="line" id="L59">    }</span>
 <span class="line" id="L60">}</span>
 <span class="line" id="L61"></span>
-<span class="line" id="L62"><span class="tok-kw">test</span> <span class="tok-str">&quot;math.acosh&quot;</span> {</span>
+<span class="line" id="L62"><span class="tok-kw">test</span> acosh {</span>
 <span class="line" id="L63">    <span class="tok-kw">try</span> expect(acosh(<span class="tok-builtin">@as</span>(<span class="tok-type">f32</span>, <span class="tok-number">1.5</span>)) == acosh32(<span class="tok-number">1.5</span>));</span>
 <span class="line" id="L64">    <span class="tok-kw">try</span> expect(acosh(<span class="tok-builtin">@as</span>(<span class="tok-type">f64</span>, <span class="tok-number">1.5</span>)) == acosh64(<span class="tok-number">1.5</span>));</span>
 <span class="line" id="L65">}</span>
 <span class="line" id="L66"></span>
-<span class="line" id="L67"><span class="tok-kw">test</span> <span class="tok-str">&quot;math.acosh32&quot;</span> {</span>
+<span class="line" id="L67"><span class="tok-kw">test</span> acosh32 {</span>
 <span class="line" id="L68">    <span class="tok-kw">const</span> epsilon = <span class="tok-number">0.000001</span>;</span>
 <span class="line" id="L69"></span>
 <span class="line" id="L70">    <span class="tok-kw">try</span> expect(math.approxEqAbs(<span class="tok-type">f32</span>, acosh32(<span class="tok-number">1.5</span>), <span class="tok-number">0.962424</span>, epsilon));</span>
@@ -199,7 +199,7 @@
 <span class="line" id="L73">    <span class="tok-kw">try</span> expect(math.approxEqAbs(<span class="tok-type">f32</span>, acosh32(<span class="tok-number">123123.234375</span>), <span class="tok-number">12.414088</span>, epsilon));</span>
 <span class="line" id="L74">}</span>
 <span class="line" id="L75"></span>
-<span class="line" id="L76"><span class="tok-kw">test</span> <span class="tok-str">&quot;math.acosh64&quot;</span> {</span>
+<span class="line" id="L76"><span class="tok-kw">test</span> acosh64 {</span>
 <span class="line" id="L77">    <span class="tok-kw">const</span> epsilon = <span class="tok-number">0.000001</span>;</span>
 <span class="line" id="L78"></span>
 <span class="line" id="L79">    <span class="tok-kw">try</span> expect(math.approxEqAbs(<span class="tok-type">f64</span>, acosh64(<span class="tok-number">1.5</span>), <span class="tok-number">0.962424</span>, epsilon));</span>
@@ -208,12 +208,12 @@
 <span class="line" id="L82">    <span class="tok-kw">try</span> expect(math.approxEqAbs(<span class="tok-type">f64</span>, acosh64(<span class="tok-number">123123.234375</span>), <span class="tok-number">12.414088</span>, epsilon));</span>
 <span class="line" id="L83">}</span>
 <span class="line" id="L84"></span>
-<span class="line" id="L85"><span class="tok-kw">test</span> <span class="tok-str">&quot;math.acosh32.special&quot;</span> {</span>
+<span class="line" id="L85"><span class="tok-kw">test</span> <span class="tok-str">&quot;acosh32.special&quot;</span> {</span>
 <span class="line" id="L86">    <span class="tok-kw">try</span> expect(math.isNan(acosh32(math.nan(<span class="tok-type">f32</span>))));</span>
 <span class="line" id="L87">    <span class="tok-kw">try</span> expect(math.isNan(acosh32(<span class="tok-number">0.5</span>)));</span>
 <span class="line" id="L88">}</span>
 <span class="line" id="L89"></span>
-<span class="line" id="L90"><span class="tok-kw">test</span> <span class="tok-str">&quot;math.acosh64.special&quot;</span> {</span>
+<span class="line" id="L90"><span class="tok-kw">test</span> <span class="tok-str">&quot;acosh64.special&quot;</span> {</span>
 <span class="line" id="L91">    <span class="tok-kw">try</span> expect(math.isNan(acosh64(math.nan(<span class="tok-type">f64</span>))));</span>
 <span class="line" id="L92">    <span class="tok-kw">try</span> expect(math.isNan(acosh64(<span class="tok-number">0.5</span>)));</span>
 <span class="line" id="L93">}</span>

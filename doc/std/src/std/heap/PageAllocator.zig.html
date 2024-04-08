@@ -149,7 +149,7 @@
 <span class="line" id="L35">        hint,</span>
 <span class="line" id="L36">        aligned_len,</span>
 <span class="line" id="L37">        os.PROT.READ | os.PROT.WRITE,</span>
-<span class="line" id="L38">        os.MAP.PRIVATE | os.MAP.ANONYMOUS,</span>
+<span class="line" id="L38">        .{ .TYPE = .PRIVATE, .ANONYMOUS = <span class="tok-null">true</span> },</span>
 <span class="line" id="L39">        -<span class="tok-number">1</span>,</span>
 <span class="line" id="L40">        <span class="tok-number">0</span>,</span>
 <span class="line" id="L41">    ) <span class="tok-kw">catch</span> <span class="tok-kw">return</span> <span class="tok-null">null</span>;</span>

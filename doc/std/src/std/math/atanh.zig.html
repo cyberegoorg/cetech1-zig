@@ -210,12 +210,12 @@
 <span class="line" id="L84">    <span class="tok-kw">return</span> <span class="tok-kw">if</span> (s != <span class="tok-number">0</span>) -y <span class="tok-kw">else</span> y;</span>
 <span class="line" id="L85">}</span>
 <span class="line" id="L86"></span>
-<span class="line" id="L87"><span class="tok-kw">test</span> <span class="tok-str">&quot;math.atanh&quot;</span> {</span>
+<span class="line" id="L87"><span class="tok-kw">test</span> atanh {</span>
 <span class="line" id="L88">    <span class="tok-kw">try</span> expect(atanh(<span class="tok-builtin">@as</span>(<span class="tok-type">f32</span>, <span class="tok-number">0.0</span>)) == atanh_32(<span class="tok-number">0.0</span>));</span>
 <span class="line" id="L89">    <span class="tok-kw">try</span> expect(atanh(<span class="tok-builtin">@as</span>(<span class="tok-type">f64</span>, <span class="tok-number">0.0</span>)) == atanh_64(<span class="tok-number">0.0</span>));</span>
 <span class="line" id="L90">}</span>
 <span class="line" id="L91"></span>
-<span class="line" id="L92"><span class="tok-kw">test</span> <span class="tok-str">&quot;math.atanh_32&quot;</span> {</span>
+<span class="line" id="L92"><span class="tok-kw">test</span> atanh_32 {</span>
 <span class="line" id="L93">    <span class="tok-kw">const</span> epsilon = <span class="tok-number">0.000001</span>;</span>
 <span class="line" id="L94"></span>
 <span class="line" id="L95">    <span class="tok-kw">try</span> expect(math.approxEqAbs(<span class="tok-type">f32</span>, atanh_32(<span class="tok-number">0.0</span>), <span class="tok-number">0.0</span>, epsilon));</span>
@@ -223,7 +223,7 @@
 <span class="line" id="L97">    <span class="tok-kw">try</span> expect(math.approxEqAbs(<span class="tok-type">f32</span>, atanh_32(<span class="tok-number">0.8923</span>), <span class="tok-number">1.433099</span>, epsilon));</span>
 <span class="line" id="L98">}</span>
 <span class="line" id="L99"></span>
-<span class="line" id="L100"><span class="tok-kw">test</span> <span class="tok-str">&quot;math.atanh_64&quot;</span> {</span>
+<span class="line" id="L100"><span class="tok-kw">test</span> atanh_64 {</span>
 <span class="line" id="L101">    <span class="tok-kw">const</span> epsilon = <span class="tok-number">0.000001</span>;</span>
 <span class="line" id="L102"></span>
 <span class="line" id="L103">    <span class="tok-kw">try</span> expect(math.approxEqAbs(<span class="tok-type">f64</span>, atanh_64(<span class="tok-number">0.0</span>), <span class="tok-number">0.0</span>, epsilon));</span>
@@ -231,7 +231,7 @@
 <span class="line" id="L105">    <span class="tok-kw">try</span> expect(math.approxEqAbs(<span class="tok-type">f64</span>, atanh_64(<span class="tok-number">0.8923</span>), <span class="tok-number">1.433099</span>, epsilon));</span>
 <span class="line" id="L106">}</span>
 <span class="line" id="L107"></span>
-<span class="line" id="L108"><span class="tok-kw">test</span> <span class="tok-str">&quot;math.atanh32.special&quot;</span> {</span>
+<span class="line" id="L108"><span class="tok-kw">test</span> <span class="tok-str">&quot;atanh32.special&quot;</span> {</span>
 <span class="line" id="L109">    <span class="tok-kw">try</span> expect(math.isPositiveInf(atanh_32(<span class="tok-number">1</span>)));</span>
 <span class="line" id="L110">    <span class="tok-kw">try</span> expect(math.isNegativeInf(atanh_32(-<span class="tok-number">1</span>)));</span>
 <span class="line" id="L111">    <span class="tok-kw">try</span> expect(math.isNan(atanh_32(<span class="tok-number">1.5</span>)));</span>
@@ -239,7 +239,7 @@
 <span class="line" id="L113">    <span class="tok-kw">try</span> expect(math.isNan(atanh_32(math.nan(<span class="tok-type">f32</span>))));</span>
 <span class="line" id="L114">}</span>
 <span class="line" id="L115"></span>
-<span class="line" id="L116"><span class="tok-kw">test</span> <span class="tok-str">&quot;math.atanh64.special&quot;</span> {</span>
+<span class="line" id="L116"><span class="tok-kw">test</span> <span class="tok-str">&quot;atanh64.special&quot;</span> {</span>
 <span class="line" id="L117">    <span class="tok-kw">try</span> expect(math.isPositiveInf(atanh_64(<span class="tok-number">1</span>)));</span>
 <span class="line" id="L118">    <span class="tok-kw">try</span> expect(math.isNegativeInf(atanh_64(-<span class="tok-number">1</span>)));</span>
 <span class="line" id="L119">    <span class="tok-kw">try</span> expect(math.isNan(atanh_64(<span class="tok-number">1.5</span>)));</span>

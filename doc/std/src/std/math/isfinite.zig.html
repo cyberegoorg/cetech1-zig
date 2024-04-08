@@ -124,7 +124,7 @@
 <span class="line" id="L10">    <span class="tok-kw">return</span> <span class="tok-builtin">@as</span>(TBits, <span class="tok-builtin">@bitCast</span>(x)) &amp; remove_sign &lt; <span class="tok-builtin">@as</span>(TBits, <span class="tok-builtin">@bitCast</span>(math.inf(T)));</span>
 <span class="line" id="L11">}</span>
 <span class="line" id="L12"></span>
-<span class="line" id="L13"><span class="tok-kw">test</span> <span class="tok-str">&quot;math.isFinite&quot;</span> {</span>
+<span class="line" id="L13"><span class="tok-kw">test</span> isFinite {</span>
 <span class="line" id="L14">    <span class="tok-kw">inline</span> <span class="tok-kw">for</span> ([_]<span class="tok-type">type</span>{ <span class="tok-type">f16</span>, <span class="tok-type">f32</span>, <span class="tok-type">f64</span>, <span class="tok-type">f80</span>, <span class="tok-type">f128</span> }) |T| {</span>
 <span class="line" id="L15">        <span class="tok-comment">// normals</span>
 </span>

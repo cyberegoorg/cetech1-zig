@@ -293,7 +293,7 @@
 <span class="line" id="L160">                =&gt; {</span>
 <span class="line" id="L161">                    <span class="tok-kw">var</span> buf = <span class="tok-builtin">@field</span>(args, field.name).value_buf;</span>
 <span class="line" id="L162">                    <span class="tok-kw">const</span> entry = <span class="tok-builtin">@as</span>(*<span class="tok-kw">align</span>(<span class="tok-number">1</span>) <span class="tok-kw">const</span> std.os.windows.UNICODE_STRING, <span class="tok-builtin">@ptrCast</span>(table[i + <span class="tok-number">1</span>].EntryContext));</span>
-<span class="line" id="L163">                    <span class="tok-kw">const</span> len = <span class="tok-kw">try</span> std.unicode.utf16leToUtf8(buf, entry.Buffer[<span class="tok-number">0</span> .. entry.Length / <span class="tok-number">2</span>]);</span>
+<span class="line" id="L163">                    <span class="tok-kw">const</span> len = <span class="tok-kw">try</span> std.unicode.utf16LeToUtf8(buf, entry.Buffer[<span class="tok-number">0</span> .. entry.Length / <span class="tok-number">2</span>]);</span>
 <span class="line" id="L164">                    buf[len] = <span class="tok-number">0</span>;</span>
 <span class="line" id="L165">                },</span>
 <span class="line" id="L166"></span>

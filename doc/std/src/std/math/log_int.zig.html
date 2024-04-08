@@ -121,147 +121,162 @@
 <span class="line" id="L7"><span class="tok-comment">/// Returns the logarithm of `x` for the provided `base`, rounding down to the nearest integer.</span></span>
 <span class="line" id="L8"><span class="tok-comment">/// Asserts that `base &gt; 1` and `x &gt; 0`.</span></span>
 <span class="line" id="L9"><span class="tok-kw">pub</span> <span class="tok-kw">fn</span> <span class="tok-fn">log_int</span>(<span class="tok-kw">comptime</span> T: <span class="tok-type">type</span>, base: T, x: T) Log2Int(T) {</span>
-<span class="line" id="L10">    <span class="tok-kw">if</span> (<span class="tok-builtin">@typeInfo</span>(T) != .Int <span class="tok-kw">or</span> <span class="tok-builtin">@typeInfo</span>(T).Int.signedness != .unsigned)</span>
-<span class="line" id="L11">        <span class="tok-builtin">@compileError</span>(<span class="tok-str">&quot;log_int requires an unsigned integer, found &quot;</span> ++ <span class="tok-builtin">@typeName</span>(T));</span>
-<span class="line" id="L12"></span>
-<span class="line" id="L13">    assert(base &gt; <span class="tok-number">1</span> <span class="tok-kw">and</span> x &gt; <span class="tok-number">0</span>);</span>
-<span class="line" id="L14"></span>
-<span class="line" id="L15">    <span class="tok-comment">// Let's denote by [y] the integer part of y.</span>
-</span>
+<span class="line" id="L10">    <span class="tok-kw">const</span> valid = <span class="tok-kw">switch</span> (<span class="tok-builtin">@typeInfo</span>(T)) {</span>
+<span class="line" id="L11">        .ComptimeInt =&gt; <span class="tok-null">true</span>,</span>
+<span class="line" id="L12">        .Int =&gt; |IntType| IntType.signedness == .unsigned,</span>
+<span class="line" id="L13">        <span class="tok-kw">else</span> =&gt; <span class="tok-null">false</span>,</span>
+<span class="line" id="L14">    };</span>
+<span class="line" id="L15">    <span class="tok-kw">if</span> (!valid) <span class="tok-builtin">@compileError</span>(<span class="tok-str">&quot;log_int requires an unsigned integer, found &quot;</span> ++ <span class="tok-builtin">@typeName</span>(T));</span>
 <span class="line" id="L16"></span>
-<span class="line" id="L17">    <span class="tok-comment">// Throughout the iteration the following invariant is preserved:</span>
-</span>
-<span class="line" id="L18">    <span class="tok-comment">//     power = base ^ exponent</span>
-</span>
+<span class="line" id="L17">    assert(base &gt; <span class="tok-number">1</span> <span class="tok-kw">and</span> x &gt; <span class="tok-number">0</span>);</span>
+<span class="line" id="L18">    <span class="tok-kw">if</span> (base == <span class="tok-number">2</span>) <span class="tok-kw">return</span> math.log2_int(T, x);</span>
 <span class="line" id="L19"></span>
-<span class="line" id="L20">    <span class="tok-comment">// Safety and termination.</span>
+<span class="line" id="L20">    <span class="tok-comment">// Let's denote by [y] the integer part of y.</span>
 </span>
-<span class="line" id="L21">    <span class="tok-comment">//</span>
+<span class="line" id="L21"></span>
+<span class="line" id="L22">    <span class="tok-comment">// Throughout the iteration the following invariant is preserved:</span>
 </span>
-<span class="line" id="L22">    <span class="tok-comment">// We never overflow inside the loop because when we enter the loop we have</span>
+<span class="line" id="L23">    <span class="tok-comment">//     power = base ^ exponent</span>
 </span>
-<span class="line" id="L23">    <span class="tok-comment">//     power &lt;= [maxInt(T) / base]</span>
+<span class="line" id="L24"></span>
+<span class="line" id="L25">    <span class="tok-comment">// Safety and termination.</span>
 </span>
-<span class="line" id="L24">    <span class="tok-comment">// therefore</span>
+<span class="line" id="L26">    <span class="tok-comment">//</span>
 </span>
-<span class="line" id="L25">    <span class="tok-comment">//     power * base &lt;= maxInt(T)</span>
+<span class="line" id="L27">    <span class="tok-comment">// We never overflow inside the loop because when we enter the loop we have</span>
 </span>
-<span class="line" id="L26">    <span class="tok-comment">// is a valid multiplication for type `T` and</span>
+<span class="line" id="L28">    <span class="tok-comment">//     power &lt;= [maxInt(T) / base]</span>
 </span>
-<span class="line" id="L27">    <span class="tok-comment">//     exponent + 1 &lt;= log(base, maxInt(T)) &lt;= log2(maxInt(T)) &lt;= maxInt(Log2Int(T))</span>
+<span class="line" id="L29">    <span class="tok-comment">// therefore</span>
 </span>
-<span class="line" id="L28">    <span class="tok-comment">// is a valid addition for type `Log2Int(T)`.</span>
+<span class="line" id="L30">    <span class="tok-comment">//     power * base &lt;= maxInt(T)</span>
 </span>
-<span class="line" id="L29">    <span class="tok-comment">//</span>
+<span class="line" id="L31">    <span class="tok-comment">// is a valid multiplication for type `T` and</span>
 </span>
-<span class="line" id="L30">    <span class="tok-comment">// This implies also termination because power is strictly increasing,</span>
+<span class="line" id="L32">    <span class="tok-comment">//     exponent + 1 &lt;= log(base, maxInt(T)) &lt;= log2(maxInt(T)) &lt;= maxInt(Log2Int(T))</span>
 </span>
-<span class="line" id="L31">    <span class="tok-comment">// hence it must eventually surpass [x / base] &lt; maxInt(T) and we then exit the loop.</span>
+<span class="line" id="L33">    <span class="tok-comment">// is a valid addition for type `Log2Int(T)`.</span>
 </span>
-<span class="line" id="L32"></span>
-<span class="line" id="L33">    <span class="tok-kw">var</span> exponent: Log2Int(T) = <span class="tok-number">0</span>;</span>
-<span class="line" id="L34">    <span class="tok-kw">var</span> power: T = <span class="tok-number">1</span>;</span>
-<span class="line" id="L35">    <span class="tok-kw">while</span> (power &lt;= x / base) {</span>
-<span class="line" id="L36">        power *= base;</span>
-<span class="line" id="L37">        exponent += <span class="tok-number">1</span>;</span>
-<span class="line" id="L38">    }</span>
-<span class="line" id="L39"></span>
-<span class="line" id="L40">    <span class="tok-comment">// If we never entered the loop we must have</span>
+<span class="line" id="L34">    <span class="tok-comment">//</span>
 </span>
-<span class="line" id="L41">    <span class="tok-comment">//     [x / base] &lt; 1</span>
+<span class="line" id="L35">    <span class="tok-comment">// This implies also termination because power is strictly increasing,</span>
 </span>
-<span class="line" id="L42">    <span class="tok-comment">// hence</span>
+<span class="line" id="L36">    <span class="tok-comment">// hence it must eventually surpass [x / base] &lt; maxInt(T) and we then exit the loop.</span>
 </span>
-<span class="line" id="L43">    <span class="tok-comment">//     x &lt;= [x / base] * base &lt; base</span>
+<span class="line" id="L37"></span>
+<span class="line" id="L38">    <span class="tok-kw">var</span> exponent: Log2Int(T) = <span class="tok-number">0</span>;</span>
+<span class="line" id="L39">    <span class="tok-kw">var</span> power: T = <span class="tok-number">1</span>;</span>
+<span class="line" id="L40">    <span class="tok-kw">while</span> (power &lt;= x / base) {</span>
+<span class="line" id="L41">        power *= base;</span>
+<span class="line" id="L42">        exponent += <span class="tok-number">1</span>;</span>
+<span class="line" id="L43">    }</span>
+<span class="line" id="L44"></span>
+<span class="line" id="L45">    <span class="tok-comment">// If we never entered the loop we must have</span>
 </span>
-<span class="line" id="L44">    <span class="tok-comment">// thus the result is 0. We can then return exponent, which is still 0.</span>
+<span class="line" id="L46">    <span class="tok-comment">//     [x / base] &lt; 1</span>
 </span>
-<span class="line" id="L45">    <span class="tok-comment">//</span>
+<span class="line" id="L47">    <span class="tok-comment">// hence</span>
 </span>
-<span class="line" id="L46">    <span class="tok-comment">// Otherwise, if we entered the loop at least once,</span>
+<span class="line" id="L48">    <span class="tok-comment">//     x &lt;= [x / base] * base &lt; base</span>
 </span>
-<span class="line" id="L47">    <span class="tok-comment">// when we exit the loop we have that power is exactly divisible by base and</span>
+<span class="line" id="L49">    <span class="tok-comment">// thus the result is 0. We can then return exponent, which is still 0.</span>
 </span>
-<span class="line" id="L48">    <span class="tok-comment">//     power / base &lt;= [x / base] &lt; power</span>
+<span class="line" id="L50">    <span class="tok-comment">//</span>
 </span>
-<span class="line" id="L49">    <span class="tok-comment">// hence</span>
+<span class="line" id="L51">    <span class="tok-comment">// Otherwise, if we entered the loop at least once,</span>
 </span>
-<span class="line" id="L50">    <span class="tok-comment">//     power &lt;= [x / base] * base &lt;= x &lt; power * base</span>
+<span class="line" id="L52">    <span class="tok-comment">// when we exit the loop we have that power is exactly divisible by base and</span>
 </span>
-<span class="line" id="L51">    <span class="tok-comment">// This means that</span>
+<span class="line" id="L53">    <span class="tok-comment">//     power / base &lt;= [x / base] &lt; power</span>
 </span>
-<span class="line" id="L52">    <span class="tok-comment">//     base^exponent &lt;= x &lt; base^(exponent+1)</span>
+<span class="line" id="L54">    <span class="tok-comment">// hence</span>
 </span>
-<span class="line" id="L53">    <span class="tok-comment">// hence the result is exponent.</span>
+<span class="line" id="L55">    <span class="tok-comment">//     power &lt;= [x / base] * base &lt;= x &lt; power * base</span>
 </span>
-<span class="line" id="L54"></span>
-<span class="line" id="L55">    <span class="tok-kw">return</span> exponent;</span>
-<span class="line" id="L56">}</span>
-<span class="line" id="L57"></span>
-<span class="line" id="L58"><span class="tok-kw">test</span> <span class="tok-str">&quot;math.log_int&quot;</span> {</span>
-<span class="line" id="L59">    <span class="tok-comment">// Test all unsigned integers with 2, 3, ..., 64 bits.</span>
+<span class="line" id="L56">    <span class="tok-comment">// This means that</span>
 </span>
-<span class="line" id="L60">    <span class="tok-comment">// We cannot test 0 or 1 bits since base must be &gt; 1.</span>
+<span class="line" id="L57">    <span class="tok-comment">//     base^exponent &lt;= x &lt; base^(exponent+1)</span>
 </span>
-<span class="line" id="L61">    <span class="tok-kw">inline</span> <span class="tok-kw">for</span> (<span class="tok-number">2</span>..<span class="tok-number">64</span> + <span class="tok-number">1</span>) |bits| {</span>
-<span class="line" id="L62">        <span class="tok-kw">const</span> T = <span class="tok-builtin">@Type</span>(std.builtin.Type{</span>
-<span class="line" id="L63">            .Int = std.builtin.Type.Int{ .signedness = .unsigned, .bits = <span class="tok-builtin">@intCast</span>(bits) },</span>
-<span class="line" id="L64">        });</span>
-<span class="line" id="L65"></span>
-<span class="line" id="L66">        <span class="tok-comment">// for base = 2, 3, ..., min(maxInt(T),1024)</span>
+<span class="line" id="L58">    <span class="tok-comment">// hence the result is exponent.</span>
 </span>
-<span class="line" id="L67">        <span class="tok-kw">var</span> base: T = <span class="tok-number">1</span>;</span>
-<span class="line" id="L68">        <span class="tok-kw">while</span> (base &lt; math.maxInt(T) <span class="tok-kw">and</span> base &lt;= <span class="tok-number">1024</span>) {</span>
-<span class="line" id="L69">            base += <span class="tok-number">1</span>;</span>
+<span class="line" id="L59"></span>
+<span class="line" id="L60">    <span class="tok-kw">return</span> exponent;</span>
+<span class="line" id="L61">}</span>
+<span class="line" id="L62"></span>
+<span class="line" id="L63"><span class="tok-kw">test</span> <span class="tok-str">&quot;log_int&quot;</span> {</span>
+<span class="line" id="L64">    <span class="tok-comment">// Test all unsigned integers with 2, 3, ..., 64 bits.</span>
+</span>
+<span class="line" id="L65">    <span class="tok-comment">// We cannot test 0 or 1 bits since base must be &gt; 1.</span>
+</span>
+<span class="line" id="L66">    <span class="tok-kw">inline</span> <span class="tok-kw">for</span> (<span class="tok-number">2</span>..<span class="tok-number">64</span> + <span class="tok-number">1</span>) |bits| {</span>
+<span class="line" id="L67">        <span class="tok-kw">const</span> T = <span class="tok-builtin">@Type</span>(std.builtin.Type{</span>
+<span class="line" id="L68">            .Int = std.builtin.Type.Int{ .signedness = .unsigned, .bits = <span class="tok-builtin">@intCast</span>(bits) },</span>
+<span class="line" id="L69">        });</span>
 <span class="line" id="L70"></span>
-<span class="line" id="L71">            <span class="tok-comment">// test that `log_int(T, base, 1) == 0`</span>
+<span class="line" id="L71">        <span class="tok-comment">// for base = 2, 3, ..., min(maxInt(T),1024)</span>
 </span>
-<span class="line" id="L72">            <span class="tok-kw">try</span> testing.expectEqual(<span class="tok-builtin">@as</span>(Log2Int(T), <span class="tok-number">0</span>), log_int(T, base, <span class="tok-number">1</span>));</span>
-<span class="line" id="L73"></span>
-<span class="line" id="L74">            <span class="tok-comment">// For powers `pow = base^exp &gt; 1` that fit inside T,</span>
+<span class="line" id="L72">        <span class="tok-kw">var</span> base: T = <span class="tok-number">1</span>;</span>
+<span class="line" id="L73">        <span class="tok-kw">while</span> (base &lt; math.maxInt(T) <span class="tok-kw">and</span> base &lt;= <span class="tok-number">1024</span>) {</span>
+<span class="line" id="L74">            base += <span class="tok-number">1</span>;</span>
+<span class="line" id="L75"></span>
+<span class="line" id="L76">            <span class="tok-comment">// test that `log_int(T, base, 1) == 0`</span>
 </span>
-<span class="line" id="L75">            <span class="tok-comment">// test that `log_int` correctly detects the jump in the logarithm</span>
+<span class="line" id="L77">            <span class="tok-kw">try</span> testing.expectEqual(<span class="tok-builtin">@as</span>(Log2Int(T), <span class="tok-number">0</span>), log_int(T, base, <span class="tok-number">1</span>));</span>
+<span class="line" id="L78"></span>
+<span class="line" id="L79">            <span class="tok-comment">// For powers `pow = base^exp &gt; 1` that fit inside T,</span>
 </span>
-<span class="line" id="L76">            <span class="tok-comment">// from `log(pow-1) == exp-1` to `log(pow) == exp`.</span>
+<span class="line" id="L80">            <span class="tok-comment">// test that `log_int` correctly detects the jump in the logarithm</span>
 </span>
-<span class="line" id="L77">            <span class="tok-kw">var</span> exp: Log2Int(T) = <span class="tok-number">0</span>;</span>
-<span class="line" id="L78">            <span class="tok-kw">var</span> pow: T = <span class="tok-number">1</span>;</span>
-<span class="line" id="L79">            <span class="tok-kw">while</span> (pow &lt;= math.maxInt(T) / base) {</span>
-<span class="line" id="L80">                exp += <span class="tok-number">1</span>;</span>
-<span class="line" id="L81">                pow *= base;</span>
-<span class="line" id="L82"></span>
-<span class="line" id="L83">                <span class="tok-kw">try</span> testing.expectEqual(exp - <span class="tok-number">1</span>, log_int(T, base, pow - <span class="tok-number">1</span>));</span>
-<span class="line" id="L84">                <span class="tok-kw">try</span> testing.expectEqual(exp, log_int(T, base, pow));</span>
-<span class="line" id="L85">            }</span>
-<span class="line" id="L86">        }</span>
-<span class="line" id="L87">    }</span>
-<span class="line" id="L88">}</span>
-<span class="line" id="L89"></span>
-<span class="line" id="L90"><span class="tok-kw">test</span> <span class="tok-str">&quot;math.log_int vs math.log2&quot;</span> {</span>
-<span class="line" id="L91">    <span class="tok-kw">const</span> types = [_]<span class="tok-type">type</span>{ <span class="tok-type">u2</span>, <span class="tok-type">u3</span>, <span class="tok-type">u4</span>, <span class="tok-type">u8</span>, <span class="tok-type">u16</span> };</span>
-<span class="line" id="L92">    <span class="tok-kw">inline</span> <span class="tok-kw">for</span> (types) |T| {</span>
-<span class="line" id="L93">        <span class="tok-kw">var</span> n: T = <span class="tok-number">0</span>;</span>
-<span class="line" id="L94">        <span class="tok-kw">while</span> (n &lt; math.maxInt(T)) {</span>
-<span class="line" id="L95">            n += <span class="tok-number">1</span>;</span>
-<span class="line" id="L96">            <span class="tok-kw">const</span> special = math.log2_int(T, n);</span>
-<span class="line" id="L97">            <span class="tok-kw">const</span> general = log_int(T, <span class="tok-number">2</span>, n);</span>
-<span class="line" id="L98">            <span class="tok-kw">try</span> testing.expectEqual(special, general);</span>
-<span class="line" id="L99">        }</span>
-<span class="line" id="L100">    }</span>
-<span class="line" id="L101">}</span>
-<span class="line" id="L102"></span>
-<span class="line" id="L103"><span class="tok-kw">test</span> <span class="tok-str">&quot;math.log_int vs math.log10&quot;</span> {</span>
-<span class="line" id="L104">    <span class="tok-kw">const</span> types = [_]<span class="tok-type">type</span>{ <span class="tok-type">u4</span>, <span class="tok-type">u5</span>, <span class="tok-type">u6</span>, <span class="tok-type">u8</span>, <span class="tok-type">u16</span> };</span>
-<span class="line" id="L105">    <span class="tok-kw">inline</span> <span class="tok-kw">for</span> (types) |T| {</span>
-<span class="line" id="L106">        <span class="tok-kw">var</span> n: T = <span class="tok-number">0</span>;</span>
-<span class="line" id="L107">        <span class="tok-kw">while</span> (n &lt; math.maxInt(T)) {</span>
-<span class="line" id="L108">            n += <span class="tok-number">1</span>;</span>
-<span class="line" id="L109">            <span class="tok-kw">const</span> special = math.log10_int(n);</span>
-<span class="line" id="L110">            <span class="tok-kw">const</span> general = log_int(T, <span class="tok-number">10</span>, n);</span>
-<span class="line" id="L111">            <span class="tok-kw">try</span> testing.expectEqual(special, general);</span>
-<span class="line" id="L112">        }</span>
-<span class="line" id="L113">    }</span>
-<span class="line" id="L114">}</span>
-<span class="line" id="L115"></span>
+<span class="line" id="L81">            <span class="tok-comment">// from `log(pow-1) == exp-1` to `log(pow) == exp`.</span>
+</span>
+<span class="line" id="L82">            <span class="tok-kw">var</span> exp: Log2Int(T) = <span class="tok-number">0</span>;</span>
+<span class="line" id="L83">            <span class="tok-kw">var</span> pow: T = <span class="tok-number">1</span>;</span>
+<span class="line" id="L84">            <span class="tok-kw">while</span> (pow &lt;= math.maxInt(T) / base) {</span>
+<span class="line" id="L85">                exp += <span class="tok-number">1</span>;</span>
+<span class="line" id="L86">                pow *= base;</span>
+<span class="line" id="L87"></span>
+<span class="line" id="L88">                <span class="tok-kw">try</span> testing.expectEqual(exp - <span class="tok-number">1</span>, log_int(T, base, pow - <span class="tok-number">1</span>));</span>
+<span class="line" id="L89">                <span class="tok-kw">try</span> testing.expectEqual(exp, log_int(T, base, pow));</span>
+<span class="line" id="L90">            }</span>
+<span class="line" id="L91">        }</span>
+<span class="line" id="L92">    }</span>
+<span class="line" id="L93">}</span>
+<span class="line" id="L94"></span>
+<span class="line" id="L95"><span class="tok-kw">test</span> <span class="tok-str">&quot;log_int vs math.log2&quot;</span> {</span>
+<span class="line" id="L96">    <span class="tok-kw">const</span> types = [_]<span class="tok-type">type</span>{ <span class="tok-type">u2</span>, <span class="tok-type">u3</span>, <span class="tok-type">u4</span>, <span class="tok-type">u8</span>, <span class="tok-type">u16</span> };</span>
+<span class="line" id="L97">    <span class="tok-kw">inline</span> <span class="tok-kw">for</span> (types) |T| {</span>
+<span class="line" id="L98">        <span class="tok-kw">var</span> n: T = <span class="tok-number">0</span>;</span>
+<span class="line" id="L99">        <span class="tok-kw">while</span> (n &lt; math.maxInt(T)) {</span>
+<span class="line" id="L100">            n += <span class="tok-number">1</span>;</span>
+<span class="line" id="L101">            <span class="tok-kw">const</span> special = math.log2_int(T, n);</span>
+<span class="line" id="L102">            <span class="tok-kw">const</span> general = log_int(T, <span class="tok-number">2</span>, n);</span>
+<span class="line" id="L103">            <span class="tok-kw">try</span> testing.expectEqual(special, general);</span>
+<span class="line" id="L104">        }</span>
+<span class="line" id="L105">    }</span>
+<span class="line" id="L106">}</span>
+<span class="line" id="L107"></span>
+<span class="line" id="L108"><span class="tok-kw">test</span> <span class="tok-str">&quot;log_int vs math.log10&quot;</span> {</span>
+<span class="line" id="L109">    <span class="tok-kw">const</span> types = [_]<span class="tok-type">type</span>{ <span class="tok-type">u4</span>, <span class="tok-type">u5</span>, <span class="tok-type">u6</span>, <span class="tok-type">u8</span>, <span class="tok-type">u16</span> };</span>
+<span class="line" id="L110">    <span class="tok-kw">inline</span> <span class="tok-kw">for</span> (types) |T| {</span>
+<span class="line" id="L111">        <span class="tok-kw">var</span> n: T = <span class="tok-number">0</span>;</span>
+<span class="line" id="L112">        <span class="tok-kw">while</span> (n &lt; math.maxInt(T)) {</span>
+<span class="line" id="L113">            n += <span class="tok-number">1</span>;</span>
+<span class="line" id="L114">            <span class="tok-kw">const</span> special = math.log10_int(n);</span>
+<span class="line" id="L115">            <span class="tok-kw">const</span> general = log_int(T, <span class="tok-number">10</span>, n);</span>
+<span class="line" id="L116">            <span class="tok-kw">try</span> testing.expectEqual(special, general);</span>
+<span class="line" id="L117">        }</span>
+<span class="line" id="L118">    }</span>
+<span class="line" id="L119">}</span>
+<span class="line" id="L120"></span>
+<span class="line" id="L121"><span class="tok-kw">test</span> <span class="tok-str">&quot;log_int at comptime&quot;</span> {</span>
+<span class="line" id="L122">    <span class="tok-kw">const</span> x = <span class="tok-number">59049</span>; <span class="tok-comment">// 9 ** 5;</span>
+</span>
+<span class="line" id="L123">    <span class="tok-kw">comptime</span> {</span>
+<span class="line" id="L124">        <span class="tok-kw">if</span> (math.log_int(<span class="tok-type">comptime_int</span>, <span class="tok-number">9</span>, x) != <span class="tok-number">5</span>) {</span>
+<span class="line" id="L125">            <span class="tok-builtin">@compileError</span>(<span class="tok-str">&quot;log(9, 59049) should be 5&quot;</span>);</span>
+<span class="line" id="L126">        }</span>
+<span class="line" id="L127">    }</span>
+<span class="line" id="L128">}</span>
+<span class="line" id="L129"></span>
 </code></pre></body>
 </html>

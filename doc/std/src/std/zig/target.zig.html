@@ -1,0 +1,236 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">    <title>zig/target.zig - source view</title>
+    <link rel="icon" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAgklEQVR4AWMYWuD7EllJIM4G4g4g5oIJ/odhOJ8wToOxSTXgNxDHoeiBMfA4+wGShjyYOCkG/IGqWQziEzYAoUAeiF9D5U+DxEg14DRU7jWIT5IBIOdCxf+A+CQZAAoopEB7QJwBCBwHiip8UYmRdrAlDpIMgApwQZNnNii5Dq0MBgCxxycBnwEd+wAAAABJRU5ErkJggg==">
+    <link rel="icon" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxNTMgMTQwIj48ZyBmaWxsPSIjRjdBNDFEIj48Zz48cG9seWdvbiBwb2ludHM9IjQ2LDIyIDI4LDQ0IDE5LDMwIi8+PHBvbHlnb24gcG9pbnRzPSI0NiwyMiAzMywzMyAyOCw0NCAyMiw0NCAyMiw5NSAzMSw5NSAyMCwxMDAgMTIsMTE3IDAsMTE3IDAsMjIiIHNoYXBlLXJlbmRlcmluZz0iY3Jpc3BFZGdlcyIvPjxwb2x5Z29uIHBvaW50cz0iMzEsOTUgMTIsMTE3IDQsMTA2Ii8+PC9nPjxnPjxwb2x5Z29uIHBvaW50cz0iNTYsMjIgNjIsMzYgMzcsNDQiLz48cG9seWdvbiBwb2ludHM9IjU2LDIyIDExMSwyMiAxMTEsNDQgMzcsNDQgNTYsMzIiIHNoYXBlLXJlbmRlcmluZz0iY3Jpc3BFZGdlcyIvPjxwb2x5Z29uIHBvaW50cz0iMTE2LDk1IDk3LDExNyA5MCwxMDQiLz48cG9seWdvbiBwb2ludHM9IjExNiw5NSAxMDAsMTA0IDk3LDExNyA0MiwxMTcgNDIsOTUiIHNoYXBlLXJlbmRlcmluZz0iY3Jpc3BFZGdlcyIvPjxwb2x5Z29uIHBvaW50cz0iMTUwLDAgNTIsMTE3IDMsMTQwIDEwMSwyMiIvPjwvZz48Zz48cG9seWdvbiBwb2ludHM9IjE0MSwyMiAxNDAsNDAgMTIyLDQ1Ii8+PHBvbHlnb24gcG9pbnRzPSIxNTMsMjIgMTUzLDExNyAxMDYsMTE3IDEyMCwxMDUgMTI1LDk1IDEzMSw5NSAxMzEsNDUgMTIyLDQ1IDEzMiwzNiAxNDEsMjIiIHNoYXBlLXJlbmRlcmluZz0iY3Jpc3BFZGdlcyIvPjxwb2x5Z29uIHBvaW50cz0iMTI1LDk1IDEzMCwxMTAgMTA2LDExNyIvPjwvZz48L2c+PC9zdmc+">
+    <style>
+      body{
+        font-family: system-ui, -apple-system, Roboto, "Segoe UI", sans-serif;
+        margin: 0;
+        line-height: 1.5;
+      }
+
+      pre > code {
+        display: block;
+        overflow: auto;
+        line-height: normal;
+        margin: 0em;
+      }
+      .tok-kw {
+          color: #333;
+          font-weight: bold;
+      }
+      .tok-str {
+          color: #d14;
+      }
+      .tok-builtin {
+          color: #005C7A;
+      }
+      .tok-comment {
+          color: #545454;
+          font-style: italic;
+      }
+      .tok-fn {
+          color: #900;
+          font-weight: bold;
+      }
+      .tok-null {
+          color: #005C5C;
+      }
+      .tok-number {
+          color: #005C5C;
+      }
+      .tok-type {
+          color: #458;
+          font-weight: bold;
+      }
+      pre {
+        counter-reset: line;
+      }
+      pre .line:before {
+        counter-increment: line;
+        content: counter(line);
+        display: inline-block;
+        padding-right: 1em;
+        width: 2em;
+        text-align: right;
+        color: #999;
+      }
+      
+      .line {
+        width: 100%;
+        display: inline-block;
+      }
+      .line:target {
+        border-top: 1px solid #ccc;
+        border-bottom: 1px solid #ccc;
+        background: #fafafa;
+      }
+
+      @media (prefers-color-scheme: dark) {
+        body{
+            background:#222;
+            color: #ccc;
+        }
+        pre > code {
+            color: #ccc;
+            background: #222;
+            border: unset;
+        }
+        .line:target {
+            border-top: 1px solid #444;
+            border-bottom: 1px solid #444;
+            background: #333;
+        }
+        .tok-kw {
+            color: #eee;
+        }
+        .tok-str {
+            color: #2e5;
+        }
+        .tok-builtin {
+            color: #ff894c;
+        }
+        .tok-comment {
+            color: #aa7;
+        }
+        .tok-fn {
+            color: #B1A0F8;
+        }
+        .tok-null {
+            color: #ff8080;
+        }
+        .tok-number {
+            color: #ff8080;
+        }
+        .tok-type {
+            color: #68f;
+        }
+      }
+    </style>
+</head>
+<body>
+<pre><code><span class="line" id="L1"><span class="tok-kw">pub</span> <span class="tok-kw">const</span> ArchOsAbi = <span class="tok-kw">struct</span> {</span>
+<span class="line" id="L2">    arch: std.Target.Cpu.Arch,</span>
+<span class="line" id="L3">    os: std.Target.Os.Tag,</span>
+<span class="line" id="L4">    abi: std.Target.Abi,</span>
+<span class="line" id="L5">    os_ver: ?std.SemanticVersion = <span class="tok-null">null</span>,</span>
+<span class="line" id="L6"></span>
+<span class="line" id="L7">    <span class="tok-comment">// Minimum glibc version that provides support for the arch/os when ABI is GNU.</span>
+</span>
+<span class="line" id="L8">    glibc_min: ?std.SemanticVersion = <span class="tok-null">null</span>,</span>
+<span class="line" id="L9">};</span>
+<span class="line" id="L10"></span>
+<span class="line" id="L11"><span class="tok-kw">pub</span> <span class="tok-kw">const</span> available_libcs = [_]ArchOsAbi{</span>
+<span class="line" id="L12">    .{ .arch = .aarch64_be, .os = .linux, .abi = .gnu, .glibc_min = .{ .major = <span class="tok-number">2</span>, .minor = <span class="tok-number">17</span>, .patch = <span class="tok-number">0</span> } },</span>
+<span class="line" id="L13">    .{ .arch = .aarch64_be, .os = .linux, .abi = .musl },</span>
+<span class="line" id="L14">    .{ .arch = .aarch64_be, .os = .windows, .abi = .gnu },</span>
+<span class="line" id="L15">    .{ .arch = .aarch64, .os = .linux, .abi = .gnu },</span>
+<span class="line" id="L16">    .{ .arch = .aarch64, .os = .linux, .abi = .musl },</span>
+<span class="line" id="L17">    .{ .arch = .aarch64, .os = .windows, .abi = .gnu },</span>
+<span class="line" id="L18">    .{ .arch = .aarch64, .os = .macos, .abi = .none, .os_ver = .{ .major = <span class="tok-number">11</span>, .minor = <span class="tok-number">0</span>, .patch = <span class="tok-number">0</span> } },</span>
+<span class="line" id="L19">    .{ .arch = .armeb, .os = .linux, .abi = .gnueabi },</span>
+<span class="line" id="L20">    .{ .arch = .armeb, .os = .linux, .abi = .gnueabihf },</span>
+<span class="line" id="L21">    .{ .arch = .armeb, .os = .linux, .abi = .musleabi },</span>
+<span class="line" id="L22">    .{ .arch = .armeb, .os = .linux, .abi = .musleabihf },</span>
+<span class="line" id="L23">    .{ .arch = .armeb, .os = .windows, .abi = .gnu },</span>
+<span class="line" id="L24">    .{ .arch = .arm, .os = .linux, .abi = .gnueabi },</span>
+<span class="line" id="L25">    .{ .arch = .arm, .os = .linux, .abi = .gnueabihf },</span>
+<span class="line" id="L26">    .{ .arch = .arm, .os = .linux, .abi = .musleabi },</span>
+<span class="line" id="L27">    .{ .arch = .arm, .os = .linux, .abi = .musleabihf },</span>
+<span class="line" id="L28">    .{ .arch = .thumb, .os = .linux, .abi = .gnueabi },</span>
+<span class="line" id="L29">    .{ .arch = .thumb, .os = .linux, .abi = .gnueabihf },</span>
+<span class="line" id="L30">    .{ .arch = .thumb, .os = .linux, .abi = .musleabi },</span>
+<span class="line" id="L31">    .{ .arch = .thumb, .os = .linux, .abi = .musleabihf },</span>
+<span class="line" id="L32">    .{ .arch = .arm, .os = .windows, .abi = .gnu },</span>
+<span class="line" id="L33">    .{ .arch = .csky, .os = .linux, .abi = .gnueabi },</span>
+<span class="line" id="L34">    .{ .arch = .csky, .os = .linux, .abi = .gnueabihf },</span>
+<span class="line" id="L35">    .{ .arch = .x86, .os = .linux, .abi = .gnu },</span>
+<span class="line" id="L36">    .{ .arch = .x86, .os = .linux, .abi = .musl },</span>
+<span class="line" id="L37">    .{ .arch = .x86, .os = .windows, .abi = .gnu },</span>
+<span class="line" id="L38">    .{ .arch = .m68k, .os = .linux, .abi = .gnu },</span>
+<span class="line" id="L39">    .{ .arch = .m68k, .os = .linux, .abi = .musl },</span>
+<span class="line" id="L40">    .{ .arch = .mips64el, .os = .linux, .abi = .gnuabi64 },</span>
+<span class="line" id="L41">    .{ .arch = .mips64el, .os = .linux, .abi = .gnuabin32 },</span>
+<span class="line" id="L42">    .{ .arch = .mips64el, .os = .linux, .abi = .musl },</span>
+<span class="line" id="L43">    .{ .arch = .mips64, .os = .linux, .abi = .gnuabi64 },</span>
+<span class="line" id="L44">    .{ .arch = .mips64, .os = .linux, .abi = .gnuabin32 },</span>
+<span class="line" id="L45">    .{ .arch = .mips64, .os = .linux, .abi = .musl },</span>
+<span class="line" id="L46">    .{ .arch = .mipsel, .os = .linux, .abi = .gnueabi },</span>
+<span class="line" id="L47">    .{ .arch = .mipsel, .os = .linux, .abi = .gnueabihf },</span>
+<span class="line" id="L48">    .{ .arch = .mipsel, .os = .linux, .abi = .musl },</span>
+<span class="line" id="L49">    .{ .arch = .mips, .os = .linux, .abi = .gnueabi },</span>
+<span class="line" id="L50">    .{ .arch = .mips, .os = .linux, .abi = .gnueabihf },</span>
+<span class="line" id="L51">    .{ .arch = .mips, .os = .linux, .abi = .musl },</span>
+<span class="line" id="L52">    .{ .arch = .powerpc64le, .os = .linux, .abi = .gnu, .glibc_min = .{ .major = <span class="tok-number">2</span>, .minor = <span class="tok-number">19</span>, .patch = <span class="tok-number">0</span> } },</span>
+<span class="line" id="L53">    .{ .arch = .powerpc64le, .os = .linux, .abi = .musl },</span>
+<span class="line" id="L54">    .{ .arch = .powerpc64, .os = .linux, .abi = .gnu },</span>
+<span class="line" id="L55">    .{ .arch = .powerpc64, .os = .linux, .abi = .musl },</span>
+<span class="line" id="L56">    .{ .arch = .powerpc, .os = .linux, .abi = .gnueabi },</span>
+<span class="line" id="L57">    .{ .arch = .powerpc, .os = .linux, .abi = .gnueabihf },</span>
+<span class="line" id="L58">    .{ .arch = .powerpc, .os = .linux, .abi = .musl },</span>
+<span class="line" id="L59">    .{ .arch = .riscv64, .os = .linux, .abi = .gnu, .glibc_min = .{ .major = <span class="tok-number">2</span>, .minor = <span class="tok-number">27</span>, .patch = <span class="tok-number">0</span> } },</span>
+<span class="line" id="L60">    .{ .arch = .riscv64, .os = .linux, .abi = .musl },</span>
+<span class="line" id="L61">    .{ .arch = .s390x, .os = .linux, .abi = .gnu },</span>
+<span class="line" id="L62">    .{ .arch = .s390x, .os = .linux, .abi = .musl },</span>
+<span class="line" id="L63">    .{ .arch = .sparc, .os = .linux, .abi = .gnu },</span>
+<span class="line" id="L64">    .{ .arch = .sparc64, .os = .linux, .abi = .gnu },</span>
+<span class="line" id="L65">    .{ .arch = .wasm32, .os = .freestanding, .abi = .musl },</span>
+<span class="line" id="L66">    .{ .arch = .wasm32, .os = .wasi, .abi = .musl },</span>
+<span class="line" id="L67">    .{ .arch = .x86_64, .os = .linux, .abi = .gnu },</span>
+<span class="line" id="L68">    .{ .arch = .x86_64, .os = .linux, .abi = .gnux32 },</span>
+<span class="line" id="L69">    .{ .arch = .x86_64, .os = .linux, .abi = .musl },</span>
+<span class="line" id="L70">    .{ .arch = .x86_64, .os = .windows, .abi = .gnu },</span>
+<span class="line" id="L71">    .{ .arch = .x86_64, .os = .macos, .abi = .none, .os_ver = .{ .major = <span class="tok-number">10</span>, .minor = <span class="tok-number">7</span>, .patch = <span class="tok-number">0</span> } },</span>
+<span class="line" id="L72">};</span>
+<span class="line" id="L73"></span>
+<span class="line" id="L74"><span class="tok-kw">pub</span> <span class="tok-kw">fn</span> <span class="tok-fn">canBuildLibC</span>(target: std.Target) <span class="tok-type">bool</span> {</span>
+<span class="line" id="L75">    <span class="tok-kw">for</span> (available_libcs) |libc| {</span>
+<span class="line" id="L76">        <span class="tok-kw">if</span> (target.cpu.arch == libc.arch <span class="tok-kw">and</span> target.os.tag == libc.os <span class="tok-kw">and</span> target.abi == libc.abi) {</span>
+<span class="line" id="L77">            <span class="tok-kw">if</span> (target.os.tag == .macos) {</span>
+<span class="line" id="L78">                <span class="tok-kw">const</span> ver = target.os.version_range.semver;</span>
+<span class="line" id="L79">                <span class="tok-kw">return</span> ver.min.order(libc.os_ver.?) != .lt;</span>
+<span class="line" id="L80">            }</span>
+<span class="line" id="L81">            <span class="tok-comment">// Ensure glibc (aka *-linux-gnu) version is supported</span>
+</span>
+<span class="line" id="L82">            <span class="tok-kw">if</span> (target.isGnuLibC()) {</span>
+<span class="line" id="L83">                <span class="tok-kw">const</span> min_glibc_ver = libc.glibc_min <span class="tok-kw">orelse</span> <span class="tok-kw">return</span> <span class="tok-null">true</span>;</span>
+<span class="line" id="L84">                <span class="tok-kw">const</span> target_glibc_ver = target.os.version_range.linux.glibc;</span>
+<span class="line" id="L85">                <span class="tok-kw">return</span> target_glibc_ver.order(min_glibc_ver) != .lt;</span>
+<span class="line" id="L86">            }</span>
+<span class="line" id="L87">            <span class="tok-kw">return</span> <span class="tok-null">true</span>;</span>
+<span class="line" id="L88">        }</span>
+<span class="line" id="L89">    }</span>
+<span class="line" id="L90">    <span class="tok-kw">return</span> <span class="tok-null">false</span>;</span>
+<span class="line" id="L91">}</span>
+<span class="line" id="L92"></span>
+<span class="line" id="L93"><span class="tok-kw">pub</span> <span class="tok-kw">fn</span> <span class="tok-fn">muslArchNameHeaders</span>(arch: std.Target.Cpu.Arch) [:<span class="tok-number">0</span>]<span class="tok-kw">const</span> <span class="tok-type">u8</span> {</span>
+<span class="line" id="L94">    <span class="tok-kw">return</span> <span class="tok-kw">switch</span> (arch) {</span>
+<span class="line" id="L95">        .x86 =&gt; <span class="tok-kw">return</span> <span class="tok-str">&quot;x86&quot;</span>,</span>
+<span class="line" id="L96">        <span class="tok-kw">else</span> =&gt; muslArchName(arch),</span>
+<span class="line" id="L97">    };</span>
+<span class="line" id="L98">}</span>
+<span class="line" id="L99"></span>
+<span class="line" id="L100"><span class="tok-kw">pub</span> <span class="tok-kw">fn</span> <span class="tok-fn">muslArchName</span>(arch: std.Target.Cpu.Arch) [:<span class="tok-number">0</span>]<span class="tok-kw">const</span> <span class="tok-type">u8</span> {</span>
+<span class="line" id="L101">    <span class="tok-kw">switch</span> (arch) {</span>
+<span class="line" id="L102">        .aarch64, .aarch64_be =&gt; <span class="tok-kw">return</span> <span class="tok-str">&quot;aarch64&quot;</span>,</span>
+<span class="line" id="L103">        .arm, .armeb, .thumb, .thumbeb =&gt; <span class="tok-kw">return</span> <span class="tok-str">&quot;arm&quot;</span>,</span>
+<span class="line" id="L104">        .x86 =&gt; <span class="tok-kw">return</span> <span class="tok-str">&quot;i386&quot;</span>,</span>
+<span class="line" id="L105">        .mips, .mipsel =&gt; <span class="tok-kw">return</span> <span class="tok-str">&quot;mips&quot;</span>,</span>
+<span class="line" id="L106">        .mips64el, .mips64 =&gt; <span class="tok-kw">return</span> <span class="tok-str">&quot;mips64&quot;</span>,</span>
+<span class="line" id="L107">        .powerpc =&gt; <span class="tok-kw">return</span> <span class="tok-str">&quot;powerpc&quot;</span>,</span>
+<span class="line" id="L108">        .powerpc64, .powerpc64le =&gt; <span class="tok-kw">return</span> <span class="tok-str">&quot;powerpc64&quot;</span>,</span>
+<span class="line" id="L109">        .riscv64 =&gt; <span class="tok-kw">return</span> <span class="tok-str">&quot;riscv64&quot;</span>,</span>
+<span class="line" id="L110">        .s390x =&gt; <span class="tok-kw">return</span> <span class="tok-str">&quot;s390x&quot;</span>,</span>
+<span class="line" id="L111">        .wasm32, .wasm64 =&gt; <span class="tok-kw">return</span> <span class="tok-str">&quot;wasm&quot;</span>,</span>
+<span class="line" id="L112">        .x86_64 =&gt; <span class="tok-kw">return</span> <span class="tok-str">&quot;x86_64&quot;</span>,</span>
+<span class="line" id="L113">        <span class="tok-kw">else</span> =&gt; <span class="tok-kw">unreachable</span>,</span>
+<span class="line" id="L114">    }</span>
+<span class="line" id="L115">}</span>
+<span class="line" id="L116"></span>
+<span class="line" id="L117"><span class="tok-kw">const</span> std = <span class="tok-builtin">@import</span>(<span class="tok-str">&quot;std&quot;</span>);</span>
+<span class="line" id="L118"></span>
+</code></pre></body>
+</html>

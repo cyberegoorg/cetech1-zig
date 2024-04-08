@@ -318,12 +318,12 @@
 <span class="line" id="L182">    <span class="tok-kw">return</span> s * (hfsq + R) + (dk * ln2_lo + c) - hfsq + f + dk * ln2_hi;</span>
 <span class="line" id="L183">}</span>
 <span class="line" id="L184"></span>
-<span class="line" id="L185"><span class="tok-kw">test</span> <span class="tok-str">&quot;math.log1p&quot;</span> {</span>
+<span class="line" id="L185"><span class="tok-kw">test</span> log1p {</span>
 <span class="line" id="L186">    <span class="tok-kw">try</span> expect(log1p(<span class="tok-builtin">@as</span>(<span class="tok-type">f32</span>, <span class="tok-number">0.0</span>)) == log1p_32(<span class="tok-number">0.0</span>));</span>
 <span class="line" id="L187">    <span class="tok-kw">try</span> expect(log1p(<span class="tok-builtin">@as</span>(<span class="tok-type">f64</span>, <span class="tok-number">0.0</span>)) == log1p_64(<span class="tok-number">0.0</span>));</span>
 <span class="line" id="L188">}</span>
 <span class="line" id="L189"></span>
-<span class="line" id="L190"><span class="tok-kw">test</span> <span class="tok-str">&quot;math.log1p_32&quot;</span> {</span>
+<span class="line" id="L190"><span class="tok-kw">test</span> log1p_32 {</span>
 <span class="line" id="L191">    <span class="tok-kw">const</span> epsilon = <span class="tok-number">0.000001</span>;</span>
 <span class="line" id="L192"></span>
 <span class="line" id="L193">    <span class="tok-kw">try</span> expect(math.approxEqAbs(<span class="tok-type">f32</span>, log1p_32(<span class="tok-number">0.0</span>), <span class="tok-number">0.0</span>, epsilon));</span>
@@ -335,7 +335,7 @@
 <span class="line" id="L199">    <span class="tok-kw">try</span> expect(math.approxEqAbs(<span class="tok-type">f32</span>, log1p_32(<span class="tok-number">123123.234375</span>), <span class="tok-number">11.720949</span>, epsilon));</span>
 <span class="line" id="L200">}</span>
 <span class="line" id="L201"></span>
-<span class="line" id="L202"><span class="tok-kw">test</span> <span class="tok-str">&quot;math.log1p_64&quot;</span> {</span>
+<span class="line" id="L202"><span class="tok-kw">test</span> log1p_64 {</span>
 <span class="line" id="L203">    <span class="tok-kw">const</span> epsilon = <span class="tok-number">0.000001</span>;</span>
 <span class="line" id="L204"></span>
 <span class="line" id="L205">    <span class="tok-kw">try</span> expect(math.approxEqAbs(<span class="tok-type">f64</span>, log1p_64(<span class="tok-number">0.0</span>), <span class="tok-number">0.0</span>, epsilon));</span>
@@ -347,7 +347,7 @@
 <span class="line" id="L211">    <span class="tok-kw">try</span> expect(math.approxEqAbs(<span class="tok-type">f64</span>, log1p_64(<span class="tok-number">123123.234375</span>), <span class="tok-number">11.720949</span>, epsilon));</span>
 <span class="line" id="L212">}</span>
 <span class="line" id="L213"></span>
-<span class="line" id="L214"><span class="tok-kw">test</span> <span class="tok-str">&quot;math.log1p_32.special&quot;</span> {</span>
+<span class="line" id="L214"><span class="tok-kw">test</span> <span class="tok-str">&quot;log1p_32.special&quot;</span> {</span>
 <span class="line" id="L215">    <span class="tok-kw">try</span> expect(math.isPositiveInf(log1p_32(math.inf(<span class="tok-type">f32</span>))));</span>
 <span class="line" id="L216">    <span class="tok-kw">try</span> expect(math.isPositiveZero(log1p_32(<span class="tok-number">0.0</span>)));</span>
 <span class="line" id="L217">    <span class="tok-kw">try</span> expect(math.isNegativeZero(log1p_32(-<span class="tok-number">0.0</span>)));</span>
@@ -356,7 +356,7 @@
 <span class="line" id="L220">    <span class="tok-kw">try</span> expect(math.isNan(log1p_32(math.nan(<span class="tok-type">f32</span>))));</span>
 <span class="line" id="L221">}</span>
 <span class="line" id="L222"></span>
-<span class="line" id="L223"><span class="tok-kw">test</span> <span class="tok-str">&quot;math.log1p_64.special&quot;</span> {</span>
+<span class="line" id="L223"><span class="tok-kw">test</span> <span class="tok-str">&quot;log1p_64.special&quot;</span> {</span>
 <span class="line" id="L224">    <span class="tok-kw">try</span> expect(math.isPositiveInf(log1p_64(math.inf(<span class="tok-type">f64</span>))));</span>
 <span class="line" id="L225">    <span class="tok-kw">try</span> expect(math.isPositiveZero(log1p_64(<span class="tok-number">0.0</span>)));</span>
 <span class="line" id="L226">    <span class="tok-kw">try</span> expect(math.isNegativeZero(log1p_64(-<span class="tok-number">0.0</span>)));</span>

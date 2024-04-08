@@ -131,7 +131,7 @@
 <span class="line" id="L17">    <span class="tok-kw">return</span> isNan(x) <span class="tok-kw">and</span> (<span class="tok-builtin">@as</span>(U, <span class="tok-builtin">@bitCast</span>(x)) &amp; quiet_signal_bit_mask == <span class="tok-number">0</span>);</span>
 <span class="line" id="L18">}</span>
 <span class="line" id="L19"></span>
-<span class="line" id="L20"><span class="tok-kw">test</span> <span class="tok-str">&quot;math.isNan&quot;</span> {</span>
+<span class="line" id="L20"><span class="tok-kw">test</span> isNan {</span>
 <span class="line" id="L21">    <span class="tok-kw">inline</span> <span class="tok-kw">for</span> ([_]<span class="tok-type">type</span>{ <span class="tok-type">f16</span>, <span class="tok-type">f32</span>, <span class="tok-type">f64</span>, <span class="tok-type">f80</span>, <span class="tok-type">f128</span>, <span class="tok-type">c_longdouble</span> }) |T| {</span>
 <span class="line" id="L22">        <span class="tok-kw">try</span> expect(isNan(math.nan(T)));</span>
 <span class="line" id="L23">        <span class="tok-kw">try</span> expect(isNan(-math.nan(T)));</span>
@@ -141,7 +141,7 @@
 <span class="line" id="L27">    }</span>
 <span class="line" id="L28">}</span>
 <span class="line" id="L29"></span>
-<span class="line" id="L30"><span class="tok-kw">test</span> <span class="tok-str">&quot;math.isSignalNan&quot;</span> {</span>
+<span class="line" id="L30"><span class="tok-kw">test</span> isSignalNan {</span>
 <span class="line" id="L31">    <span class="tok-kw">inline</span> <span class="tok-kw">for</span> ([_]<span class="tok-type">type</span>{ <span class="tok-type">f16</span>, <span class="tok-type">f32</span>, <span class="tok-type">f64</span>, <span class="tok-type">f80</span>, <span class="tok-type">f128</span>, <span class="tok-type">c_longdouble</span> }) |T| {</span>
 <span class="line" id="L32">        <span class="tok-comment">// TODO: Signalling NaN values get converted to quiet NaN values in</span>
 </span>

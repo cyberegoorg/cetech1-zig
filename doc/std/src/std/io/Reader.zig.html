@@ -455,9 +455,9 @@
 <span class="line" id="L332">    <span class="tok-kw">return</span> res[<span class="tok-number">0</span>];</span>
 <span class="line" id="L333">}</span>
 <span class="line" id="L334"></span>
-<span class="line" id="L335"><span class="tok-kw">pub</span> <span class="tok-kw">fn</span> <span class="tok-fn">readStructBig</span>(self: Self, <span class="tok-kw">comptime</span> T: <span class="tok-type">type</span>) <span class="tok-type">anyerror</span>!T {</span>
+<span class="line" id="L335"><span class="tok-kw">pub</span> <span class="tok-kw">fn</span> <span class="tok-fn">readStructEndian</span>(self: Self, <span class="tok-kw">comptime</span> T: <span class="tok-type">type</span>, endian: std.builtin.Endian) <span class="tok-type">anyerror</span>!T {</span>
 <span class="line" id="L336">    <span class="tok-kw">var</span> res = <span class="tok-kw">try</span> self.readStruct(T);</span>
-<span class="line" id="L337">    <span class="tok-kw">if</span> (native_endian != std.builtin.Endian.big) {</span>
+<span class="line" id="L337">    <span class="tok-kw">if</span> (native_endian != endian) {</span>
 <span class="line" id="L338">        mem.byteSwapAllFields(T, &amp;res);</span>
 <span class="line" id="L339">    }</span>
 <span class="line" id="L340">    <span class="tok-kw">return</span> res;</span>
@@ -483,17 +483,29 @@
 <span class="line" id="L360">    <span class="tok-kw">return</span> E.InvalidValue;</span>
 <span class="line" id="L361">}</span>
 <span class="line" id="L362"></span>
-<span class="line" id="L363"><span class="tok-kw">const</span> std = <span class="tok-builtin">@import</span>(<span class="tok-str">&quot;../std.zig&quot;</span>);</span>
-<span class="line" id="L364"><span class="tok-kw">const</span> Self = <span class="tok-builtin">@This</span>();</span>
-<span class="line" id="L365"><span class="tok-kw">const</span> math = std.math;</span>
-<span class="line" id="L366"><span class="tok-kw">const</span> assert = std.debug.assert;</span>
-<span class="line" id="L367"><span class="tok-kw">const</span> mem = std.mem;</span>
-<span class="line" id="L368"><span class="tok-kw">const</span> testing = std.testing;</span>
-<span class="line" id="L369"><span class="tok-kw">const</span> native_endian = <span class="tok-builtin">@import</span>(<span class="tok-str">&quot;builtin&quot;</span>).target.cpu.arch.endian();</span>
-<span class="line" id="L370"></span>
-<span class="line" id="L371"><span class="tok-kw">test</span> {</span>
-<span class="line" id="L372">    _ = <span class="tok-builtin">@import</span>(<span class="tok-str">&quot;Reader/test.zig&quot;</span>);</span>
+<span class="line" id="L363"><span class="tok-comment">/// Reads the stream until the end, ignoring all the data.</span></span>
+<span class="line" id="L364"><span class="tok-comment">/// Returns the number of bytes discarded.</span></span>
+<span class="line" id="L365"><span class="tok-kw">pub</span> <span class="tok-kw">fn</span> <span class="tok-fn">discard</span>(self: Self) <span class="tok-type">anyerror</span>!<span class="tok-type">u64</span> {</span>
+<span class="line" id="L366">    <span class="tok-kw">var</span> trash: [<span class="tok-number">4096</span>]<span class="tok-type">u8</span> = <span class="tok-null">undefined</span>;</span>
+<span class="line" id="L367">    <span class="tok-kw">var</span> index: <span class="tok-type">u64</span> = <span class="tok-number">0</span>;</span>
+<span class="line" id="L368">    <span class="tok-kw">while</span> (<span class="tok-null">true</span>) {</span>
+<span class="line" id="L369">        <span class="tok-kw">const</span> n = <span class="tok-kw">try</span> self.read(&amp;trash);</span>
+<span class="line" id="L370">        <span class="tok-kw">if</span> (n == <span class="tok-number">0</span>) <span class="tok-kw">return</span> index;</span>
+<span class="line" id="L371">        index += n;</span>
+<span class="line" id="L372">    }</span>
 <span class="line" id="L373">}</span>
 <span class="line" id="L374"></span>
+<span class="line" id="L375"><span class="tok-kw">const</span> std = <span class="tok-builtin">@import</span>(<span class="tok-str">&quot;../std.zig&quot;</span>);</span>
+<span class="line" id="L376"><span class="tok-kw">const</span> Self = <span class="tok-builtin">@This</span>();</span>
+<span class="line" id="L377"><span class="tok-kw">const</span> math = std.math;</span>
+<span class="line" id="L378"><span class="tok-kw">const</span> assert = std.debug.assert;</span>
+<span class="line" id="L379"><span class="tok-kw">const</span> mem = std.mem;</span>
+<span class="line" id="L380"><span class="tok-kw">const</span> testing = std.testing;</span>
+<span class="line" id="L381"><span class="tok-kw">const</span> native_endian = <span class="tok-builtin">@import</span>(<span class="tok-str">&quot;builtin&quot;</span>).target.cpu.arch.endian();</span>
+<span class="line" id="L382"></span>
+<span class="line" id="L383"><span class="tok-kw">test</span> {</span>
+<span class="line" id="L384">    _ = <span class="tok-builtin">@import</span>(<span class="tok-str">&quot;Reader/test.zig&quot;</span>);</span>
+<span class="line" id="L385">}</span>
+<span class="line" id="L386"></span>
 </code></pre></body>
 </html>

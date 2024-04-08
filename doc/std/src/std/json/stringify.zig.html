@@ -202,7 +202,7 @@
 <span class="line" id="L88">    allocator: Allocator,</span>
 <span class="line" id="L89">    value: <span class="tok-kw">anytype</span>,</span>
 <span class="line" id="L90">    options: StringifyOptions,</span>
-<span class="line" id="L91">) <span class="tok-kw">error</span>{OutOfMemory}![]<span class="tok-kw">const</span> <span class="tok-type">u8</span> {</span>
+<span class="line" id="L91">) <span class="tok-kw">error</span>{OutOfMemory}![]<span class="tok-type">u8</span> {</span>
 <span class="line" id="L92">    <span class="tok-kw">var</span> list = std.ArrayList(<span class="tok-type">u8</span>).init(allocator);</span>
 <span class="line" id="L93">    <span class="tok-kw">errdefer</span> list.deinit();</span>
 <span class="line" id="L94">    <span class="tok-kw">try</span> stringifyArbitraryDepth(allocator, value, options, list.writer());</span>

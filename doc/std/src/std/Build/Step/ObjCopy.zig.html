@@ -147,7 +147,7 @@
 <span class="line" id="L33">output_file_debug: ?std.Build.GeneratedFile,</span>
 <span class="line" id="L34"></span>
 <span class="line" id="L35">format: ?RawFormat,</span>
-<span class="line" id="L36">only_section: ?[]<span class="tok-kw">const</span> <span class="tok-type">u8</span>,</span>
+<span class="line" id="L36">only_sections: ?[]<span class="tok-kw">const</span> []<span class="tok-kw">const</span> <span class="tok-type">u8</span>,</span>
 <span class="line" id="L37">pad_to: ?<span class="tok-type">u64</span>,</span>
 <span class="line" id="L38">strip: Strip,</span>
 <span class="line" id="L39">compress_debug: <span class="tok-type">bool</span>,</span>
@@ -155,7 +155,7 @@
 <span class="line" id="L41"><span class="tok-kw">pub</span> <span class="tok-kw">const</span> Options = <span class="tok-kw">struct</span> {</span>
 <span class="line" id="L42">    basename: ?[]<span class="tok-kw">const</span> <span class="tok-type">u8</span> = <span class="tok-null">null</span>,</span>
 <span class="line" id="L43">    format: ?RawFormat = <span class="tok-null">null</span>,</span>
-<span class="line" id="L44">    only_section: ?[]<span class="tok-kw">const</span> <span class="tok-type">u8</span> = <span class="tok-null">null</span>,</span>
+<span class="line" id="L44">    only_sections: ?[]<span class="tok-kw">const</span> []<span class="tok-kw">const</span> <span class="tok-type">u8</span> = <span class="tok-null">null</span>,</span>
 <span class="line" id="L45">    pad_to: ?<span class="tok-type">u64</span> = <span class="tok-null">null</span>,</span>
 <span class="line" id="L46"></span>
 <span class="line" id="L47">    compress_debug: <span class="tok-type">bool</span> = <span class="tok-null">false</span>,</span>
@@ -185,7 +185,7 @@
 <span class="line" id="L71">        .output_file = std.Build.GeneratedFile{ .step = &amp;self.step },</span>
 <span class="line" id="L72">        .output_file_debug = <span class="tok-kw">if</span> (options.strip != .none <span class="tok-kw">and</span> options.extract_to_separate_file) std.Build.GeneratedFile{ .step = &amp;self.step } <span class="tok-kw">else</span> <span class="tok-null">null</span>,</span>
 <span class="line" id="L73">        .format = options.format,</span>
-<span class="line" id="L74">        .only_section = options.only_section,</span>
+<span class="line" id="L74">        .only_sections = options.only_sections,</span>
 <span class="line" id="L75">        .pad_to = options.pad_to,</span>
 <span class="line" id="L76">        .strip = options.strip,</span>
 <span class="line" id="L77">        .compress_debug = options.compress_debug,</span>
@@ -208,7 +208,7 @@
 <span class="line" id="L94">    <span class="tok-kw">const</span> b = step.owner;</span>
 <span class="line" id="L95">    <span class="tok-kw">const</span> self = <span class="tok-builtin">@fieldParentPtr</span>(ObjCopy, <span class="tok-str">&quot;step&quot;</span>, step);</span>
 <span class="line" id="L96"></span>
-<span class="line" id="L97">    <span class="tok-kw">var</span> man = b.cache.obtain();</span>
+<span class="line" id="L97">    <span class="tok-kw">var</span> man = b.graph.cache.obtain();</span>
 <span class="line" id="L98">    <span class="tok-kw">defer</span> man.deinit();</span>
 <span class="line" id="L99"></span>
 <span class="line" id="L100">    <span class="tok-comment">// Random bytes to make ObjCopy unique. Refresh this with new random</span>
@@ -219,7 +219,7 @@
 <span class="line" id="L103"></span>
 <span class="line" id="L104">    <span class="tok-kw">const</span> full_src_path = self.input_file.getPath(b);</span>
 <span class="line" id="L105">    _ = <span class="tok-kw">try</span> man.addFile(full_src_path, <span class="tok-null">null</span>);</span>
-<span class="line" id="L106">    man.hash.addOptionalBytes(self.only_section);</span>
+<span class="line" id="L106">    man.hash.addOptionalListOfBytes(self.only_sections);</span>
 <span class="line" id="L107">    man.hash.addOptional(self.pad_to);</span>
 <span class="line" id="L108">    man.hash.addOptional(self.format);</span>
 <span class="line" id="L109">    man.hash.add(self.compress_debug);</span>
@@ -250,40 +250,42 @@
 <span class="line" id="L133">    };</span>
 <span class="line" id="L134"></span>
 <span class="line" id="L135">    <span class="tok-kw">var</span> argv = std.ArrayList([]<span class="tok-kw">const</span> <span class="tok-type">u8</span>).init(b.allocator);</span>
-<span class="line" id="L136">    <span class="tok-kw">try</span> argv.appendSlice(&amp;.{ b.zig_exe, <span class="tok-str">&quot;objcopy&quot;</span> });</span>
+<span class="line" id="L136">    <span class="tok-kw">try</span> argv.appendSlice(&amp;.{ b.graph.zig_exe, <span class="tok-str">&quot;objcopy&quot;</span> });</span>
 <span class="line" id="L137"></span>
-<span class="line" id="L138">    <span class="tok-kw">if</span> (self.only_section) |only_section| {</span>
-<span class="line" id="L139">        <span class="tok-kw">try</span> argv.appendSlice(&amp;.{ <span class="tok-str">&quot;-j&quot;</span>, only_section });</span>
-<span class="line" id="L140">    }</span>
-<span class="line" id="L141">    <span class="tok-kw">switch</span> (self.strip) {</span>
-<span class="line" id="L142">        .none =&gt; {},</span>
-<span class="line" id="L143">        .debug =&gt; <span class="tok-kw">try</span> argv.appendSlice(&amp;.{<span class="tok-str">&quot;--strip-debug&quot;</span>}),</span>
-<span class="line" id="L144">        .debug_and_symbols =&gt; <span class="tok-kw">try</span> argv.appendSlice(&amp;.{<span class="tok-str">&quot;--strip-all&quot;</span>}),</span>
-<span class="line" id="L145">    }</span>
-<span class="line" id="L146">    <span class="tok-kw">if</span> (self.pad_to) |pad_to| {</span>
-<span class="line" id="L147">        <span class="tok-kw">try</span> argv.appendSlice(&amp;.{ <span class="tok-str">&quot;--pad-to&quot;</span>, b.fmt(<span class="tok-str">&quot;{d}&quot;</span>, .{pad_to}) });</span>
-<span class="line" id="L148">    }</span>
-<span class="line" id="L149">    <span class="tok-kw">if</span> (self.format) |format| <span class="tok-kw">switch</span> (format) {</span>
-<span class="line" id="L150">        .bin =&gt; <span class="tok-kw">try</span> argv.appendSlice(&amp;.{ <span class="tok-str">&quot;-O&quot;</span>, <span class="tok-str">&quot;binary&quot;</span> }),</span>
-<span class="line" id="L151">        .hex =&gt; <span class="tok-kw">try</span> argv.appendSlice(&amp;.{ <span class="tok-str">&quot;-O&quot;</span>, <span class="tok-str">&quot;hex&quot;</span> }),</span>
-<span class="line" id="L152">        .elf =&gt; <span class="tok-kw">try</span> argv.appendSlice(&amp;.{ <span class="tok-str">&quot;-O&quot;</span>, <span class="tok-str">&quot;elf&quot;</span> }),</span>
-<span class="line" id="L153">    };</span>
-<span class="line" id="L154">    <span class="tok-kw">if</span> (self.compress_debug) {</span>
-<span class="line" id="L155">        <span class="tok-kw">try</span> argv.appendSlice(&amp;.{<span class="tok-str">&quot;--compress-debug-sections&quot;</span>});</span>
-<span class="line" id="L156">    }</span>
-<span class="line" id="L157">    <span class="tok-kw">if</span> (self.output_file_debug != <span class="tok-null">null</span>) {</span>
-<span class="line" id="L158">        <span class="tok-kw">try</span> argv.appendSlice(&amp;.{b.fmt(<span class="tok-str">&quot;--extract-to={s}&quot;</span>, .{full_dest_path_debug})});</span>
-<span class="line" id="L159">    }</span>
-<span class="line" id="L160"></span>
-<span class="line" id="L161">    <span class="tok-kw">try</span> argv.appendSlice(&amp;.{ full_src_path, full_dest_path });</span>
+<span class="line" id="L138">    <span class="tok-kw">if</span> (self.only_sections) |only_sections| {</span>
+<span class="line" id="L139">        <span class="tok-kw">for</span> (only_sections) |only_section| {</span>
+<span class="line" id="L140">            <span class="tok-kw">try</span> argv.appendSlice(&amp;.{ <span class="tok-str">&quot;-j&quot;</span>, only_section });</span>
+<span class="line" id="L141">        }</span>
+<span class="line" id="L142">    }</span>
+<span class="line" id="L143">    <span class="tok-kw">switch</span> (self.strip) {</span>
+<span class="line" id="L144">        .none =&gt; {},</span>
+<span class="line" id="L145">        .debug =&gt; <span class="tok-kw">try</span> argv.appendSlice(&amp;.{<span class="tok-str">&quot;--strip-debug&quot;</span>}),</span>
+<span class="line" id="L146">        .debug_and_symbols =&gt; <span class="tok-kw">try</span> argv.appendSlice(&amp;.{<span class="tok-str">&quot;--strip-all&quot;</span>}),</span>
+<span class="line" id="L147">    }</span>
+<span class="line" id="L148">    <span class="tok-kw">if</span> (self.pad_to) |pad_to| {</span>
+<span class="line" id="L149">        <span class="tok-kw">try</span> argv.appendSlice(&amp;.{ <span class="tok-str">&quot;--pad-to&quot;</span>, b.fmt(<span class="tok-str">&quot;{d}&quot;</span>, .{pad_to}) });</span>
+<span class="line" id="L150">    }</span>
+<span class="line" id="L151">    <span class="tok-kw">if</span> (self.format) |format| <span class="tok-kw">switch</span> (format) {</span>
+<span class="line" id="L152">        .bin =&gt; <span class="tok-kw">try</span> argv.appendSlice(&amp;.{ <span class="tok-str">&quot;-O&quot;</span>, <span class="tok-str">&quot;binary&quot;</span> }),</span>
+<span class="line" id="L153">        .hex =&gt; <span class="tok-kw">try</span> argv.appendSlice(&amp;.{ <span class="tok-str">&quot;-O&quot;</span>, <span class="tok-str">&quot;hex&quot;</span> }),</span>
+<span class="line" id="L154">        .elf =&gt; <span class="tok-kw">try</span> argv.appendSlice(&amp;.{ <span class="tok-str">&quot;-O&quot;</span>, <span class="tok-str">&quot;elf&quot;</span> }),</span>
+<span class="line" id="L155">    };</span>
+<span class="line" id="L156">    <span class="tok-kw">if</span> (self.compress_debug) {</span>
+<span class="line" id="L157">        <span class="tok-kw">try</span> argv.appendSlice(&amp;.{<span class="tok-str">&quot;--compress-debug-sections&quot;</span>});</span>
+<span class="line" id="L158">    }</span>
+<span class="line" id="L159">    <span class="tok-kw">if</span> (self.output_file_debug != <span class="tok-null">null</span>) {</span>
+<span class="line" id="L160">        <span class="tok-kw">try</span> argv.appendSlice(&amp;.{b.fmt(<span class="tok-str">&quot;--extract-to={s}&quot;</span>, .{full_dest_path_debug})});</span>
+<span class="line" id="L161">    }</span>
 <span class="line" id="L162"></span>
-<span class="line" id="L163">    <span class="tok-kw">try</span> argv.append(<span class="tok-str">&quot;--listen=-&quot;</span>);</span>
-<span class="line" id="L164">    _ = <span class="tok-kw">try</span> step.evalZigProcess(argv.items, prog_node);</span>
-<span class="line" id="L165"></span>
-<span class="line" id="L166">    self.output_file.path = full_dest_path;</span>
-<span class="line" id="L167">    <span class="tok-kw">if</span> (self.output_file_debug) |*file| file.path = full_dest_path_debug;</span>
-<span class="line" id="L168">    <span class="tok-kw">try</span> man.writeManifest();</span>
-<span class="line" id="L169">}</span>
-<span class="line" id="L170"></span>
+<span class="line" id="L163">    <span class="tok-kw">try</span> argv.appendSlice(&amp;.{ full_src_path, full_dest_path });</span>
+<span class="line" id="L164"></span>
+<span class="line" id="L165">    <span class="tok-kw">try</span> argv.append(<span class="tok-str">&quot;--listen=-&quot;</span>);</span>
+<span class="line" id="L166">    _ = <span class="tok-kw">try</span> step.evalZigProcess(argv.items, prog_node);</span>
+<span class="line" id="L167"></span>
+<span class="line" id="L168">    self.output_file.path = full_dest_path;</span>
+<span class="line" id="L169">    <span class="tok-kw">if</span> (self.output_file_debug) |*file| file.path = full_dest_path_debug;</span>
+<span class="line" id="L170">    <span class="tok-kw">try</span> man.writeManifest();</span>
+<span class="line" id="L171">}</span>
+<span class="line" id="L172"></span>
 </code></pre></body>
 </html>

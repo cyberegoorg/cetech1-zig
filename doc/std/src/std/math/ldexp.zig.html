@@ -189,7 +189,7 @@
 <span class="line" id="L66">    }</span>
 <span class="line" id="L67">}</span>
 <span class="line" id="L68"></span>
-<span class="line" id="L69"><span class="tok-kw">test</span> <span class="tok-str">&quot;math.ldexp&quot;</span> {</span>
+<span class="line" id="L69"><span class="tok-kw">test</span> ldexp {</span>
 <span class="line" id="L70">    <span class="tok-comment">// subnormals</span>
 </span>
 <span class="line" id="L71">    <span class="tok-kw">try</span> expect(ldexp(<span class="tok-builtin">@as</span>(<span class="tok-type">f16</span>, <span class="tok-number">0x1.1FFp14</span>), -<span class="tok-number">14</span> - <span class="tok-number">9</span> - <span class="tok-number">15</span>) == math.floatTrueMin(<span class="tok-type">f16</span>));</span>

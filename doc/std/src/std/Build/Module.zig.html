@@ -193,9 +193,9 @@
 <span class="line" id="L79">};</span>
 <span class="line" id="L80"></span>
 <span class="line" id="L81"><span class="tok-kw">pub</span> <span class="tok-kw">const</span> CSourceFiles = <span class="tok-kw">struct</span> {</span>
-<span class="line" id="L82">    dependency: ?*std.Build.Dependency,</span>
-<span class="line" id="L83">    <span class="tok-comment">/// If `dependency` is not null relative to it,</span></span>
-<span class="line" id="L84">    <span class="tok-comment">/// else relative to the build root.</span></span>
+<span class="line" id="L82">    root: LazyPath,</span>
+<span class="line" id="L83">    <span class="tok-comment">/// `files` is relative to `root`, which is</span></span>
+<span class="line" id="L84">    <span class="tok-comment">/// the build root by default</span></span>
 <span class="line" id="L85">    files: []<span class="tok-kw">const</span> []<span class="tok-kw">const</span> <span class="tok-type">u8</span>,</span>
 <span class="line" id="L86">    flags: []<span class="tok-kw">const</span> []<span class="tok-kw">const</span> <span class="tok-type">u8</span>,</span>
 <span class="line" id="L87">};</span>
@@ -433,449 +433,452 @@
 <span class="line" id="L318">    <span class="tok-kw">return</span> addImport(m, name, module);</span>
 <span class="line" id="L319">}</span>
 <span class="line" id="L320"></span>
-<span class="line" id="L321"><span class="tok-kw">pub</span> <span class="tok-kw">fn</span> <span class="tok-fn">addOptions</span>(m: *Module, module_name: []<span class="tok-kw">const</span> <span class="tok-type">u8</span>, options: *Step.Options) <span class="tok-type">void</span> {</span>
-<span class="line" id="L322">    addImport(m, module_name, options.createModule());</span>
-<span class="line" id="L323">}</span>
-<span class="line" id="L324"></span>
-<span class="line" id="L325"><span class="tok-kw">pub</span> <span class="tok-kw">const</span> DependencyIterator = <span class="tok-kw">struct</span> {</span>
-<span class="line" id="L326">    allocator: std.mem.Allocator,</span>
-<span class="line" id="L327">    index: <span class="tok-type">usize</span>,</span>
-<span class="line" id="L328">    set: std.AutoArrayHashMapUnmanaged(Key, []<span class="tok-kw">const</span> <span class="tok-type">u8</span>),</span>
-<span class="line" id="L329">    chase_dyn_libs: <span class="tok-type">bool</span>,</span>
-<span class="line" id="L330"></span>
-<span class="line" id="L331">    <span class="tok-kw">pub</span> <span class="tok-kw">const</span> Key = <span class="tok-kw">struct</span> {</span>
-<span class="line" id="L332">        <span class="tok-comment">/// The compilation that contains the `Module`. Note that a `Module` might be</span></span>
-<span class="line" id="L333">        <span class="tok-comment">/// used by more than one compilation.</span></span>
-<span class="line" id="L334">        compile: ?*Step.Compile,</span>
-<span class="line" id="L335">        module: *Module,</span>
-<span class="line" id="L336">    };</span>
-<span class="line" id="L337"></span>
-<span class="line" id="L338">    <span class="tok-kw">pub</span> <span class="tok-kw">const</span> Item = <span class="tok-kw">struct</span> {</span>
-<span class="line" id="L339">        <span class="tok-comment">/// The compilation that contains the `Module`. Note that a `Module` might be</span></span>
-<span class="line" id="L340">        <span class="tok-comment">/// used by more than one compilation.</span></span>
-<span class="line" id="L341">        compile: ?*Step.Compile,</span>
-<span class="line" id="L342">        module: *Module,</span>
-<span class="line" id="L343">        name: []<span class="tok-kw">const</span> <span class="tok-type">u8</span>,</span>
-<span class="line" id="L344">    };</span>
-<span class="line" id="L345"></span>
-<span class="line" id="L346">    <span class="tok-kw">pub</span> <span class="tok-kw">fn</span> <span class="tok-fn">deinit</span>(it: *DependencyIterator) <span class="tok-type">void</span> {</span>
-<span class="line" id="L347">        it.set.deinit(it.allocator);</span>
-<span class="line" id="L348">        it.* = <span class="tok-null">undefined</span>;</span>
-<span class="line" id="L349">    }</span>
-<span class="line" id="L350"></span>
-<span class="line" id="L351">    <span class="tok-kw">pub</span> <span class="tok-kw">fn</span> <span class="tok-fn">next</span>(it: *DependencyIterator) ?Item {</span>
-<span class="line" id="L352">        <span class="tok-kw">if</span> (it.index &gt;= it.set.count()) {</span>
-<span class="line" id="L353">            it.set.clearAndFree(it.allocator);</span>
-<span class="line" id="L354">            <span class="tok-kw">return</span> <span class="tok-null">null</span>;</span>
-<span class="line" id="L355">        }</span>
-<span class="line" id="L356">        <span class="tok-kw">const</span> key = it.set.keys()[it.index];</span>
-<span class="line" id="L357">        <span class="tok-kw">const</span> name = it.set.values()[it.index];</span>
-<span class="line" id="L358">        it.index += <span class="tok-number">1</span>;</span>
-<span class="line" id="L359">        <span class="tok-kw">const</span> module = key.module;</span>
-<span class="line" id="L360">        it.set.ensureUnusedCapacity(it.allocator, module.import_table.count()) <span class="tok-kw">catch</span></span>
-<span class="line" id="L361">            <span class="tok-builtin">@panic</span>(<span class="tok-str">&quot;OOM&quot;</span>);</span>
-<span class="line" id="L362">        <span class="tok-kw">for</span> (module.import_table.keys(), module.import_table.values()) |dep_name, dep| {</span>
-<span class="line" id="L363">            it.set.putAssumeCapacity(.{</span>
-<span class="line" id="L364">                .module = dep,</span>
-<span class="line" id="L365">                .compile = key.compile,</span>
-<span class="line" id="L366">            }, dep_name);</span>
-<span class="line" id="L367">        }</span>
-<span class="line" id="L368"></span>
-<span class="line" id="L369">        <span class="tok-kw">if</span> (key.compile != <span class="tok-null">null</span>) {</span>
-<span class="line" id="L370">            <span class="tok-kw">for</span> (module.link_objects.items) |link_object| <span class="tok-kw">switch</span> (link_object) {</span>
-<span class="line" id="L371">                .other_step =&gt; |compile| {</span>
-<span class="line" id="L372">                    <span class="tok-kw">if</span> (!it.chase_dyn_libs <span class="tok-kw">and</span> compile.isDynamicLibrary()) <span class="tok-kw">continue</span>;</span>
-<span class="line" id="L373"></span>
-<span class="line" id="L374">                    it.set.put(it.allocator, .{</span>
-<span class="line" id="L375">                        .module = &amp;compile.root_module,</span>
-<span class="line" id="L376">                        .compile = compile,</span>
-<span class="line" id="L377">                    }, <span class="tok-str">&quot;root&quot;</span>) <span class="tok-kw">catch</span> <span class="tok-builtin">@panic</span>(<span class="tok-str">&quot;OOM&quot;</span>);</span>
-<span class="line" id="L378">                },</span>
-<span class="line" id="L379">                <span class="tok-kw">else</span> =&gt; {},</span>
-<span class="line" id="L380">            };</span>
-<span class="line" id="L381">        }</span>
-<span class="line" id="L382"></span>
-<span class="line" id="L383">        <span class="tok-kw">return</span> .{</span>
-<span class="line" id="L384">            .compile = key.compile,</span>
-<span class="line" id="L385">            .module = key.module,</span>
-<span class="line" id="L386">            .name = name,</span>
-<span class="line" id="L387">        };</span>
-<span class="line" id="L388">    }</span>
-<span class="line" id="L389">};</span>
-<span class="line" id="L390"></span>
-<span class="line" id="L391"><span class="tok-kw">pub</span> <span class="tok-kw">fn</span> <span class="tok-fn">iterateDependencies</span>(</span>
-<span class="line" id="L392">    m: *Module,</span>
-<span class="line" id="L393">    chase_steps: ?*Step.Compile,</span>
-<span class="line" id="L394">    chase_dyn_libs: <span class="tok-type">bool</span>,</span>
-<span class="line" id="L395">) DependencyIterator {</span>
-<span class="line" id="L396">    <span class="tok-kw">var</span> it: DependencyIterator = .{</span>
-<span class="line" id="L397">        .allocator = m.owner.allocator,</span>
-<span class="line" id="L398">        .index = <span class="tok-number">0</span>,</span>
-<span class="line" id="L399">        .set = .{},</span>
-<span class="line" id="L400">        .chase_dyn_libs = chase_dyn_libs,</span>
-<span class="line" id="L401">    };</span>
-<span class="line" id="L402">    it.set.ensureUnusedCapacity(m.owner.allocator, m.import_table.count() + <span class="tok-number">1</span>) <span class="tok-kw">catch</span> <span class="tok-builtin">@panic</span>(<span class="tok-str">&quot;OOM&quot;</span>);</span>
-<span class="line" id="L403">    it.set.putAssumeCapacity(.{</span>
-<span class="line" id="L404">        .module = m,</span>
-<span class="line" id="L405">        .compile = chase_steps,</span>
-<span class="line" id="L406">    }, <span class="tok-str">&quot;root&quot;</span>);</span>
-<span class="line" id="L407">    <span class="tok-kw">return</span> it;</span>
-<span class="line" id="L408">}</span>
-<span class="line" id="L409"></span>
-<span class="line" id="L410"><span class="tok-kw">pub</span> <span class="tok-kw">const</span> LinkSystemLibraryOptions = <span class="tok-kw">struct</span> {</span>
-<span class="line" id="L411">    needed: <span class="tok-type">bool</span> = <span class="tok-null">false</span>,</span>
-<span class="line" id="L412">    weak: <span class="tok-type">bool</span> = <span class="tok-null">false</span>,</span>
-<span class="line" id="L413">    use_pkg_config: SystemLib.UsePkgConfig = .yes,</span>
-<span class="line" id="L414">    preferred_link_mode: std.builtin.LinkMode = .Dynamic,</span>
-<span class="line" id="L415">    search_strategy: SystemLib.SearchStrategy = .paths_first,</span>
-<span class="line" id="L416">};</span>
-<span class="line" id="L417"></span>
-<span class="line" id="L418"><span class="tok-kw">pub</span> <span class="tok-kw">fn</span> <span class="tok-fn">linkSystemLibrary</span>(</span>
-<span class="line" id="L419">    m: *Module,</span>
-<span class="line" id="L420">    name: []<span class="tok-kw">const</span> <span class="tok-type">u8</span>,</span>
-<span class="line" id="L421">    options: LinkSystemLibraryOptions,</span>
-<span class="line" id="L422">) <span class="tok-type">void</span> {</span>
-<span class="line" id="L423">    <span class="tok-kw">const</span> b = m.owner;</span>
-<span class="line" id="L424"></span>
-<span class="line" id="L425">    <span class="tok-kw">const</span> target = m.requireKnownTarget();</span>
-<span class="line" id="L426">    <span class="tok-kw">if</span> (target.is_libc_lib_name(name)) {</span>
-<span class="line" id="L427">        m.link_libc = <span class="tok-null">true</span>;</span>
-<span class="line" id="L428">        <span class="tok-kw">return</span>;</span>
-<span class="line" id="L429">    }</span>
-<span class="line" id="L430">    <span class="tok-kw">if</span> (target.is_libcpp_lib_name(name)) {</span>
-<span class="line" id="L431">        m.link_libcpp = <span class="tok-null">true</span>;</span>
-<span class="line" id="L432">        <span class="tok-kw">return</span>;</span>
-<span class="line" id="L433">    }</span>
-<span class="line" id="L434"></span>
-<span class="line" id="L435">    m.link_objects.append(b.allocator, .{</span>
-<span class="line" id="L436">        .system_lib = .{</span>
-<span class="line" id="L437">            .name = b.dupe(name),</span>
-<span class="line" id="L438">            .needed = options.needed,</span>
-<span class="line" id="L439">            .weak = options.weak,</span>
-<span class="line" id="L440">            .use_pkg_config = options.use_pkg_config,</span>
-<span class="line" id="L441">            .preferred_link_mode = options.preferred_link_mode,</span>
-<span class="line" id="L442">            .search_strategy = options.search_strategy,</span>
-<span class="line" id="L443">        },</span>
-<span class="line" id="L444">    }) <span class="tok-kw">catch</span> <span class="tok-builtin">@panic</span>(<span class="tok-str">&quot;OOM&quot;</span>);</span>
-<span class="line" id="L445">}</span>
-<span class="line" id="L446"></span>
-<span class="line" id="L447"><span class="tok-kw">pub</span> <span class="tok-kw">fn</span> <span class="tok-fn">linkFramework</span>(m: *Module, name: []<span class="tok-kw">const</span> <span class="tok-type">u8</span>, options: LinkFrameworkOptions) <span class="tok-type">void</span> {</span>
-<span class="line" id="L448">    <span class="tok-kw">const</span> b = m.owner;</span>
-<span class="line" id="L449">    m.frameworks.put(b.allocator, b.dupe(name), options) <span class="tok-kw">catch</span> <span class="tok-builtin">@panic</span>(<span class="tok-str">&quot;OOM&quot;</span>);</span>
-<span class="line" id="L450">}</span>
-<span class="line" id="L451"></span>
-<span class="line" id="L452"><span class="tok-kw">pub</span> <span class="tok-kw">const</span> AddCSourceFilesOptions = <span class="tok-kw">struct</span> {</span>
-<span class="line" id="L453">    <span class="tok-comment">/// When provided, `files` are relative to `dependency` rather than the</span></span>
-<span class="line" id="L454">    <span class="tok-comment">/// package that owns the `Compile` step.</span></span>
-<span class="line" id="L455">    dependency: ?*std.Build.Dependency = <span class="tok-null">null</span>,</span>
-<span class="line" id="L456">    files: []<span class="tok-kw">const</span> []<span class="tok-kw">const</span> <span class="tok-type">u8</span>,</span>
-<span class="line" id="L457">    flags: []<span class="tok-kw">const</span> []<span class="tok-kw">const</span> <span class="tok-type">u8</span> = &amp;.{},</span>
-<span class="line" id="L458">};</span>
-<span class="line" id="L459"></span>
-<span class="line" id="L460"><span class="tok-comment">/// Handy when you have many C/C++ source files and want them all to have the same flags.</span></span>
-<span class="line" id="L461"><span class="tok-kw">pub</span> <span class="tok-kw">fn</span> <span class="tok-fn">addCSourceFiles</span>(m: *Module, options: AddCSourceFilesOptions) <span class="tok-type">void</span> {</span>
-<span class="line" id="L462">    <span class="tok-kw">const</span> b = m.owner;</span>
-<span class="line" id="L463">    <span class="tok-kw">const</span> allocator = b.allocator;</span>
-<span class="line" id="L464">    <span class="tok-kw">const</span> c_source_files = allocator.create(CSourceFiles) <span class="tok-kw">catch</span> <span class="tok-builtin">@panic</span>(<span class="tok-str">&quot;OOM&quot;</span>);</span>
-<span class="line" id="L465">    c_source_files.* = .{</span>
-<span class="line" id="L466">        .dependency = options.dependency,</span>
-<span class="line" id="L467">        .files = b.dupeStrings(options.files),</span>
-<span class="line" id="L468">        .flags = b.dupeStrings(options.flags),</span>
-<span class="line" id="L469">    };</span>
-<span class="line" id="L470">    m.link_objects.append(allocator, .{ .c_source_files = c_source_files }) <span class="tok-kw">catch</span> <span class="tok-builtin">@panic</span>(<span class="tok-str">&quot;OOM&quot;</span>);</span>
-<span class="line" id="L471">}</span>
-<span class="line" id="L472"></span>
-<span class="line" id="L473"><span class="tok-kw">pub</span> <span class="tok-kw">fn</span> <span class="tok-fn">addCSourceFile</span>(m: *Module, source: CSourceFile) <span class="tok-type">void</span> {</span>
-<span class="line" id="L474">    <span class="tok-kw">const</span> b = m.owner;</span>
-<span class="line" id="L475">    <span class="tok-kw">const</span> allocator = b.allocator;</span>
-<span class="line" id="L476">    <span class="tok-kw">const</span> c_source_file = allocator.create(CSourceFile) <span class="tok-kw">catch</span> <span class="tok-builtin">@panic</span>(<span class="tok-str">&quot;OOM&quot;</span>);</span>
-<span class="line" id="L477">    c_source_file.* = source.dupe(b);</span>
-<span class="line" id="L478">    m.link_objects.append(allocator, .{ .c_source_file = c_source_file }) <span class="tok-kw">catch</span> <span class="tok-builtin">@panic</span>(<span class="tok-str">&quot;OOM&quot;</span>);</span>
-<span class="line" id="L479">    addLazyPathDependenciesOnly(m, source.file);</span>
-<span class="line" id="L480">}</span>
-<span class="line" id="L481"></span>
-<span class="line" id="L482"><span class="tok-comment">/// Resource files must have the extension `.rc`.</span></span>
-<span class="line" id="L483"><span class="tok-comment">/// Can be called regardless of target. The .rc file will be ignored</span></span>
-<span class="line" id="L484"><span class="tok-comment">/// if the target object format does not support embedded resources.</span></span>
-<span class="line" id="L485"><span class="tok-kw">pub</span> <span class="tok-kw">fn</span> <span class="tok-fn">addWin32ResourceFile</span>(m: *Module, source: RcSourceFile) <span class="tok-type">void</span> {</span>
-<span class="line" id="L486">    <span class="tok-kw">const</span> b = m.owner;</span>
-<span class="line" id="L487">    <span class="tok-kw">const</span> allocator = b.allocator;</span>
-<span class="line" id="L488">    <span class="tok-kw">const</span> target = m.requireKnownTarget();</span>
-<span class="line" id="L489">    <span class="tok-comment">// Only the PE/COFF format has a Resource Table, so for any other target</span>
+<span class="line" id="L321"><span class="tok-comment">/// Converts a set of key-value pairs into a Zig source file, and then inserts it into</span></span>
+<span class="line" id="L322"><span class="tok-comment">/// the Module's import table with the specified name. This makes the options importable</span></span>
+<span class="line" id="L323"><span class="tok-comment">/// via `@import(&quot;module_name&quot;)`.</span></span>
+<span class="line" id="L324"><span class="tok-kw">pub</span> <span class="tok-kw">fn</span> <span class="tok-fn">addOptions</span>(m: *Module, module_name: []<span class="tok-kw">const</span> <span class="tok-type">u8</span>, options: *Step.Options) <span class="tok-type">void</span> {</span>
+<span class="line" id="L325">    addImport(m, module_name, options.createModule());</span>
+<span class="line" id="L326">}</span>
+<span class="line" id="L327"></span>
+<span class="line" id="L328"><span class="tok-kw">pub</span> <span class="tok-kw">const</span> DependencyIterator = <span class="tok-kw">struct</span> {</span>
+<span class="line" id="L329">    allocator: std.mem.Allocator,</span>
+<span class="line" id="L330">    index: <span class="tok-type">usize</span>,</span>
+<span class="line" id="L331">    set: std.AutoArrayHashMapUnmanaged(Key, []<span class="tok-kw">const</span> <span class="tok-type">u8</span>),</span>
+<span class="line" id="L332">    chase_dyn_libs: <span class="tok-type">bool</span>,</span>
+<span class="line" id="L333"></span>
+<span class="line" id="L334">    <span class="tok-kw">pub</span> <span class="tok-kw">const</span> Key = <span class="tok-kw">struct</span> {</span>
+<span class="line" id="L335">        <span class="tok-comment">/// The compilation that contains the `Module`. Note that a `Module` might be</span></span>
+<span class="line" id="L336">        <span class="tok-comment">/// used by more than one compilation.</span></span>
+<span class="line" id="L337">        compile: ?*Step.Compile,</span>
+<span class="line" id="L338">        module: *Module,</span>
+<span class="line" id="L339">    };</span>
+<span class="line" id="L340"></span>
+<span class="line" id="L341">    <span class="tok-kw">pub</span> <span class="tok-kw">const</span> Item = <span class="tok-kw">struct</span> {</span>
+<span class="line" id="L342">        <span class="tok-comment">/// The compilation that contains the `Module`. Note that a `Module` might be</span></span>
+<span class="line" id="L343">        <span class="tok-comment">/// used by more than one compilation.</span></span>
+<span class="line" id="L344">        compile: ?*Step.Compile,</span>
+<span class="line" id="L345">        module: *Module,</span>
+<span class="line" id="L346">        name: []<span class="tok-kw">const</span> <span class="tok-type">u8</span>,</span>
+<span class="line" id="L347">    };</span>
+<span class="line" id="L348"></span>
+<span class="line" id="L349">    <span class="tok-kw">pub</span> <span class="tok-kw">fn</span> <span class="tok-fn">deinit</span>(it: *DependencyIterator) <span class="tok-type">void</span> {</span>
+<span class="line" id="L350">        it.set.deinit(it.allocator);</span>
+<span class="line" id="L351">        it.* = <span class="tok-null">undefined</span>;</span>
+<span class="line" id="L352">    }</span>
+<span class="line" id="L353"></span>
+<span class="line" id="L354">    <span class="tok-kw">pub</span> <span class="tok-kw">fn</span> <span class="tok-fn">next</span>(it: *DependencyIterator) ?Item {</span>
+<span class="line" id="L355">        <span class="tok-kw">if</span> (it.index &gt;= it.set.count()) {</span>
+<span class="line" id="L356">            it.set.clearAndFree(it.allocator);</span>
+<span class="line" id="L357">            <span class="tok-kw">return</span> <span class="tok-null">null</span>;</span>
+<span class="line" id="L358">        }</span>
+<span class="line" id="L359">        <span class="tok-kw">const</span> key = it.set.keys()[it.index];</span>
+<span class="line" id="L360">        <span class="tok-kw">const</span> name = it.set.values()[it.index];</span>
+<span class="line" id="L361">        it.index += <span class="tok-number">1</span>;</span>
+<span class="line" id="L362">        <span class="tok-kw">const</span> module = key.module;</span>
+<span class="line" id="L363">        it.set.ensureUnusedCapacity(it.allocator, module.import_table.count()) <span class="tok-kw">catch</span></span>
+<span class="line" id="L364">            <span class="tok-builtin">@panic</span>(<span class="tok-str">&quot;OOM&quot;</span>);</span>
+<span class="line" id="L365">        <span class="tok-kw">for</span> (module.import_table.keys(), module.import_table.values()) |dep_name, dep| {</span>
+<span class="line" id="L366">            it.set.putAssumeCapacity(.{</span>
+<span class="line" id="L367">                .module = dep,</span>
+<span class="line" id="L368">                .compile = key.compile,</span>
+<span class="line" id="L369">            }, dep_name);</span>
+<span class="line" id="L370">        }</span>
+<span class="line" id="L371"></span>
+<span class="line" id="L372">        <span class="tok-kw">if</span> (key.compile != <span class="tok-null">null</span>) {</span>
+<span class="line" id="L373">            <span class="tok-kw">for</span> (module.link_objects.items) |link_object| <span class="tok-kw">switch</span> (link_object) {</span>
+<span class="line" id="L374">                .other_step =&gt; |compile| {</span>
+<span class="line" id="L375">                    <span class="tok-kw">if</span> (!it.chase_dyn_libs <span class="tok-kw">and</span> compile.isDynamicLibrary()) <span class="tok-kw">continue</span>;</span>
+<span class="line" id="L376"></span>
+<span class="line" id="L377">                    it.set.put(it.allocator, .{</span>
+<span class="line" id="L378">                        .module = &amp;compile.root_module,</span>
+<span class="line" id="L379">                        .compile = compile,</span>
+<span class="line" id="L380">                    }, <span class="tok-str">&quot;root&quot;</span>) <span class="tok-kw">catch</span> <span class="tok-builtin">@panic</span>(<span class="tok-str">&quot;OOM&quot;</span>);</span>
+<span class="line" id="L381">                },</span>
+<span class="line" id="L382">                <span class="tok-kw">else</span> =&gt; {},</span>
+<span class="line" id="L383">            };</span>
+<span class="line" id="L384">        }</span>
+<span class="line" id="L385"></span>
+<span class="line" id="L386">        <span class="tok-kw">return</span> .{</span>
+<span class="line" id="L387">            .compile = key.compile,</span>
+<span class="line" id="L388">            .module = key.module,</span>
+<span class="line" id="L389">            .name = name,</span>
+<span class="line" id="L390">        };</span>
+<span class="line" id="L391">    }</span>
+<span class="line" id="L392">};</span>
+<span class="line" id="L393"></span>
+<span class="line" id="L394"><span class="tok-kw">pub</span> <span class="tok-kw">fn</span> <span class="tok-fn">iterateDependencies</span>(</span>
+<span class="line" id="L395">    m: *Module,</span>
+<span class="line" id="L396">    chase_steps: ?*Step.Compile,</span>
+<span class="line" id="L397">    chase_dyn_libs: <span class="tok-type">bool</span>,</span>
+<span class="line" id="L398">) DependencyIterator {</span>
+<span class="line" id="L399">    <span class="tok-kw">var</span> it: DependencyIterator = .{</span>
+<span class="line" id="L400">        .allocator = m.owner.allocator,</span>
+<span class="line" id="L401">        .index = <span class="tok-number">0</span>,</span>
+<span class="line" id="L402">        .set = .{},</span>
+<span class="line" id="L403">        .chase_dyn_libs = chase_dyn_libs,</span>
+<span class="line" id="L404">    };</span>
+<span class="line" id="L405">    it.set.ensureUnusedCapacity(m.owner.allocator, m.import_table.count() + <span class="tok-number">1</span>) <span class="tok-kw">catch</span> <span class="tok-builtin">@panic</span>(<span class="tok-str">&quot;OOM&quot;</span>);</span>
+<span class="line" id="L406">    it.set.putAssumeCapacity(.{</span>
+<span class="line" id="L407">        .module = m,</span>
+<span class="line" id="L408">        .compile = chase_steps,</span>
+<span class="line" id="L409">    }, <span class="tok-str">&quot;root&quot;</span>);</span>
+<span class="line" id="L410">    <span class="tok-kw">return</span> it;</span>
+<span class="line" id="L411">}</span>
+<span class="line" id="L412"></span>
+<span class="line" id="L413"><span class="tok-kw">pub</span> <span class="tok-kw">const</span> LinkSystemLibraryOptions = <span class="tok-kw">struct</span> {</span>
+<span class="line" id="L414">    needed: <span class="tok-type">bool</span> = <span class="tok-null">false</span>,</span>
+<span class="line" id="L415">    weak: <span class="tok-type">bool</span> = <span class="tok-null">false</span>,</span>
+<span class="line" id="L416">    use_pkg_config: SystemLib.UsePkgConfig = .yes,</span>
+<span class="line" id="L417">    preferred_link_mode: std.builtin.LinkMode = .Dynamic,</span>
+<span class="line" id="L418">    search_strategy: SystemLib.SearchStrategy = .paths_first,</span>
+<span class="line" id="L419">};</span>
+<span class="line" id="L420"></span>
+<span class="line" id="L421"><span class="tok-kw">pub</span> <span class="tok-kw">fn</span> <span class="tok-fn">linkSystemLibrary</span>(</span>
+<span class="line" id="L422">    m: *Module,</span>
+<span class="line" id="L423">    name: []<span class="tok-kw">const</span> <span class="tok-type">u8</span>,</span>
+<span class="line" id="L424">    options: LinkSystemLibraryOptions,</span>
+<span class="line" id="L425">) <span class="tok-type">void</span> {</span>
+<span class="line" id="L426">    <span class="tok-kw">const</span> b = m.owner;</span>
+<span class="line" id="L427"></span>
+<span class="line" id="L428">    <span class="tok-kw">const</span> target = m.requireKnownTarget();</span>
+<span class="line" id="L429">    <span class="tok-kw">if</span> (target.is_libc_lib_name(name)) {</span>
+<span class="line" id="L430">        m.link_libc = <span class="tok-null">true</span>;</span>
+<span class="line" id="L431">        <span class="tok-kw">return</span>;</span>
+<span class="line" id="L432">    }</span>
+<span class="line" id="L433">    <span class="tok-kw">if</span> (target.is_libcpp_lib_name(name)) {</span>
+<span class="line" id="L434">        m.link_libcpp = <span class="tok-null">true</span>;</span>
+<span class="line" id="L435">        <span class="tok-kw">return</span>;</span>
+<span class="line" id="L436">    }</span>
+<span class="line" id="L437"></span>
+<span class="line" id="L438">    m.link_objects.append(b.allocator, .{</span>
+<span class="line" id="L439">        .system_lib = .{</span>
+<span class="line" id="L440">            .name = b.dupe(name),</span>
+<span class="line" id="L441">            .needed = options.needed,</span>
+<span class="line" id="L442">            .weak = options.weak,</span>
+<span class="line" id="L443">            .use_pkg_config = options.use_pkg_config,</span>
+<span class="line" id="L444">            .preferred_link_mode = options.preferred_link_mode,</span>
+<span class="line" id="L445">            .search_strategy = options.search_strategy,</span>
+<span class="line" id="L446">        },</span>
+<span class="line" id="L447">    }) <span class="tok-kw">catch</span> <span class="tok-builtin">@panic</span>(<span class="tok-str">&quot;OOM&quot;</span>);</span>
+<span class="line" id="L448">}</span>
+<span class="line" id="L449"></span>
+<span class="line" id="L450"><span class="tok-kw">pub</span> <span class="tok-kw">fn</span> <span class="tok-fn">linkFramework</span>(m: *Module, name: []<span class="tok-kw">const</span> <span class="tok-type">u8</span>, options: LinkFrameworkOptions) <span class="tok-type">void</span> {</span>
+<span class="line" id="L451">    <span class="tok-kw">const</span> b = m.owner;</span>
+<span class="line" id="L452">    m.frameworks.put(b.allocator, b.dupe(name), options) <span class="tok-kw">catch</span> <span class="tok-builtin">@panic</span>(<span class="tok-str">&quot;OOM&quot;</span>);</span>
+<span class="line" id="L453">}</span>
+<span class="line" id="L454"></span>
+<span class="line" id="L455"><span class="tok-kw">pub</span> <span class="tok-kw">const</span> AddCSourceFilesOptions = <span class="tok-kw">struct</span> {</span>
+<span class="line" id="L456">    <span class="tok-comment">/// When provided, `files` are relative to `root` rather than the</span></span>
+<span class="line" id="L457">    <span class="tok-comment">/// package that owns the `Compile` step.</span></span>
+<span class="line" id="L458">    root: LazyPath = .{ .path = <span class="tok-str">&quot;&quot;</span> },</span>
+<span class="line" id="L459">    files: []<span class="tok-kw">const</span> []<span class="tok-kw">const</span> <span class="tok-type">u8</span>,</span>
+<span class="line" id="L460">    flags: []<span class="tok-kw">const</span> []<span class="tok-kw">const</span> <span class="tok-type">u8</span> = &amp;.{},</span>
+<span class="line" id="L461">};</span>
+<span class="line" id="L462"></span>
+<span class="line" id="L463"><span class="tok-comment">/// Handy when you have many C/C++ source files and want them all to have the same flags.</span></span>
+<span class="line" id="L464"><span class="tok-kw">pub</span> <span class="tok-kw">fn</span> <span class="tok-fn">addCSourceFiles</span>(m: *Module, options: AddCSourceFilesOptions) <span class="tok-type">void</span> {</span>
+<span class="line" id="L465">    <span class="tok-kw">const</span> b = m.owner;</span>
+<span class="line" id="L466">    <span class="tok-kw">const</span> allocator = b.allocator;</span>
+<span class="line" id="L467">    <span class="tok-kw">const</span> c_source_files = allocator.create(CSourceFiles) <span class="tok-kw">catch</span> <span class="tok-builtin">@panic</span>(<span class="tok-str">&quot;OOM&quot;</span>);</span>
+<span class="line" id="L468">    c_source_files.* = .{</span>
+<span class="line" id="L469">        .root = options.root,</span>
+<span class="line" id="L470">        .files = b.dupeStrings(options.files),</span>
+<span class="line" id="L471">        .flags = b.dupeStrings(options.flags),</span>
+<span class="line" id="L472">    };</span>
+<span class="line" id="L473">    m.link_objects.append(allocator, .{ .c_source_files = c_source_files }) <span class="tok-kw">catch</span> <span class="tok-builtin">@panic</span>(<span class="tok-str">&quot;OOM&quot;</span>);</span>
+<span class="line" id="L474">}</span>
+<span class="line" id="L475"></span>
+<span class="line" id="L476"><span class="tok-kw">pub</span> <span class="tok-kw">fn</span> <span class="tok-fn">addCSourceFile</span>(m: *Module, source: CSourceFile) <span class="tok-type">void</span> {</span>
+<span class="line" id="L477">    <span class="tok-kw">const</span> b = m.owner;</span>
+<span class="line" id="L478">    <span class="tok-kw">const</span> allocator = b.allocator;</span>
+<span class="line" id="L479">    <span class="tok-kw">const</span> c_source_file = allocator.create(CSourceFile) <span class="tok-kw">catch</span> <span class="tok-builtin">@panic</span>(<span class="tok-str">&quot;OOM&quot;</span>);</span>
+<span class="line" id="L480">    c_source_file.* = source.dupe(b);</span>
+<span class="line" id="L481">    m.link_objects.append(allocator, .{ .c_source_file = c_source_file }) <span class="tok-kw">catch</span> <span class="tok-builtin">@panic</span>(<span class="tok-str">&quot;OOM&quot;</span>);</span>
+<span class="line" id="L482">    addLazyPathDependenciesOnly(m, source.file);</span>
+<span class="line" id="L483">}</span>
+<span class="line" id="L484"></span>
+<span class="line" id="L485"><span class="tok-comment">/// Resource files must have the extension `.rc`.</span></span>
+<span class="line" id="L486"><span class="tok-comment">/// Can be called regardless of target. The .rc file will be ignored</span></span>
+<span class="line" id="L487"><span class="tok-comment">/// if the target object format does not support embedded resources.</span></span>
+<span class="line" id="L488"><span class="tok-kw">pub</span> <span class="tok-kw">fn</span> <span class="tok-fn">addWin32ResourceFile</span>(m: *Module, source: RcSourceFile) <span class="tok-type">void</span> {</span>
+<span class="line" id="L489">    <span class="tok-kw">const</span> b = m.owner;</span>
+<span class="line" id="L490">    <span class="tok-kw">const</span> allocator = b.allocator;</span>
+<span class="line" id="L491">    <span class="tok-kw">const</span> target = m.requireKnownTarget();</span>
+<span class="line" id="L492">    <span class="tok-comment">// Only the PE/COFF format has a Resource Table, so for any other target</span>
 </span>
-<span class="line" id="L490">    <span class="tok-comment">// the resource file is ignored.</span>
+<span class="line" id="L493">    <span class="tok-comment">// the resource file is ignored.</span>
 </span>
-<span class="line" id="L491">    <span class="tok-kw">if</span> (target.ofmt != .coff) <span class="tok-kw">return</span>;</span>
-<span class="line" id="L492"></span>
-<span class="line" id="L493">    <span class="tok-kw">const</span> rc_source_file = allocator.create(RcSourceFile) <span class="tok-kw">catch</span> <span class="tok-builtin">@panic</span>(<span class="tok-str">&quot;OOM&quot;</span>);</span>
-<span class="line" id="L494">    rc_source_file.* = source.dupe(b);</span>
-<span class="line" id="L495">    m.link_objects.append(allocator, .{ .win32_resource_file = rc_source_file }) <span class="tok-kw">catch</span> <span class="tok-builtin">@panic</span>(<span class="tok-str">&quot;OOM&quot;</span>);</span>
-<span class="line" id="L496">    addLazyPathDependenciesOnly(m, source.file);</span>
-<span class="line" id="L497">}</span>
-<span class="line" id="L498"></span>
-<span class="line" id="L499"><span class="tok-kw">pub</span> <span class="tok-kw">fn</span> <span class="tok-fn">addAssemblyFile</span>(m: *Module, source: LazyPath) <span class="tok-type">void</span> {</span>
-<span class="line" id="L500">    <span class="tok-kw">const</span> b = m.owner;</span>
-<span class="line" id="L501">    m.link_objects.append(b.allocator, .{ .assembly_file = source.dupe(b) }) <span class="tok-kw">catch</span> <span class="tok-builtin">@panic</span>(<span class="tok-str">&quot;OOM&quot;</span>);</span>
-<span class="line" id="L502">    addLazyPathDependenciesOnly(m, source);</span>
-<span class="line" id="L503">}</span>
-<span class="line" id="L504"></span>
-<span class="line" id="L505"><span class="tok-kw">pub</span> <span class="tok-kw">fn</span> <span class="tok-fn">addObjectFile</span>(m: *Module, object: LazyPath) <span class="tok-type">void</span> {</span>
-<span class="line" id="L506">    <span class="tok-kw">const</span> b = m.owner;</span>
-<span class="line" id="L507">    m.link_objects.append(b.allocator, .{ .static_path = object.dupe(b) }) <span class="tok-kw">catch</span> <span class="tok-builtin">@panic</span>(<span class="tok-str">&quot;OOM&quot;</span>);</span>
-<span class="line" id="L508">    addLazyPathDependenciesOnly(m, object);</span>
-<span class="line" id="L509">}</span>
-<span class="line" id="L510"></span>
-<span class="line" id="L511"><span class="tok-kw">pub</span> <span class="tok-kw">fn</span> <span class="tok-fn">addObject</span>(m: *Module, object: *Step.Compile) <span class="tok-type">void</span> {</span>
-<span class="line" id="L512">    assert(object.kind == .obj);</span>
-<span class="line" id="L513">    m.linkLibraryOrObject(object);</span>
-<span class="line" id="L514">}</span>
-<span class="line" id="L515"></span>
-<span class="line" id="L516"><span class="tok-kw">pub</span> <span class="tok-kw">fn</span> <span class="tok-fn">linkLibrary</span>(m: *Module, library: *Step.Compile) <span class="tok-type">void</span> {</span>
-<span class="line" id="L517">    assert(library.kind == .lib);</span>
-<span class="line" id="L518">    m.linkLibraryOrObject(library);</span>
-<span class="line" id="L519">}</span>
-<span class="line" id="L520"></span>
-<span class="line" id="L521"><span class="tok-kw">pub</span> <span class="tok-kw">fn</span> <span class="tok-fn">addAfterIncludePath</span>(m: *Module, lazy_path: LazyPath) <span class="tok-type">void</span> {</span>
-<span class="line" id="L522">    <span class="tok-kw">const</span> b = m.owner;</span>
-<span class="line" id="L523">    m.include_dirs.append(b.allocator, .{ .path_after = lazy_path.dupe(b) }) <span class="tok-kw">catch</span> <span class="tok-builtin">@panic</span>(<span class="tok-str">&quot;OOM&quot;</span>);</span>
-<span class="line" id="L524">    addLazyPathDependenciesOnly(m, lazy_path);</span>
-<span class="line" id="L525">}</span>
-<span class="line" id="L526"></span>
-<span class="line" id="L527"><span class="tok-kw">pub</span> <span class="tok-kw">fn</span> <span class="tok-fn">addSystemIncludePath</span>(m: *Module, lazy_path: LazyPath) <span class="tok-type">void</span> {</span>
-<span class="line" id="L528">    <span class="tok-kw">const</span> b = m.owner;</span>
-<span class="line" id="L529">    m.include_dirs.append(b.allocator, .{ .path_system = lazy_path.dupe(b) }) <span class="tok-kw">catch</span> <span class="tok-builtin">@panic</span>(<span class="tok-str">&quot;OOM&quot;</span>);</span>
-<span class="line" id="L530">    addLazyPathDependenciesOnly(m, lazy_path);</span>
-<span class="line" id="L531">}</span>
-<span class="line" id="L532"></span>
-<span class="line" id="L533"><span class="tok-kw">pub</span> <span class="tok-kw">fn</span> <span class="tok-fn">addIncludePath</span>(m: *Module, lazy_path: LazyPath) <span class="tok-type">void</span> {</span>
-<span class="line" id="L534">    <span class="tok-kw">const</span> b = m.owner;</span>
-<span class="line" id="L535">    m.include_dirs.append(b.allocator, .{ .path = lazy_path.dupe(b) }) <span class="tok-kw">catch</span> <span class="tok-builtin">@panic</span>(<span class="tok-str">&quot;OOM&quot;</span>);</span>
-<span class="line" id="L536">    addLazyPathDependenciesOnly(m, lazy_path);</span>
-<span class="line" id="L537">}</span>
-<span class="line" id="L538"></span>
-<span class="line" id="L539"><span class="tok-kw">pub</span> <span class="tok-kw">fn</span> <span class="tok-fn">addConfigHeader</span>(m: *Module, config_header: *Step.ConfigHeader) <span class="tok-type">void</span> {</span>
-<span class="line" id="L540">    <span class="tok-kw">const</span> allocator = m.owner.allocator;</span>
-<span class="line" id="L541">    m.include_dirs.append(allocator, .{ .config_header_step = config_header }) <span class="tok-kw">catch</span> <span class="tok-builtin">@panic</span>(<span class="tok-str">&quot;OOM&quot;</span>);</span>
-<span class="line" id="L542">    addStepDependenciesOnly(m, &amp;config_header.step);</span>
-<span class="line" id="L543">}</span>
-<span class="line" id="L544"></span>
-<span class="line" id="L545"><span class="tok-kw">pub</span> <span class="tok-kw">fn</span> <span class="tok-fn">addSystemFrameworkPath</span>(m: *Module, directory_path: LazyPath) <span class="tok-type">void</span> {</span>
-<span class="line" id="L546">    <span class="tok-kw">const</span> b = m.owner;</span>
-<span class="line" id="L547">    m.include_dirs.append(b.allocator, .{ .framework_path_system = directory_path.dupe(b) }) <span class="tok-kw">catch</span></span>
-<span class="line" id="L548">        <span class="tok-builtin">@panic</span>(<span class="tok-str">&quot;OOM&quot;</span>);</span>
-<span class="line" id="L549">    addLazyPathDependenciesOnly(m, directory_path);</span>
-<span class="line" id="L550">}</span>
-<span class="line" id="L551"></span>
-<span class="line" id="L552"><span class="tok-kw">pub</span> <span class="tok-kw">fn</span> <span class="tok-fn">addFrameworkPath</span>(m: *Module, directory_path: LazyPath) <span class="tok-type">void</span> {</span>
-<span class="line" id="L553">    <span class="tok-kw">const</span> b = m.owner;</span>
-<span class="line" id="L554">    m.include_dirs.append(b.allocator, .{ .framework_path = directory_path.dupe(b) }) <span class="tok-kw">catch</span></span>
-<span class="line" id="L555">        <span class="tok-builtin">@panic</span>(<span class="tok-str">&quot;OOM&quot;</span>);</span>
-<span class="line" id="L556">    addLazyPathDependenciesOnly(m, directory_path);</span>
-<span class="line" id="L557">}</span>
-<span class="line" id="L558"></span>
-<span class="line" id="L559"><span class="tok-kw">pub</span> <span class="tok-kw">fn</span> <span class="tok-fn">addLibraryPath</span>(m: *Module, directory_path: LazyPath) <span class="tok-type">void</span> {</span>
-<span class="line" id="L560">    <span class="tok-kw">const</span> b = m.owner;</span>
-<span class="line" id="L561">    m.lib_paths.append(b.allocator, directory_path.dupe(b)) <span class="tok-kw">catch</span> <span class="tok-builtin">@panic</span>(<span class="tok-str">&quot;OOM&quot;</span>);</span>
-<span class="line" id="L562">    addLazyPathDependenciesOnly(m, directory_path);</span>
-<span class="line" id="L563">}</span>
-<span class="line" id="L564"></span>
-<span class="line" id="L565"><span class="tok-kw">pub</span> <span class="tok-kw">fn</span> <span class="tok-fn">addRPath</span>(m: *Module, directory_path: LazyPath) <span class="tok-type">void</span> {</span>
-<span class="line" id="L566">    <span class="tok-kw">const</span> b = m.owner;</span>
-<span class="line" id="L567">    <span class="tok-kw">switch</span> (directory_path) {</span>
-<span class="line" id="L568">        .path, .cwd_relative =&gt; |path| {</span>
-<span class="line" id="L569">            <span class="tok-comment">// TODO: remove this check after people upgrade and stop expecting it to work</span>
+<span class="line" id="L494">    <span class="tok-kw">if</span> (target.ofmt != .coff) <span class="tok-kw">return</span>;</span>
+<span class="line" id="L495"></span>
+<span class="line" id="L496">    <span class="tok-kw">const</span> rc_source_file = allocator.create(RcSourceFile) <span class="tok-kw">catch</span> <span class="tok-builtin">@panic</span>(<span class="tok-str">&quot;OOM&quot;</span>);</span>
+<span class="line" id="L497">    rc_source_file.* = source.dupe(b);</span>
+<span class="line" id="L498">    m.link_objects.append(allocator, .{ .win32_resource_file = rc_source_file }) <span class="tok-kw">catch</span> <span class="tok-builtin">@panic</span>(<span class="tok-str">&quot;OOM&quot;</span>);</span>
+<span class="line" id="L499">    addLazyPathDependenciesOnly(m, source.file);</span>
+<span class="line" id="L500">}</span>
+<span class="line" id="L501"></span>
+<span class="line" id="L502"><span class="tok-kw">pub</span> <span class="tok-kw">fn</span> <span class="tok-fn">addAssemblyFile</span>(m: *Module, source: LazyPath) <span class="tok-type">void</span> {</span>
+<span class="line" id="L503">    <span class="tok-kw">const</span> b = m.owner;</span>
+<span class="line" id="L504">    m.link_objects.append(b.allocator, .{ .assembly_file = source.dupe(b) }) <span class="tok-kw">catch</span> <span class="tok-builtin">@panic</span>(<span class="tok-str">&quot;OOM&quot;</span>);</span>
+<span class="line" id="L505">    addLazyPathDependenciesOnly(m, source);</span>
+<span class="line" id="L506">}</span>
+<span class="line" id="L507"></span>
+<span class="line" id="L508"><span class="tok-kw">pub</span> <span class="tok-kw">fn</span> <span class="tok-fn">addObjectFile</span>(m: *Module, object: LazyPath) <span class="tok-type">void</span> {</span>
+<span class="line" id="L509">    <span class="tok-kw">const</span> b = m.owner;</span>
+<span class="line" id="L510">    m.link_objects.append(b.allocator, .{ .static_path = object.dupe(b) }) <span class="tok-kw">catch</span> <span class="tok-builtin">@panic</span>(<span class="tok-str">&quot;OOM&quot;</span>);</span>
+<span class="line" id="L511">    addLazyPathDependenciesOnly(m, object);</span>
+<span class="line" id="L512">}</span>
+<span class="line" id="L513"></span>
+<span class="line" id="L514"><span class="tok-kw">pub</span> <span class="tok-kw">fn</span> <span class="tok-fn">addObject</span>(m: *Module, object: *Step.Compile) <span class="tok-type">void</span> {</span>
+<span class="line" id="L515">    assert(object.kind == .obj);</span>
+<span class="line" id="L516">    m.linkLibraryOrObject(object);</span>
+<span class="line" id="L517">}</span>
+<span class="line" id="L518"></span>
+<span class="line" id="L519"><span class="tok-kw">pub</span> <span class="tok-kw">fn</span> <span class="tok-fn">linkLibrary</span>(m: *Module, library: *Step.Compile) <span class="tok-type">void</span> {</span>
+<span class="line" id="L520">    assert(library.kind == .lib);</span>
+<span class="line" id="L521">    m.linkLibraryOrObject(library);</span>
+<span class="line" id="L522">}</span>
+<span class="line" id="L523"></span>
+<span class="line" id="L524"><span class="tok-kw">pub</span> <span class="tok-kw">fn</span> <span class="tok-fn">addAfterIncludePath</span>(m: *Module, lazy_path: LazyPath) <span class="tok-type">void</span> {</span>
+<span class="line" id="L525">    <span class="tok-kw">const</span> b = m.owner;</span>
+<span class="line" id="L526">    m.include_dirs.append(b.allocator, .{ .path_after = lazy_path.dupe(b) }) <span class="tok-kw">catch</span> <span class="tok-builtin">@panic</span>(<span class="tok-str">&quot;OOM&quot;</span>);</span>
+<span class="line" id="L527">    addLazyPathDependenciesOnly(m, lazy_path);</span>
+<span class="line" id="L528">}</span>
+<span class="line" id="L529"></span>
+<span class="line" id="L530"><span class="tok-kw">pub</span> <span class="tok-kw">fn</span> <span class="tok-fn">addSystemIncludePath</span>(m: *Module, lazy_path: LazyPath) <span class="tok-type">void</span> {</span>
+<span class="line" id="L531">    <span class="tok-kw">const</span> b = m.owner;</span>
+<span class="line" id="L532">    m.include_dirs.append(b.allocator, .{ .path_system = lazy_path.dupe(b) }) <span class="tok-kw">catch</span> <span class="tok-builtin">@panic</span>(<span class="tok-str">&quot;OOM&quot;</span>);</span>
+<span class="line" id="L533">    addLazyPathDependenciesOnly(m, lazy_path);</span>
+<span class="line" id="L534">}</span>
+<span class="line" id="L535"></span>
+<span class="line" id="L536"><span class="tok-kw">pub</span> <span class="tok-kw">fn</span> <span class="tok-fn">addIncludePath</span>(m: *Module, lazy_path: LazyPath) <span class="tok-type">void</span> {</span>
+<span class="line" id="L537">    <span class="tok-kw">const</span> b = m.owner;</span>
+<span class="line" id="L538">    m.include_dirs.append(b.allocator, .{ .path = lazy_path.dupe(b) }) <span class="tok-kw">catch</span> <span class="tok-builtin">@panic</span>(<span class="tok-str">&quot;OOM&quot;</span>);</span>
+<span class="line" id="L539">    addLazyPathDependenciesOnly(m, lazy_path);</span>
+<span class="line" id="L540">}</span>
+<span class="line" id="L541"></span>
+<span class="line" id="L542"><span class="tok-kw">pub</span> <span class="tok-kw">fn</span> <span class="tok-fn">addConfigHeader</span>(m: *Module, config_header: *Step.ConfigHeader) <span class="tok-type">void</span> {</span>
+<span class="line" id="L543">    <span class="tok-kw">const</span> allocator = m.owner.allocator;</span>
+<span class="line" id="L544">    m.include_dirs.append(allocator, .{ .config_header_step = config_header }) <span class="tok-kw">catch</span> <span class="tok-builtin">@panic</span>(<span class="tok-str">&quot;OOM&quot;</span>);</span>
+<span class="line" id="L545">    addStepDependenciesOnly(m, &amp;config_header.step);</span>
+<span class="line" id="L546">}</span>
+<span class="line" id="L547"></span>
+<span class="line" id="L548"><span class="tok-kw">pub</span> <span class="tok-kw">fn</span> <span class="tok-fn">addSystemFrameworkPath</span>(m: *Module, directory_path: LazyPath) <span class="tok-type">void</span> {</span>
+<span class="line" id="L549">    <span class="tok-kw">const</span> b = m.owner;</span>
+<span class="line" id="L550">    m.include_dirs.append(b.allocator, .{ .framework_path_system = directory_path.dupe(b) }) <span class="tok-kw">catch</span></span>
+<span class="line" id="L551">        <span class="tok-builtin">@panic</span>(<span class="tok-str">&quot;OOM&quot;</span>);</span>
+<span class="line" id="L552">    addLazyPathDependenciesOnly(m, directory_path);</span>
+<span class="line" id="L553">}</span>
+<span class="line" id="L554"></span>
+<span class="line" id="L555"><span class="tok-kw">pub</span> <span class="tok-kw">fn</span> <span class="tok-fn">addFrameworkPath</span>(m: *Module, directory_path: LazyPath) <span class="tok-type">void</span> {</span>
+<span class="line" id="L556">    <span class="tok-kw">const</span> b = m.owner;</span>
+<span class="line" id="L557">    m.include_dirs.append(b.allocator, .{ .framework_path = directory_path.dupe(b) }) <span class="tok-kw">catch</span></span>
+<span class="line" id="L558">        <span class="tok-builtin">@panic</span>(<span class="tok-str">&quot;OOM&quot;</span>);</span>
+<span class="line" id="L559">    addLazyPathDependenciesOnly(m, directory_path);</span>
+<span class="line" id="L560">}</span>
+<span class="line" id="L561"></span>
+<span class="line" id="L562"><span class="tok-kw">pub</span> <span class="tok-kw">fn</span> <span class="tok-fn">addLibraryPath</span>(m: *Module, directory_path: LazyPath) <span class="tok-type">void</span> {</span>
+<span class="line" id="L563">    <span class="tok-kw">const</span> b = m.owner;</span>
+<span class="line" id="L564">    m.lib_paths.append(b.allocator, directory_path.dupe(b)) <span class="tok-kw">catch</span> <span class="tok-builtin">@panic</span>(<span class="tok-str">&quot;OOM&quot;</span>);</span>
+<span class="line" id="L565">    addLazyPathDependenciesOnly(m, directory_path);</span>
+<span class="line" id="L566">}</span>
+<span class="line" id="L567"></span>
+<span class="line" id="L568"><span class="tok-kw">pub</span> <span class="tok-kw">fn</span> <span class="tok-fn">addRPath</span>(m: *Module, directory_path: LazyPath) <span class="tok-type">void</span> {</span>
+<span class="line" id="L569">    <span class="tok-kw">const</span> b = m.owner;</span>
+<span class="line" id="L570">    <span class="tok-kw">switch</span> (directory_path) {</span>
+<span class="line" id="L571">        .path, .cwd_relative =&gt; |path| {</span>
+<span class="line" id="L572">            <span class="tok-comment">// TODO: remove this check after people upgrade and stop expecting it to work</span>
 </span>
-<span class="line" id="L570">            <span class="tok-kw">if</span> (std.mem.startsWith(<span class="tok-type">u8</span>, path, <span class="tok-str">&quot;@executable_path&quot;</span>) <span class="tok-kw">or</span></span>
-<span class="line" id="L571">                std.mem.startsWith(<span class="tok-type">u8</span>, path, <span class="tok-str">&quot;@loader_path&quot;</span>))</span>
-<span class="line" id="L572">            {</span>
-<span class="line" id="L573">                <span class="tok-builtin">@panic</span>(<span class="tok-str">&quot;this function is for adding directory paths. It does not support special rpaths. use addRPathSpecial for that.&quot;</span>);</span>
-<span class="line" id="L574">            }</span>
-<span class="line" id="L575">        },</span>
-<span class="line" id="L576">        <span class="tok-kw">else</span> =&gt; {},</span>
-<span class="line" id="L577">    }</span>
-<span class="line" id="L578">    m.rpaths.append(b.allocator, .{ .lazy_path = directory_path.dupe(b) }) <span class="tok-kw">catch</span> <span class="tok-builtin">@panic</span>(<span class="tok-str">&quot;OOM&quot;</span>);</span>
-<span class="line" id="L579">    addLazyPathDependenciesOnly(m, directory_path);</span>
-<span class="line" id="L580">}</span>
-<span class="line" id="L581"></span>
-<span class="line" id="L582"><span class="tok-kw">pub</span> <span class="tok-kw">fn</span> <span class="tok-fn">addRPathSpecial</span>(m: *Module, bytes: []<span class="tok-kw">const</span> <span class="tok-type">u8</span>) <span class="tok-type">void</span> {</span>
-<span class="line" id="L583">    <span class="tok-kw">const</span> b = m.owner;</span>
-<span class="line" id="L584">    m.rpaths.append(b.allocator, .{ .special = b.dupe(bytes) }) <span class="tok-kw">catch</span> <span class="tok-builtin">@panic</span>(<span class="tok-str">&quot;OOM&quot;</span>);</span>
-<span class="line" id="L585">}</span>
-<span class="line" id="L586"></span>
-<span class="line" id="L587"><span class="tok-comment">/// Equvialent to the following C code, applied to all C source files owned by</span></span>
-<span class="line" id="L588"><span class="tok-comment">/// this `Module`:</span></span>
-<span class="line" id="L589"><span class="tok-comment">/// ```c</span></span>
-<span class="line" id="L590"><span class="tok-comment">/// #define name value</span></span>
-<span class="line" id="L591"><span class="tok-comment">/// ```</span></span>
-<span class="line" id="L592"><span class="tok-comment">/// `name` and `value` need not live longer than the function call.</span></span>
-<span class="line" id="L593"><span class="tok-kw">pub</span> <span class="tok-kw">fn</span> <span class="tok-fn">addCMacro</span>(m: *Module, name: []<span class="tok-kw">const</span> <span class="tok-type">u8</span>, value: []<span class="tok-kw">const</span> <span class="tok-type">u8</span>) <span class="tok-type">void</span> {</span>
-<span class="line" id="L594">    <span class="tok-kw">const</span> b = m.owner;</span>
-<span class="line" id="L595">    m.c_macros.append(b.allocator, b.fmt(<span class="tok-str">&quot;-D{s}={s}&quot;</span>, .{ name, value })) <span class="tok-kw">catch</span> <span class="tok-builtin">@panic</span>(<span class="tok-str">&quot;OOM&quot;</span>);</span>
-<span class="line" id="L596">}</span>
-<span class="line" id="L597"></span>
-<span class="line" id="L598"><span class="tok-kw">pub</span> <span class="tok-kw">fn</span> <span class="tok-fn">appendZigProcessFlags</span>(</span>
-<span class="line" id="L599">    m: *Module,</span>
-<span class="line" id="L600">    zig_args: *std.ArrayList([]<span class="tok-kw">const</span> <span class="tok-type">u8</span>),</span>
-<span class="line" id="L601">    asking_step: ?*Step,</span>
-<span class="line" id="L602">) !<span class="tok-type">void</span> {</span>
-<span class="line" id="L603">    <span class="tok-kw">const</span> b = m.owner;</span>
-<span class="line" id="L604"></span>
-<span class="line" id="L605">    <span class="tok-kw">try</span> addFlag(zig_args, m.strip, <span class="tok-str">&quot;-fstrip&quot;</span>, <span class="tok-str">&quot;-fno-strip&quot;</span>);</span>
-<span class="line" id="L606">    <span class="tok-kw">try</span> addFlag(zig_args, m.unwind_tables, <span class="tok-str">&quot;-funwind-tables&quot;</span>, <span class="tok-str">&quot;-fno-unwind-tables&quot;</span>);</span>
-<span class="line" id="L607">    <span class="tok-kw">try</span> addFlag(zig_args, m.single_threaded, <span class="tok-str">&quot;-fsingle-threaded&quot;</span>, <span class="tok-str">&quot;-fno-single-threaded&quot;</span>);</span>
-<span class="line" id="L608">    <span class="tok-kw">try</span> addFlag(zig_args, m.stack_check, <span class="tok-str">&quot;-fstack-check&quot;</span>, <span class="tok-str">&quot;-fno-stack-check&quot;</span>);</span>
-<span class="line" id="L609">    <span class="tok-kw">try</span> addFlag(zig_args, m.stack_protector, <span class="tok-str">&quot;-fstack-protector&quot;</span>, <span class="tok-str">&quot;-fno-stack-protector&quot;</span>);</span>
-<span class="line" id="L610">    <span class="tok-kw">try</span> addFlag(zig_args, m.omit_frame_pointer, <span class="tok-str">&quot;-fomit-frame-pointer&quot;</span>, <span class="tok-str">&quot;-fno-omit-frame-pointer&quot;</span>);</span>
-<span class="line" id="L611">    <span class="tok-kw">try</span> addFlag(zig_args, m.error_tracing, <span class="tok-str">&quot;-ferror-tracing&quot;</span>, <span class="tok-str">&quot;-fno-error-tracing&quot;</span>);</span>
-<span class="line" id="L612">    <span class="tok-kw">try</span> addFlag(zig_args, m.sanitize_c, <span class="tok-str">&quot;-fsanitize-c&quot;</span>, <span class="tok-str">&quot;-fno-sanitize-c&quot;</span>);</span>
-<span class="line" id="L613">    <span class="tok-kw">try</span> addFlag(zig_args, m.sanitize_thread, <span class="tok-str">&quot;-fsanitize-thread&quot;</span>, <span class="tok-str">&quot;-fno-sanitize-thread&quot;</span>);</span>
-<span class="line" id="L614">    <span class="tok-kw">try</span> addFlag(zig_args, m.valgrind, <span class="tok-str">&quot;-fvalgrind&quot;</span>, <span class="tok-str">&quot;-fno-valgrind&quot;</span>);</span>
-<span class="line" id="L615">    <span class="tok-kw">try</span> addFlag(zig_args, m.pic, <span class="tok-str">&quot;-fPIC&quot;</span>, <span class="tok-str">&quot;-fno-PIC&quot;</span>);</span>
-<span class="line" id="L616">    <span class="tok-kw">try</span> addFlag(zig_args, m.red_zone, <span class="tok-str">&quot;-mred-zone&quot;</span>, <span class="tok-str">&quot;-mno-red-zone&quot;</span>);</span>
-<span class="line" id="L617"></span>
-<span class="line" id="L618">    <span class="tok-kw">if</span> (m.dwarf_format) |dwarf_format| {</span>
-<span class="line" id="L619">        <span class="tok-kw">try</span> zig_args.append(<span class="tok-kw">switch</span> (dwarf_format) {</span>
-<span class="line" id="L620">            .@&quot;32&quot; =&gt; <span class="tok-str">&quot;-gdwarf32&quot;</span>,</span>
-<span class="line" id="L621">            .@&quot;64&quot; =&gt; <span class="tok-str">&quot;-gdwarf64&quot;</span>,</span>
-<span class="line" id="L622">        });</span>
-<span class="line" id="L623">    }</span>
-<span class="line" id="L624"></span>
-<span class="line" id="L625">    <span class="tok-kw">try</span> zig_args.ensureUnusedCapacity(<span class="tok-number">1</span>);</span>
-<span class="line" id="L626">    <span class="tok-kw">if</span> (m.optimize) |optimize| <span class="tok-kw">switch</span> (optimize) {</span>
-<span class="line" id="L627">        .Debug =&gt; zig_args.appendAssumeCapacity(<span class="tok-str">&quot;-ODebug&quot;</span>),</span>
-<span class="line" id="L628">        .ReleaseSmall =&gt; zig_args.appendAssumeCapacity(<span class="tok-str">&quot;-OReleaseSmall&quot;</span>),</span>
-<span class="line" id="L629">        .ReleaseFast =&gt; zig_args.appendAssumeCapacity(<span class="tok-str">&quot;-OReleaseFast&quot;</span>),</span>
-<span class="line" id="L630">        .ReleaseSafe =&gt; zig_args.appendAssumeCapacity(<span class="tok-str">&quot;-OReleaseSafe&quot;</span>),</span>
-<span class="line" id="L631">    };</span>
-<span class="line" id="L632"></span>
-<span class="line" id="L633">    <span class="tok-kw">if</span> (m.code_model != .default) {</span>
-<span class="line" id="L634">        <span class="tok-kw">try</span> zig_args.append(<span class="tok-str">&quot;-mcmodel&quot;</span>);</span>
-<span class="line" id="L635">        <span class="tok-kw">try</span> zig_args.append(<span class="tok-builtin">@tagName</span>(m.code_model));</span>
-<span class="line" id="L636">    }</span>
-<span class="line" id="L637"></span>
-<span class="line" id="L638">    <span class="tok-kw">if</span> (m.resolved_target) |*target| {</span>
-<span class="line" id="L639">        <span class="tok-comment">// Communicate the query via CLI since it's more compact.</span>
+<span class="line" id="L573">            <span class="tok-kw">if</span> (std.mem.startsWith(<span class="tok-type">u8</span>, path, <span class="tok-str">&quot;@executable_path&quot;</span>) <span class="tok-kw">or</span></span>
+<span class="line" id="L574">                std.mem.startsWith(<span class="tok-type">u8</span>, path, <span class="tok-str">&quot;@loader_path&quot;</span>))</span>
+<span class="line" id="L575">            {</span>
+<span class="line" id="L576">                <span class="tok-builtin">@panic</span>(<span class="tok-str">&quot;this function is for adding directory paths. It does not support special rpaths. use addRPathSpecial for that.&quot;</span>);</span>
+<span class="line" id="L577">            }</span>
+<span class="line" id="L578">        },</span>
+<span class="line" id="L579">        <span class="tok-kw">else</span> =&gt; {},</span>
+<span class="line" id="L580">    }</span>
+<span class="line" id="L581">    m.rpaths.append(b.allocator, .{ .lazy_path = directory_path.dupe(b) }) <span class="tok-kw">catch</span> <span class="tok-builtin">@panic</span>(<span class="tok-str">&quot;OOM&quot;</span>);</span>
+<span class="line" id="L582">    addLazyPathDependenciesOnly(m, directory_path);</span>
+<span class="line" id="L583">}</span>
+<span class="line" id="L584"></span>
+<span class="line" id="L585"><span class="tok-kw">pub</span> <span class="tok-kw">fn</span> <span class="tok-fn">addRPathSpecial</span>(m: *Module, bytes: []<span class="tok-kw">const</span> <span class="tok-type">u8</span>) <span class="tok-type">void</span> {</span>
+<span class="line" id="L586">    <span class="tok-kw">const</span> b = m.owner;</span>
+<span class="line" id="L587">    m.rpaths.append(b.allocator, .{ .special = b.dupe(bytes) }) <span class="tok-kw">catch</span> <span class="tok-builtin">@panic</span>(<span class="tok-str">&quot;OOM&quot;</span>);</span>
+<span class="line" id="L588">}</span>
+<span class="line" id="L589"></span>
+<span class="line" id="L590"><span class="tok-comment">/// Equvialent to the following C code, applied to all C source files owned by</span></span>
+<span class="line" id="L591"><span class="tok-comment">/// this `Module`:</span></span>
+<span class="line" id="L592"><span class="tok-comment">/// ```c</span></span>
+<span class="line" id="L593"><span class="tok-comment">/// #define name value</span></span>
+<span class="line" id="L594"><span class="tok-comment">/// ```</span></span>
+<span class="line" id="L595"><span class="tok-comment">/// `name` and `value` need not live longer than the function call.</span></span>
+<span class="line" id="L596"><span class="tok-kw">pub</span> <span class="tok-kw">fn</span> <span class="tok-fn">addCMacro</span>(m: *Module, name: []<span class="tok-kw">const</span> <span class="tok-type">u8</span>, value: []<span class="tok-kw">const</span> <span class="tok-type">u8</span>) <span class="tok-type">void</span> {</span>
+<span class="line" id="L597">    <span class="tok-kw">const</span> b = m.owner;</span>
+<span class="line" id="L598">    m.c_macros.append(b.allocator, b.fmt(<span class="tok-str">&quot;-D{s}={s}&quot;</span>, .{ name, value })) <span class="tok-kw">catch</span> <span class="tok-builtin">@panic</span>(<span class="tok-str">&quot;OOM&quot;</span>);</span>
+<span class="line" id="L599">}</span>
+<span class="line" id="L600"></span>
+<span class="line" id="L601"><span class="tok-kw">pub</span> <span class="tok-kw">fn</span> <span class="tok-fn">appendZigProcessFlags</span>(</span>
+<span class="line" id="L602">    m: *Module,</span>
+<span class="line" id="L603">    zig_args: *std.ArrayList([]<span class="tok-kw">const</span> <span class="tok-type">u8</span>),</span>
+<span class="line" id="L604">    asking_step: ?*Step,</span>
+<span class="line" id="L605">) !<span class="tok-type">void</span> {</span>
+<span class="line" id="L606">    <span class="tok-kw">const</span> b = m.owner;</span>
+<span class="line" id="L607"></span>
+<span class="line" id="L608">    <span class="tok-kw">try</span> addFlag(zig_args, m.strip, <span class="tok-str">&quot;-fstrip&quot;</span>, <span class="tok-str">&quot;-fno-strip&quot;</span>);</span>
+<span class="line" id="L609">    <span class="tok-kw">try</span> addFlag(zig_args, m.unwind_tables, <span class="tok-str">&quot;-funwind-tables&quot;</span>, <span class="tok-str">&quot;-fno-unwind-tables&quot;</span>);</span>
+<span class="line" id="L610">    <span class="tok-kw">try</span> addFlag(zig_args, m.single_threaded, <span class="tok-str">&quot;-fsingle-threaded&quot;</span>, <span class="tok-str">&quot;-fno-single-threaded&quot;</span>);</span>
+<span class="line" id="L611">    <span class="tok-kw">try</span> addFlag(zig_args, m.stack_check, <span class="tok-str">&quot;-fstack-check&quot;</span>, <span class="tok-str">&quot;-fno-stack-check&quot;</span>);</span>
+<span class="line" id="L612">    <span class="tok-kw">try</span> addFlag(zig_args, m.stack_protector, <span class="tok-str">&quot;-fstack-protector&quot;</span>, <span class="tok-str">&quot;-fno-stack-protector&quot;</span>);</span>
+<span class="line" id="L613">    <span class="tok-kw">try</span> addFlag(zig_args, m.omit_frame_pointer, <span class="tok-str">&quot;-fomit-frame-pointer&quot;</span>, <span class="tok-str">&quot;-fno-omit-frame-pointer&quot;</span>);</span>
+<span class="line" id="L614">    <span class="tok-kw">try</span> addFlag(zig_args, m.error_tracing, <span class="tok-str">&quot;-ferror-tracing&quot;</span>, <span class="tok-str">&quot;-fno-error-tracing&quot;</span>);</span>
+<span class="line" id="L615">    <span class="tok-kw">try</span> addFlag(zig_args, m.sanitize_c, <span class="tok-str">&quot;-fsanitize-c&quot;</span>, <span class="tok-str">&quot;-fno-sanitize-c&quot;</span>);</span>
+<span class="line" id="L616">    <span class="tok-kw">try</span> addFlag(zig_args, m.sanitize_thread, <span class="tok-str">&quot;-fsanitize-thread&quot;</span>, <span class="tok-str">&quot;-fno-sanitize-thread&quot;</span>);</span>
+<span class="line" id="L617">    <span class="tok-kw">try</span> addFlag(zig_args, m.valgrind, <span class="tok-str">&quot;-fvalgrind&quot;</span>, <span class="tok-str">&quot;-fno-valgrind&quot;</span>);</span>
+<span class="line" id="L618">    <span class="tok-kw">try</span> addFlag(zig_args, m.pic, <span class="tok-str">&quot;-fPIC&quot;</span>, <span class="tok-str">&quot;-fno-PIC&quot;</span>);</span>
+<span class="line" id="L619">    <span class="tok-kw">try</span> addFlag(zig_args, m.red_zone, <span class="tok-str">&quot;-mred-zone&quot;</span>, <span class="tok-str">&quot;-mno-red-zone&quot;</span>);</span>
+<span class="line" id="L620"></span>
+<span class="line" id="L621">    <span class="tok-kw">if</span> (m.dwarf_format) |dwarf_format| {</span>
+<span class="line" id="L622">        <span class="tok-kw">try</span> zig_args.append(<span class="tok-kw">switch</span> (dwarf_format) {</span>
+<span class="line" id="L623">            .@&quot;32&quot; =&gt; <span class="tok-str">&quot;-gdwarf32&quot;</span>,</span>
+<span class="line" id="L624">            .@&quot;64&quot; =&gt; <span class="tok-str">&quot;-gdwarf64&quot;</span>,</span>
+<span class="line" id="L625">        });</span>
+<span class="line" id="L626">    }</span>
+<span class="line" id="L627"></span>
+<span class="line" id="L628">    <span class="tok-kw">try</span> zig_args.ensureUnusedCapacity(<span class="tok-number">1</span>);</span>
+<span class="line" id="L629">    <span class="tok-kw">if</span> (m.optimize) |optimize| <span class="tok-kw">switch</span> (optimize) {</span>
+<span class="line" id="L630">        .Debug =&gt; zig_args.appendAssumeCapacity(<span class="tok-str">&quot;-ODebug&quot;</span>),</span>
+<span class="line" id="L631">        .ReleaseSmall =&gt; zig_args.appendAssumeCapacity(<span class="tok-str">&quot;-OReleaseSmall&quot;</span>),</span>
+<span class="line" id="L632">        .ReleaseFast =&gt; zig_args.appendAssumeCapacity(<span class="tok-str">&quot;-OReleaseFast&quot;</span>),</span>
+<span class="line" id="L633">        .ReleaseSafe =&gt; zig_args.appendAssumeCapacity(<span class="tok-str">&quot;-OReleaseSafe&quot;</span>),</span>
+<span class="line" id="L634">    };</span>
+<span class="line" id="L635"></span>
+<span class="line" id="L636">    <span class="tok-kw">if</span> (m.code_model != .default) {</span>
+<span class="line" id="L637">        <span class="tok-kw">try</span> zig_args.append(<span class="tok-str">&quot;-mcmodel&quot;</span>);</span>
+<span class="line" id="L638">        <span class="tok-kw">try</span> zig_args.append(<span class="tok-builtin">@tagName</span>(m.code_model));</span>
+<span class="line" id="L639">    }</span>
+<span class="line" id="L640"></span>
+<span class="line" id="L641">    <span class="tok-kw">if</span> (m.resolved_target) |*target| {</span>
+<span class="line" id="L642">        <span class="tok-comment">// Communicate the query via CLI since it's more compact.</span>
 </span>
-<span class="line" id="L640">        <span class="tok-kw">if</span> (!target.query.isNative()) {</span>
-<span class="line" id="L641">            <span class="tok-kw">try</span> zig_args.appendSlice(&amp;.{</span>
-<span class="line" id="L642">                <span class="tok-str">&quot;-target&quot;</span>, <span class="tok-kw">try</span> target.query.zigTriple(b.allocator),</span>
-<span class="line" id="L643">                <span class="tok-str">&quot;-mcpu&quot;</span>,   <span class="tok-kw">try</span> target.query.serializeCpuAlloc(b.allocator),</span>
-<span class="line" id="L644">            });</span>
-<span class="line" id="L645"></span>
-<span class="line" id="L646">            <span class="tok-kw">if</span> (target.query.dynamic_linker.get()) |dynamic_linker| {</span>
-<span class="line" id="L647">                <span class="tok-kw">try</span> zig_args.append(<span class="tok-str">&quot;--dynamic-linker&quot;</span>);</span>
-<span class="line" id="L648">                <span class="tok-kw">try</span> zig_args.append(dynamic_linker);</span>
-<span class="line" id="L649">            }</span>
-<span class="line" id="L650">        }</span>
-<span class="line" id="L651">    }</span>
-<span class="line" id="L652"></span>
-<span class="line" id="L653">    <span class="tok-kw">for</span> (m.export_symbol_names) |symbol_name| {</span>
-<span class="line" id="L654">        <span class="tok-kw">try</span> zig_args.append(b.fmt(<span class="tok-str">&quot;--export={s}&quot;</span>, .{symbol_name}));</span>
-<span class="line" id="L655">    }</span>
-<span class="line" id="L656"></span>
-<span class="line" id="L657">    <span class="tok-kw">for</span> (m.include_dirs.items) |include_dir| {</span>
-<span class="line" id="L658">        <span class="tok-kw">switch</span> (include_dir) {</span>
-<span class="line" id="L659">            .path =&gt; |include_path| {</span>
-<span class="line" id="L660">                <span class="tok-kw">try</span> zig_args.append(<span class="tok-str">&quot;-I&quot;</span>);</span>
-<span class="line" id="L661">                <span class="tok-kw">try</span> zig_args.append(include_path.getPath(b));</span>
-<span class="line" id="L662">            },</span>
-<span class="line" id="L663">            .path_system =&gt; |include_path| {</span>
-<span class="line" id="L664">                <span class="tok-kw">try</span> zig_args.append(<span class="tok-str">&quot;-isystem&quot;</span>);</span>
-<span class="line" id="L665">                <span class="tok-kw">try</span> zig_args.append(include_path.getPath(b));</span>
-<span class="line" id="L666">            },</span>
-<span class="line" id="L667">            .path_after =&gt; |include_path| {</span>
-<span class="line" id="L668">                <span class="tok-kw">try</span> zig_args.append(<span class="tok-str">&quot;-idirafter&quot;</span>);</span>
-<span class="line" id="L669">                <span class="tok-kw">try</span> zig_args.append(include_path.getPath(b));</span>
-<span class="line" id="L670">            },</span>
-<span class="line" id="L671">            .framework_path =&gt; |include_path| {</span>
-<span class="line" id="L672">                <span class="tok-kw">try</span> zig_args.append(<span class="tok-str">&quot;-F&quot;</span>);</span>
-<span class="line" id="L673">                <span class="tok-kw">try</span> zig_args.append(include_path.getPath2(b, asking_step));</span>
-<span class="line" id="L674">            },</span>
-<span class="line" id="L675">            .framework_path_system =&gt; |include_path| {</span>
-<span class="line" id="L676">                <span class="tok-kw">try</span> zig_args.append(<span class="tok-str">&quot;-iframework&quot;</span>);</span>
-<span class="line" id="L677">                <span class="tok-kw">try</span> zig_args.append(include_path.getPath2(b, asking_step));</span>
-<span class="line" id="L678">            },</span>
-<span class="line" id="L679">            .other_step =&gt; |other| {</span>
-<span class="line" id="L680">                <span class="tok-kw">if</span> (other.generated_h) |header| {</span>
-<span class="line" id="L681">                    <span class="tok-kw">try</span> zig_args.append(<span class="tok-str">&quot;-isystem&quot;</span>);</span>
-<span class="line" id="L682">                    <span class="tok-kw">try</span> zig_args.append(std.fs.path.dirname(header.path.?).?);</span>
-<span class="line" id="L683">                }</span>
-<span class="line" id="L684">                <span class="tok-kw">if</span> (other.installed_headers.items.len &gt; <span class="tok-number">0</span>) {</span>
-<span class="line" id="L685">                    <span class="tok-kw">try</span> zig_args.append(<span class="tok-str">&quot;-I&quot;</span>);</span>
-<span class="line" id="L686">                    <span class="tok-kw">try</span> zig_args.append(b.pathJoin(&amp;.{</span>
-<span class="line" id="L687">                        other.step.owner.install_prefix, <span class="tok-str">&quot;include&quot;</span>,</span>
-<span class="line" id="L688">                    }));</span>
-<span class="line" id="L689">                }</span>
-<span class="line" id="L690">            },</span>
-<span class="line" id="L691">            .config_header_step =&gt; |config_header| {</span>
-<span class="line" id="L692">                <span class="tok-kw">const</span> full_file_path = config_header.output_file.path.?;</span>
-<span class="line" id="L693">                <span class="tok-kw">const</span> header_dir_path = full_file_path[<span class="tok-number">0</span> .. full_file_path.len - config_header.include_path.len];</span>
-<span class="line" id="L694">                <span class="tok-kw">try</span> zig_args.appendSlice(&amp;.{ <span class="tok-str">&quot;-I&quot;</span>, header_dir_path });</span>
-<span class="line" id="L695">            },</span>
-<span class="line" id="L696">        }</span>
-<span class="line" id="L697">    }</span>
-<span class="line" id="L698"></span>
-<span class="line" id="L699">    <span class="tok-kw">try</span> zig_args.appendSlice(m.c_macros.items);</span>
-<span class="line" id="L700"></span>
-<span class="line" id="L701">    <span class="tok-kw">try</span> zig_args.ensureUnusedCapacity(<span class="tok-number">2</span> * m.lib_paths.items.len);</span>
-<span class="line" id="L702">    <span class="tok-kw">for</span> (m.lib_paths.items) |lib_path| {</span>
-<span class="line" id="L703">        zig_args.appendAssumeCapacity(<span class="tok-str">&quot;-L&quot;</span>);</span>
-<span class="line" id="L704">        zig_args.appendAssumeCapacity(lib_path.getPath2(b, asking_step));</span>
-<span class="line" id="L705">    }</span>
-<span class="line" id="L706"></span>
-<span class="line" id="L707">    <span class="tok-kw">try</span> zig_args.ensureUnusedCapacity(<span class="tok-number">2</span> * m.rpaths.items.len);</span>
-<span class="line" id="L708">    <span class="tok-kw">for</span> (m.rpaths.items) |rpath| <span class="tok-kw">switch</span> (rpath) {</span>
-<span class="line" id="L709">        .lazy_path =&gt; |lp| {</span>
-<span class="line" id="L710">            zig_args.appendAssumeCapacity(<span class="tok-str">&quot;-rpath&quot;</span>);</span>
-<span class="line" id="L711">            zig_args.appendAssumeCapacity(lp.getPath2(b, asking_step));</span>
-<span class="line" id="L712">        },</span>
-<span class="line" id="L713">        .special =&gt; |bytes| {</span>
-<span class="line" id="L714">            zig_args.appendAssumeCapacity(<span class="tok-str">&quot;-rpath&quot;</span>);</span>
-<span class="line" id="L715">            zig_args.appendAssumeCapacity(bytes);</span>
-<span class="line" id="L716">        },</span>
-<span class="line" id="L717">    };</span>
-<span class="line" id="L718">}</span>
-<span class="line" id="L719"></span>
-<span class="line" id="L720"><span class="tok-kw">fn</span> <span class="tok-fn">addFlag</span>(</span>
-<span class="line" id="L721">    args: *std.ArrayList([]<span class="tok-kw">const</span> <span class="tok-type">u8</span>),</span>
-<span class="line" id="L722">    opt: ?<span class="tok-type">bool</span>,</span>
-<span class="line" id="L723">    then_name: []<span class="tok-kw">const</span> <span class="tok-type">u8</span>,</span>
-<span class="line" id="L724">    else_name: []<span class="tok-kw">const</span> <span class="tok-type">u8</span>,</span>
-<span class="line" id="L725">) !<span class="tok-type">void</span> {</span>
-<span class="line" id="L726">    <span class="tok-kw">const</span> cond = opt <span class="tok-kw">orelse</span> <span class="tok-kw">return</span>;</span>
-<span class="line" id="L727">    <span class="tok-kw">return</span> args.append(<span class="tok-kw">if</span> (cond) then_name <span class="tok-kw">else</span> else_name);</span>
-<span class="line" id="L728">}</span>
-<span class="line" id="L729"></span>
-<span class="line" id="L730"><span class="tok-kw">fn</span> <span class="tok-fn">linkLibraryOrObject</span>(m: *Module, other: *Step.Compile) <span class="tok-type">void</span> {</span>
-<span class="line" id="L731">    <span class="tok-kw">const</span> allocator = m.owner.allocator;</span>
-<span class="line" id="L732">    _ = other.getEmittedBin(); <span class="tok-comment">// Indicate there is a dependency on the outputted binary.</span>
+<span class="line" id="L643">        <span class="tok-kw">if</span> (!target.query.isNative()) {</span>
+<span class="line" id="L644">            <span class="tok-kw">try</span> zig_args.appendSlice(&amp;.{</span>
+<span class="line" id="L645">                <span class="tok-str">&quot;-target&quot;</span>, <span class="tok-kw">try</span> target.query.zigTriple(b.allocator),</span>
+<span class="line" id="L646">                <span class="tok-str">&quot;-mcpu&quot;</span>,   <span class="tok-kw">try</span> target.query.serializeCpuAlloc(b.allocator),</span>
+<span class="line" id="L647">            });</span>
+<span class="line" id="L648"></span>
+<span class="line" id="L649">            <span class="tok-kw">if</span> (target.query.dynamic_linker.get()) |dynamic_linker| {</span>
+<span class="line" id="L650">                <span class="tok-kw">try</span> zig_args.append(<span class="tok-str">&quot;--dynamic-linker&quot;</span>);</span>
+<span class="line" id="L651">                <span class="tok-kw">try</span> zig_args.append(dynamic_linker);</span>
+<span class="line" id="L652">            }</span>
+<span class="line" id="L653">        }</span>
+<span class="line" id="L654">    }</span>
+<span class="line" id="L655"></span>
+<span class="line" id="L656">    <span class="tok-kw">for</span> (m.export_symbol_names) |symbol_name| {</span>
+<span class="line" id="L657">        <span class="tok-kw">try</span> zig_args.append(b.fmt(<span class="tok-str">&quot;--export={s}&quot;</span>, .{symbol_name}));</span>
+<span class="line" id="L658">    }</span>
+<span class="line" id="L659"></span>
+<span class="line" id="L660">    <span class="tok-kw">for</span> (m.include_dirs.items) |include_dir| {</span>
+<span class="line" id="L661">        <span class="tok-kw">switch</span> (include_dir) {</span>
+<span class="line" id="L662">            .path =&gt; |include_path| {</span>
+<span class="line" id="L663">                <span class="tok-kw">try</span> zig_args.append(<span class="tok-str">&quot;-I&quot;</span>);</span>
+<span class="line" id="L664">                <span class="tok-kw">try</span> zig_args.append(include_path.getPath(b));</span>
+<span class="line" id="L665">            },</span>
+<span class="line" id="L666">            .path_system =&gt; |include_path| {</span>
+<span class="line" id="L667">                <span class="tok-kw">try</span> zig_args.append(<span class="tok-str">&quot;-isystem&quot;</span>);</span>
+<span class="line" id="L668">                <span class="tok-kw">try</span> zig_args.append(include_path.getPath(b));</span>
+<span class="line" id="L669">            },</span>
+<span class="line" id="L670">            .path_after =&gt; |include_path| {</span>
+<span class="line" id="L671">                <span class="tok-kw">try</span> zig_args.append(<span class="tok-str">&quot;-idirafter&quot;</span>);</span>
+<span class="line" id="L672">                <span class="tok-kw">try</span> zig_args.append(include_path.getPath(b));</span>
+<span class="line" id="L673">            },</span>
+<span class="line" id="L674">            .framework_path =&gt; |include_path| {</span>
+<span class="line" id="L675">                <span class="tok-kw">try</span> zig_args.append(<span class="tok-str">&quot;-F&quot;</span>);</span>
+<span class="line" id="L676">                <span class="tok-kw">try</span> zig_args.append(include_path.getPath2(b, asking_step));</span>
+<span class="line" id="L677">            },</span>
+<span class="line" id="L678">            .framework_path_system =&gt; |include_path| {</span>
+<span class="line" id="L679">                <span class="tok-kw">try</span> zig_args.append(<span class="tok-str">&quot;-iframework&quot;</span>);</span>
+<span class="line" id="L680">                <span class="tok-kw">try</span> zig_args.append(include_path.getPath2(b, asking_step));</span>
+<span class="line" id="L681">            },</span>
+<span class="line" id="L682">            .other_step =&gt; |other| {</span>
+<span class="line" id="L683">                <span class="tok-kw">if</span> (other.generated_h) |header| {</span>
+<span class="line" id="L684">                    <span class="tok-kw">try</span> zig_args.append(<span class="tok-str">&quot;-isystem&quot;</span>);</span>
+<span class="line" id="L685">                    <span class="tok-kw">try</span> zig_args.append(std.fs.path.dirname(header.path.?).?);</span>
+<span class="line" id="L686">                }</span>
+<span class="line" id="L687">                <span class="tok-kw">if</span> (other.installed_headers.items.len &gt; <span class="tok-number">0</span>) {</span>
+<span class="line" id="L688">                    <span class="tok-kw">try</span> zig_args.append(<span class="tok-str">&quot;-I&quot;</span>);</span>
+<span class="line" id="L689">                    <span class="tok-kw">try</span> zig_args.append(b.pathJoin(&amp;.{</span>
+<span class="line" id="L690">                        other.step.owner.install_prefix, <span class="tok-str">&quot;include&quot;</span>,</span>
+<span class="line" id="L691">                    }));</span>
+<span class="line" id="L692">                }</span>
+<span class="line" id="L693">            },</span>
+<span class="line" id="L694">            .config_header_step =&gt; |config_header| {</span>
+<span class="line" id="L695">                <span class="tok-kw">const</span> full_file_path = config_header.output_file.path.?;</span>
+<span class="line" id="L696">                <span class="tok-kw">const</span> header_dir_path = full_file_path[<span class="tok-number">0</span> .. full_file_path.len - config_header.include_path.len];</span>
+<span class="line" id="L697">                <span class="tok-kw">try</span> zig_args.appendSlice(&amp;.{ <span class="tok-str">&quot;-I&quot;</span>, header_dir_path });</span>
+<span class="line" id="L698">            },</span>
+<span class="line" id="L699">        }</span>
+<span class="line" id="L700">    }</span>
+<span class="line" id="L701"></span>
+<span class="line" id="L702">    <span class="tok-kw">try</span> zig_args.appendSlice(m.c_macros.items);</span>
+<span class="line" id="L703"></span>
+<span class="line" id="L704">    <span class="tok-kw">try</span> zig_args.ensureUnusedCapacity(<span class="tok-number">2</span> * m.lib_paths.items.len);</span>
+<span class="line" id="L705">    <span class="tok-kw">for</span> (m.lib_paths.items) |lib_path| {</span>
+<span class="line" id="L706">        zig_args.appendAssumeCapacity(<span class="tok-str">&quot;-L&quot;</span>);</span>
+<span class="line" id="L707">        zig_args.appendAssumeCapacity(lib_path.getPath2(b, asking_step));</span>
+<span class="line" id="L708">    }</span>
+<span class="line" id="L709"></span>
+<span class="line" id="L710">    <span class="tok-kw">try</span> zig_args.ensureUnusedCapacity(<span class="tok-number">2</span> * m.rpaths.items.len);</span>
+<span class="line" id="L711">    <span class="tok-kw">for</span> (m.rpaths.items) |rpath| <span class="tok-kw">switch</span> (rpath) {</span>
+<span class="line" id="L712">        .lazy_path =&gt; |lp| {</span>
+<span class="line" id="L713">            zig_args.appendAssumeCapacity(<span class="tok-str">&quot;-rpath&quot;</span>);</span>
+<span class="line" id="L714">            zig_args.appendAssumeCapacity(lp.getPath2(b, asking_step));</span>
+<span class="line" id="L715">        },</span>
+<span class="line" id="L716">        .special =&gt; |bytes| {</span>
+<span class="line" id="L717">            zig_args.appendAssumeCapacity(<span class="tok-str">&quot;-rpath&quot;</span>);</span>
+<span class="line" id="L718">            zig_args.appendAssumeCapacity(bytes);</span>
+<span class="line" id="L719">        },</span>
+<span class="line" id="L720">    };</span>
+<span class="line" id="L721">}</span>
+<span class="line" id="L722"></span>
+<span class="line" id="L723"><span class="tok-kw">fn</span> <span class="tok-fn">addFlag</span>(</span>
+<span class="line" id="L724">    args: *std.ArrayList([]<span class="tok-kw">const</span> <span class="tok-type">u8</span>),</span>
+<span class="line" id="L725">    opt: ?<span class="tok-type">bool</span>,</span>
+<span class="line" id="L726">    then_name: []<span class="tok-kw">const</span> <span class="tok-type">u8</span>,</span>
+<span class="line" id="L727">    else_name: []<span class="tok-kw">const</span> <span class="tok-type">u8</span>,</span>
+<span class="line" id="L728">) !<span class="tok-type">void</span> {</span>
+<span class="line" id="L729">    <span class="tok-kw">const</span> cond = opt <span class="tok-kw">orelse</span> <span class="tok-kw">return</span>;</span>
+<span class="line" id="L730">    <span class="tok-kw">return</span> args.append(<span class="tok-kw">if</span> (cond) then_name <span class="tok-kw">else</span> else_name);</span>
+<span class="line" id="L731">}</span>
+<span class="line" id="L732"></span>
+<span class="line" id="L733"><span class="tok-kw">fn</span> <span class="tok-fn">linkLibraryOrObject</span>(m: *Module, other: *Step.Compile) <span class="tok-type">void</span> {</span>
+<span class="line" id="L734">    <span class="tok-kw">const</span> allocator = m.owner.allocator;</span>
+<span class="line" id="L735">    _ = other.getEmittedBin(); <span class="tok-comment">// Indicate there is a dependency on the outputted binary.</span>
 </span>
-<span class="line" id="L733">    addStepDependenciesOnly(m, &amp;other.step);</span>
-<span class="line" id="L734"></span>
-<span class="line" id="L735">    <span class="tok-kw">if</span> (other.rootModuleTarget().os.tag == .windows <span class="tok-kw">and</span> other.isDynamicLibrary()) {</span>
-<span class="line" id="L736">        _ = other.getEmittedImplib(); <span class="tok-comment">// Indicate dependency on the outputted implib.</span>
+<span class="line" id="L736">    addStepDependenciesOnly(m, &amp;other.step);</span>
+<span class="line" id="L737"></span>
+<span class="line" id="L738">    <span class="tok-kw">if</span> (other.rootModuleTarget().os.tag == .windows <span class="tok-kw">and</span> other.isDynamicLibrary()) {</span>
+<span class="line" id="L739">        _ = other.getEmittedImplib(); <span class="tok-comment">// Indicate dependency on the outputted implib.</span>
 </span>
-<span class="line" id="L737">    }</span>
-<span class="line" id="L738"></span>
-<span class="line" id="L739">    m.link_objects.append(allocator, .{ .other_step = other }) <span class="tok-kw">catch</span> <span class="tok-builtin">@panic</span>(<span class="tok-str">&quot;OOM&quot;</span>);</span>
-<span class="line" id="L740">    m.include_dirs.append(allocator, .{ .other_step = other }) <span class="tok-kw">catch</span> <span class="tok-builtin">@panic</span>(<span class="tok-str">&quot;OOM&quot;</span>);</span>
+<span class="line" id="L740">    }</span>
 <span class="line" id="L741"></span>
-<span class="line" id="L742">    <span class="tok-kw">for</span> (other.installed_headers.items) |install_step| {</span>
-<span class="line" id="L743">        addStepDependenciesOnly(m, install_step);</span>
-<span class="line" id="L744">    }</span>
-<span class="line" id="L745">}</span>
-<span class="line" id="L746"></span>
-<span class="line" id="L747"><span class="tok-kw">fn</span> <span class="tok-fn">requireKnownTarget</span>(m: *Module) std.Target {</span>
-<span class="line" id="L748">    <span class="tok-kw">const</span> resolved_target = m.resolved_target <span class="tok-kw">orelse</span></span>
-<span class="line" id="L749">        <span class="tok-builtin">@panic</span>(<span class="tok-str">&quot;this API requires the Module to be created with a known 'target' field&quot;</span>);</span>
-<span class="line" id="L750">    <span class="tok-kw">return</span> resolved_target.result;</span>
-<span class="line" id="L751">}</span>
-<span class="line" id="L752"></span>
-<span class="line" id="L753"><span class="tok-kw">const</span> Module = <span class="tok-builtin">@This</span>();</span>
-<span class="line" id="L754"><span class="tok-kw">const</span> std = <span class="tok-builtin">@import</span>(<span class="tok-str">&quot;std&quot;</span>);</span>
-<span class="line" id="L755"><span class="tok-kw">const</span> assert = std.debug.assert;</span>
-<span class="line" id="L756"><span class="tok-kw">const</span> LazyPath = std.Build.LazyPath;</span>
-<span class="line" id="L757"><span class="tok-kw">const</span> Step = std.Build.Step;</span>
-<span class="line" id="L758"></span>
+<span class="line" id="L742">    m.link_objects.append(allocator, .{ .other_step = other }) <span class="tok-kw">catch</span> <span class="tok-builtin">@panic</span>(<span class="tok-str">&quot;OOM&quot;</span>);</span>
+<span class="line" id="L743">    m.include_dirs.append(allocator, .{ .other_step = other }) <span class="tok-kw">catch</span> <span class="tok-builtin">@panic</span>(<span class="tok-str">&quot;OOM&quot;</span>);</span>
+<span class="line" id="L744"></span>
+<span class="line" id="L745">    <span class="tok-kw">for</span> (other.installed_headers.items) |install_step| {</span>
+<span class="line" id="L746">        addStepDependenciesOnly(m, install_step);</span>
+<span class="line" id="L747">    }</span>
+<span class="line" id="L748">}</span>
+<span class="line" id="L749"></span>
+<span class="line" id="L750"><span class="tok-kw">fn</span> <span class="tok-fn">requireKnownTarget</span>(m: *Module) std.Target {</span>
+<span class="line" id="L751">    <span class="tok-kw">const</span> resolved_target = m.resolved_target <span class="tok-kw">orelse</span></span>
+<span class="line" id="L752">        <span class="tok-builtin">@panic</span>(<span class="tok-str">&quot;this API requires the Module to be created with a known 'target' field&quot;</span>);</span>
+<span class="line" id="L753">    <span class="tok-kw">return</span> resolved_target.result;</span>
+<span class="line" id="L754">}</span>
+<span class="line" id="L755"></span>
+<span class="line" id="L756"><span class="tok-kw">const</span> Module = <span class="tok-builtin">@This</span>();</span>
+<span class="line" id="L757"><span class="tok-kw">const</span> std = <span class="tok-builtin">@import</span>(<span class="tok-str">&quot;std&quot;</span>);</span>
+<span class="line" id="L758"><span class="tok-kw">const</span> assert = std.debug.assert;</span>
+<span class="line" id="L759"><span class="tok-kw">const</span> LazyPath = std.Build.LazyPath;</span>
+<span class="line" id="L760"><span class="tok-kw">const</span> Step = std.Build.Step;</span>
+<span class="line" id="L761"></span>
 </code></pre></body>
 </html>

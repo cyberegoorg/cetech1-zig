@@ -249,7 +249,7 @@
 <span class="line" id="L123">    <span class="tok-kw">return</span> result;</span>
 <span class="line" id="L124">}</span>
 <span class="line" id="L125"></span>
-<span class="line" id="L126"><span class="tok-kw">test</span> <span class="tok-str">&quot;math.modf&quot;</span> {</span>
+<span class="line" id="L126"><span class="tok-kw">test</span> modf {</span>
 <span class="line" id="L127">    <span class="tok-kw">const</span> a = modf(<span class="tok-builtin">@as</span>(<span class="tok-type">f32</span>, <span class="tok-number">1.0</span>));</span>
 <span class="line" id="L128">    <span class="tok-kw">const</span> b = modf32(<span class="tok-number">1.0</span>);</span>
 <span class="line" id="L129">    <span class="tok-comment">// NOTE: No struct comparison on generic return type function? non-named, makes sense, but still.</span>
@@ -257,7 +257,7 @@
 <span class="line" id="L130">    <span class="tok-kw">try</span> expectEqual(a, b);</span>
 <span class="line" id="L131">}</span>
 <span class="line" id="L132"></span>
-<span class="line" id="L133"><span class="tok-kw">test</span> <span class="tok-str">&quot;math.modf32&quot;</span> {</span>
+<span class="line" id="L133"><span class="tok-kw">test</span> modf32 {</span>
 <span class="line" id="L134">    <span class="tok-kw">const</span> epsilon = <span class="tok-number">0.000001</span>;</span>
 <span class="line" id="L135">    <span class="tok-kw">var</span> r: modf32_result = <span class="tok-null">undefined</span>;</span>
 <span class="line" id="L136"></span>
@@ -282,7 +282,7 @@
 <span class="line" id="L155">    <span class="tok-kw">try</span> expect(math.approxEqAbs(<span class="tok-type">f32</span>, r.fpart, <span class="tok-number">0.340820</span>, epsilon));</span>
 <span class="line" id="L156">}</span>
 <span class="line" id="L157"></span>
-<span class="line" id="L158"><span class="tok-kw">test</span> <span class="tok-str">&quot;math.modf64&quot;</span> {</span>
+<span class="line" id="L158"><span class="tok-kw">test</span> modf64 {</span>
 <span class="line" id="L159">    <span class="tok-kw">const</span> epsilon = <span class="tok-number">0.000001</span>;</span>
 <span class="line" id="L160">    <span class="tok-kw">var</span> r: modf64_result = <span class="tok-null">undefined</span>;</span>
 <span class="line" id="L161"></span>
@@ -307,7 +307,7 @@
 <span class="line" id="L180">    <span class="tok-kw">try</span> expect(math.approxEqAbs(<span class="tok-type">f64</span>, r.fpart, <span class="tok-number">0.340780</span>, epsilon));</span>
 <span class="line" id="L181">}</span>
 <span class="line" id="L182"></span>
-<span class="line" id="L183"><span class="tok-kw">test</span> <span class="tok-str">&quot;math.modf32.special&quot;</span> {</span>
+<span class="line" id="L183"><span class="tok-kw">test</span> <span class="tok-str">&quot;modf32.special&quot;</span> {</span>
 <span class="line" id="L184">    <span class="tok-kw">var</span> r: modf32_result = <span class="tok-null">undefined</span>;</span>
 <span class="line" id="L185"></span>
 <span class="line" id="L186">    r = modf32(math.inf(<span class="tok-type">f32</span>));</span>
@@ -320,7 +320,7 @@
 <span class="line" id="L193">    <span class="tok-kw">try</span> expect(math.isNan(r.ipart) <span class="tok-kw">and</span> math.isNan(r.fpart));</span>
 <span class="line" id="L194">}</span>
 <span class="line" id="L195"></span>
-<span class="line" id="L196"><span class="tok-kw">test</span> <span class="tok-str">&quot;math.modf64.special&quot;</span> {</span>
+<span class="line" id="L196"><span class="tok-kw">test</span> <span class="tok-str">&quot;modf64.special&quot;</span> {</span>
 <span class="line" id="L197">    <span class="tok-kw">var</span> r: modf64_result = <span class="tok-null">undefined</span>;</span>
 <span class="line" id="L198"></span>
 <span class="line" id="L199">    r = modf64(math.inf(<span class="tok-type">f64</span>));</span>

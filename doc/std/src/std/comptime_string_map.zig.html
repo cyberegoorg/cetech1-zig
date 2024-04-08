@@ -257,7 +257,7 @@
 <span class="line" id="L142">    E,</span>
 <span class="line" id="L143">};</span>
 <span class="line" id="L144"></span>
-<span class="line" id="L145"><span class="tok-kw">test</span> <span class="tok-str">&quot;ComptimeStringMap list literal of list literals&quot;</span> {</span>
+<span class="line" id="L145"><span class="tok-kw">test</span> <span class="tok-str">&quot;list literal of list literals&quot;</span> {</span>
 <span class="line" id="L146">    <span class="tok-kw">const</span> map = ComptimeStringMap(TestEnum, .{</span>
 <span class="line" id="L147">        .{ <span class="tok-str">&quot;these&quot;</span>, .D },</span>
 <span class="line" id="L148">        .{ <span class="tok-str">&quot;have&quot;</span>, .A },</span>
@@ -273,7 +273,7 @@
 <span class="line" id="L157">    <span class="tok-kw">try</span> std.testing.expect(<span class="tok-null">null</span> == map.get(<span class="tok-str">&quot;NOTHING&quot;</span>));</span>
 <span class="line" id="L158">}</span>
 <span class="line" id="L159"></span>
-<span class="line" id="L160"><span class="tok-kw">test</span> <span class="tok-str">&quot;ComptimeStringMap array of structs&quot;</span> {</span>
+<span class="line" id="L160"><span class="tok-kw">test</span> <span class="tok-str">&quot;array of structs&quot;</span> {</span>
 <span class="line" id="L161">    <span class="tok-kw">const</span> KV = <span class="tok-kw">struct</span> { []<span class="tok-kw">const</span> <span class="tok-type">u8</span>, TestEnum };</span>
 <span class="line" id="L162">    <span class="tok-kw">const</span> map = ComptimeStringMap(TestEnum, [_]KV{</span>
 <span class="line" id="L163">        .{ <span class="tok-str">&quot;these&quot;</span>, .D },</span>
@@ -286,7 +286,7 @@
 <span class="line" id="L170">    <span class="tok-kw">try</span> testMap(map);</span>
 <span class="line" id="L171">}</span>
 <span class="line" id="L172"></span>
-<span class="line" id="L173"><span class="tok-kw">test</span> <span class="tok-str">&quot;ComptimeStringMap slice of structs&quot;</span> {</span>
+<span class="line" id="L173"><span class="tok-kw">test</span> <span class="tok-str">&quot;slice of structs&quot;</span> {</span>
 <span class="line" id="L174">    <span class="tok-kw">const</span> KV = <span class="tok-kw">struct</span> { []<span class="tok-kw">const</span> <span class="tok-type">u8</span>, TestEnum };</span>
 <span class="line" id="L175">    <span class="tok-kw">const</span> slice: []<span class="tok-kw">const</span> KV = &amp;[_]KV{</span>
 <span class="line" id="L176">        .{ <span class="tok-str">&quot;these&quot;</span>, .D },</span>
@@ -314,7 +314,7 @@
 <span class="line" id="L198">    <span class="tok-kw">try</span> std.testing.expect(<span class="tok-null">null</span> == map.get(<span class="tok-str">&quot;averylongstringthathasnomatches&quot;</span>));</span>
 <span class="line" id="L199">}</span>
 <span class="line" id="L200"></span>
-<span class="line" id="L201"><span class="tok-kw">test</span> <span class="tok-str">&quot;ComptimeStringMap void value type, slice of structs&quot;</span> {</span>
+<span class="line" id="L201"><span class="tok-kw">test</span> <span class="tok-str">&quot;void value type, slice of structs&quot;</span> {</span>
 <span class="line" id="L202">    <span class="tok-kw">const</span> KV = <span class="tok-kw">struct</span> { []<span class="tok-kw">const</span> <span class="tok-type">u8</span> };</span>
 <span class="line" id="L203">    <span class="tok-kw">const</span> slice: []<span class="tok-kw">const</span> KV = &amp;[_]KV{</span>
 <span class="line" id="L204">        .{<span class="tok-str">&quot;these&quot;</span>},</span>
@@ -332,7 +332,7 @@
 <span class="line" id="L215">    <span class="tok-kw">try</span> std.testing.expect(<span class="tok-null">null</span> == map.get(<span class="tok-str">&quot;NOTHING&quot;</span>));</span>
 <span class="line" id="L216">}</span>
 <span class="line" id="L217"></span>
-<span class="line" id="L218"><span class="tok-kw">test</span> <span class="tok-str">&quot;ComptimeStringMap void value type, list literal of list literals&quot;</span> {</span>
+<span class="line" id="L218"><span class="tok-kw">test</span> <span class="tok-str">&quot;void value type, list literal of list literals&quot;</span> {</span>
 <span class="line" id="L219">    <span class="tok-kw">const</span> map = ComptimeStringMap(<span class="tok-type">void</span>, .{</span>
 <span class="line" id="L220">        .{<span class="tok-str">&quot;these&quot;</span>},</span>
 <span class="line" id="L221">        .{<span class="tok-str">&quot;have&quot;</span>},</span>
@@ -375,7 +375,7 @@
 <span class="line" id="L258">    <span class="tok-kw">try</span> std.testing.expect(map.has(<span class="tok-str">&quot;ThESe&quot;</span>));</span>
 <span class="line" id="L259">}</span>
 <span class="line" id="L260"></span>
-<span class="line" id="L261"><span class="tok-kw">test</span> <span class="tok-str">&quot;ComptimeStringMap empty&quot;</span> {</span>
+<span class="line" id="L261"><span class="tok-kw">test</span> <span class="tok-str">&quot;empty&quot;</span> {</span>
 <span class="line" id="L262">    <span class="tok-kw">const</span> m1 = ComptimeStringMap(<span class="tok-type">usize</span>, .{});</span>
 <span class="line" id="L263">    <span class="tok-kw">try</span> std.testing.expect(<span class="tok-null">null</span> == m1.get(<span class="tok-str">&quot;anything&quot;</span>));</span>
 <span class="line" id="L264"></span>
@@ -383,7 +383,7 @@
 <span class="line" id="L266">    <span class="tok-kw">try</span> std.testing.expect(<span class="tok-null">null</span> == m2.get(<span class="tok-str">&quot;anything&quot;</span>));</span>
 <span class="line" id="L267">}</span>
 <span class="line" id="L268"></span>
-<span class="line" id="L269"><span class="tok-kw">test</span> <span class="tok-str">&quot;ComptimeStringMap redundant entries&quot;</span> {</span>
+<span class="line" id="L269"><span class="tok-kw">test</span> <span class="tok-str">&quot;redundant entries&quot;</span> {</span>
 <span class="line" id="L270">    <span class="tok-kw">const</span> map = ComptimeStringMap(TestEnum, .{</span>
 <span class="line" id="L271">        .{ <span class="tok-str">&quot;redundant&quot;</span>, .D },</span>
 <span class="line" id="L272">        .{ <span class="tok-str">&quot;theNeedle&quot;</span>, .A },</span>
@@ -403,7 +403,7 @@
 <span class="line" id="L284">    <span class="tok-kw">try</span> std.testing.expectEqual(TestEnum.A, map.get(<span class="tok-str">&quot;theNeedle&quot;</span>).?);</span>
 <span class="line" id="L285">}</span>
 <span class="line" id="L286"></span>
-<span class="line" id="L287"><span class="tok-kw">test</span> <span class="tok-str">&quot;ComptimeStringMap redundant insensitive&quot;</span> {</span>
+<span class="line" id="L287"><span class="tok-kw">test</span> <span class="tok-str">&quot;redundant insensitive&quot;</span> {</span>
 <span class="line" id="L288">    <span class="tok-kw">const</span> map = ComptimeStringMapWithEql(TestEnum, .{</span>
 <span class="line" id="L289">        .{ <span class="tok-str">&quot;redundant&quot;</span>, .D },</span>
 <span class="line" id="L290">        .{ <span class="tok-str">&quot;theNeedle&quot;</span>, .A },</span>
@@ -420,5 +420,24 @@
 <span class="line" id="L300">    <span class="tok-kw">try</span> std.testing.expectEqual(TestEnum.A, map.get(<span class="tok-str">&quot;theNeedle&quot;</span>).?);</span>
 <span class="line" id="L301">}</span>
 <span class="line" id="L302"></span>
+<span class="line" id="L303"><span class="tok-kw">test</span> <span class="tok-str">&quot;comptime-only value&quot;</span> {</span>
+<span class="line" id="L304">    <span class="tok-kw">const</span> map = std.ComptimeStringMap(<span class="tok-type">type</span>, .{</span>
+<span class="line" id="L305">        .{ <span class="tok-str">&quot;a&quot;</span>, <span class="tok-kw">struct</span> {</span>
+<span class="line" id="L306">            <span class="tok-kw">pub</span> <span class="tok-kw">const</span> foo = <span class="tok-number">1</span>;</span>
+<span class="line" id="L307">        } },</span>
+<span class="line" id="L308">        .{ <span class="tok-str">&quot;b&quot;</span>, <span class="tok-kw">struct</span> {</span>
+<span class="line" id="L309">            <span class="tok-kw">pub</span> <span class="tok-kw">const</span> foo = <span class="tok-number">2</span>;</span>
+<span class="line" id="L310">        } },</span>
+<span class="line" id="L311">        .{ <span class="tok-str">&quot;c&quot;</span>, <span class="tok-kw">struct</span> {</span>
+<span class="line" id="L312">            <span class="tok-kw">pub</span> <span class="tok-kw">const</span> foo = <span class="tok-number">3</span>;</span>
+<span class="line" id="L313">        } },</span>
+<span class="line" id="L314">    });</span>
+<span class="line" id="L315"></span>
+<span class="line" id="L316">    <span class="tok-kw">try</span> std.testing.expect(map.get(<span class="tok-str">&quot;a&quot;</span>).?.foo == <span class="tok-number">1</span>);</span>
+<span class="line" id="L317">    <span class="tok-kw">try</span> std.testing.expect(map.get(<span class="tok-str">&quot;b&quot;</span>).?.foo == <span class="tok-number">2</span>);</span>
+<span class="line" id="L318">    <span class="tok-kw">try</span> std.testing.expect(map.get(<span class="tok-str">&quot;c&quot;</span>).?.foo == <span class="tok-number">3</span>);</span>
+<span class="line" id="L319">    <span class="tok-kw">try</span> std.testing.expect(map.get(<span class="tok-str">&quot;d&quot;</span>) == <span class="tok-null">null</span>);</span>
+<span class="line" id="L320">}</span>
+<span class="line" id="L321"></span>
 </code></pre></body>
 </html>

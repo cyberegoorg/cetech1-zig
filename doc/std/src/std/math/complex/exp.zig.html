@@ -132,8 +132,8 @@
 <span class="line" id="L13"><span class="tok-kw">const</span> ldexp_cexp = <span class="tok-builtin">@import</span>(<span class="tok-str">&quot;ldexp.zig&quot;</span>).ldexp_cexp;</span>
 <span class="line" id="L14"></span>
 <span class="line" id="L15"><span class="tok-comment">/// Returns e raised to the power of z (e^z).</span></span>
-<span class="line" id="L16"><span class="tok-kw">pub</span> <span class="tok-kw">fn</span> <span class="tok-fn">exp</span>(z: <span class="tok-kw">anytype</span>) <span class="tok-builtin">@TypeOf</span>(z) {</span>
-<span class="line" id="L17">    <span class="tok-kw">const</span> T = <span class="tok-builtin">@TypeOf</span>(z.re);</span>
+<span class="line" id="L16"><span class="tok-kw">pub</span> <span class="tok-kw">fn</span> <span class="tok-fn">exp</span>(z: <span class="tok-kw">anytype</span>) Complex(<span class="tok-builtin">@TypeOf</span>(z.re, z.im)) {</span>
+<span class="line" id="L17">    <span class="tok-kw">const</span> T = <span class="tok-builtin">@TypeOf</span>(z.re, z.im);</span>
 <span class="line" id="L18"></span>
 <span class="line" id="L19">    <span class="tok-kw">return</span> <span class="tok-kw">switch</span> (T) {</span>
 <span class="line" id="L20">        <span class="tok-type">f32</span> =&gt; exp32(z),</span>
@@ -262,7 +262,7 @@
 <span class="line" id="L119">    }</span>
 <span class="line" id="L120">}</span>
 <span class="line" id="L121"></span>
-<span class="line" id="L122"><span class="tok-kw">test</span> <span class="tok-str">&quot;complex.cexp32&quot;</span> {</span>
+<span class="line" id="L122"><span class="tok-kw">test</span> exp32 {</span>
 <span class="line" id="L123">    <span class="tok-kw">const</span> tolerance_f32 = <span class="tok-builtin">@sqrt</span>(math.floatEps(<span class="tok-type">f32</span>));</span>
 <span class="line" id="L124"></span>
 <span class="line" id="L125">    {</span>
@@ -282,7 +282,7 @@
 <span class="line" id="L139">    }</span>
 <span class="line" id="L140">}</span>
 <span class="line" id="L141"></span>
-<span class="line" id="L142"><span class="tok-kw">test</span> <span class="tok-str">&quot;complex.cexp64&quot;</span> {</span>
+<span class="line" id="L142"><span class="tok-kw">test</span> exp64 {</span>
 <span class="line" id="L143">    <span class="tok-kw">const</span> tolerance_f64 = <span class="tok-builtin">@sqrt</span>(math.floatEps(<span class="tok-type">f64</span>));</span>
 <span class="line" id="L144"></span>
 <span class="line" id="L145">    {</span>

@@ -132,8 +132,8 @@
 <span class="line" id="L13"><span class="tok-kw">const</span> ldexp_cexp = <span class="tok-builtin">@import</span>(<span class="tok-str">&quot;ldexp.zig&quot;</span>).ldexp_cexp;</span>
 <span class="line" id="L14"></span>
 <span class="line" id="L15"><span class="tok-comment">/// Returns the hyperbolic arc-cosine of z.</span></span>
-<span class="line" id="L16"><span class="tok-kw">pub</span> <span class="tok-kw">fn</span> <span class="tok-fn">cosh</span>(z: <span class="tok-kw">anytype</span>) Complex(<span class="tok-builtin">@TypeOf</span>(z.re)) {</span>
-<span class="line" id="L17">    <span class="tok-kw">const</span> T = <span class="tok-builtin">@TypeOf</span>(z.re);</span>
+<span class="line" id="L16"><span class="tok-kw">pub</span> <span class="tok-kw">fn</span> <span class="tok-fn">cosh</span>(z: <span class="tok-kw">anytype</span>) Complex(<span class="tok-builtin">@TypeOf</span>(z.re, z.im)) {</span>
+<span class="line" id="L17">    <span class="tok-kw">const</span> T = <span class="tok-builtin">@TypeOf</span>(z.re, z.im);</span>
 <span class="line" id="L18">    <span class="tok-kw">return</span> <span class="tok-kw">switch</span> (T) {</span>
 <span class="line" id="L19">        <span class="tok-type">f32</span> =&gt; cosh32(z),</span>
 <span class="line" id="L20">        <span class="tok-type">f64</span> =&gt; cosh64(z),</span>
@@ -285,7 +285,7 @@
 <span class="line" id="L155"></span>
 <span class="line" id="L156"><span class="tok-kw">const</span> epsilon = <span class="tok-number">0.0001</span>;</span>
 <span class="line" id="L157"></span>
-<span class="line" id="L158"><span class="tok-kw">test</span> <span class="tok-str">&quot;complex.ccosh32&quot;</span> {</span>
+<span class="line" id="L158"><span class="tok-kw">test</span> cosh32 {</span>
 <span class="line" id="L159">    <span class="tok-kw">const</span> a = Complex(<span class="tok-type">f32</span>).init(<span class="tok-number">5</span>, <span class="tok-number">3</span>);</span>
 <span class="line" id="L160">    <span class="tok-kw">const</span> c = cosh(a);</span>
 <span class="line" id="L161"></span>
@@ -293,7 +293,7 @@
 <span class="line" id="L163">    <span class="tok-kw">try</span> testing.expect(math.approxEqAbs(<span class="tok-type">f32</span>, c.im, <span class="tok-number">10.471557</span>, epsilon));</span>
 <span class="line" id="L164">}</span>
 <span class="line" id="L165"></span>
-<span class="line" id="L166"><span class="tok-kw">test</span> <span class="tok-str">&quot;complex.ccosh64&quot;</span> {</span>
+<span class="line" id="L166"><span class="tok-kw">test</span> cosh64 {</span>
 <span class="line" id="L167">    <span class="tok-kw">const</span> a = Complex(<span class="tok-type">f64</span>).init(<span class="tok-number">5</span>, <span class="tok-number">3</span>);</span>
 <span class="line" id="L168">    <span class="tok-kw">const</span> c = cosh(a);</span>
 <span class="line" id="L169"></span>

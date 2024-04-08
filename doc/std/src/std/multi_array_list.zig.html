@@ -691,7 +691,7 @@
 <span class="line" id="L574">        }</span>
 <span class="line" id="L575"></span>
 <span class="line" id="L576">        <span class="tok-kw">comptime</span> {</span>
-<span class="line" id="L577">            <span class="tok-kw">if</span> (builtin.mode == .Debug) {</span>
+<span class="line" id="L577">            <span class="tok-kw">if</span> (!builtin.strip_debug_info) {</span>
 <span class="line" id="L578">                _ = &amp;dbHelper;</span>
 <span class="line" id="L579">                _ = &amp;Slice.dbHelper;</span>
 <span class="line" id="L580">            }</span>

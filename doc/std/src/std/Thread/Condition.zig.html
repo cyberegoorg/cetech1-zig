@@ -457,7 +457,7 @@
 <span class="line" id="L296">    }</span>
 <span class="line" id="L297">};</span>
 <span class="line" id="L298"></span>
-<span class="line" id="L299"><span class="tok-kw">test</span> <span class="tok-str">&quot;Condition - smoke test&quot;</span> {</span>
+<span class="line" id="L299"><span class="tok-kw">test</span> <span class="tok-str">&quot;smoke test&quot;</span> {</span>
 <span class="line" id="L300">    <span class="tok-kw">var</span> mutex = Mutex{};</span>
 <span class="line" id="L301">    <span class="tok-kw">var</span> cond = Condition{};</span>
 <span class="line" id="L302"></span>
@@ -482,7 +482,7 @@
 <span class="line" id="L318"></span>
 <span class="line" id="L319"><span class="tok-comment">// Inspired from: https://github.com/Amanieu/parking_lot/pull/129</span>
 </span>
-<span class="line" id="L320"><span class="tok-kw">test</span> <span class="tok-str">&quot;Condition - wait and signal&quot;</span> {</span>
+<span class="line" id="L320"><span class="tok-kw">test</span> <span class="tok-str">&quot;wait and signal&quot;</span> {</span>
 <span class="line" id="L321">    <span class="tok-comment">// This test requires spawning threads</span>
 </span>
 <span class="line" id="L322">    <span class="tok-kw">if</span> (builtin.single_threaded) {</span>
@@ -529,7 +529,7 @@
 <span class="line" id="L362">    }</span>
 <span class="line" id="L363">}</span>
 <span class="line" id="L364"></span>
-<span class="line" id="L365"><span class="tok-kw">test</span> <span class="tok-str">&quot;Condition - signal&quot;</span> {</span>
+<span class="line" id="L365"><span class="tok-kw">test</span> signal {</span>
 <span class="line" id="L366">    <span class="tok-comment">// This test requires spawning threads</span>
 </span>
 <span class="line" id="L367">    <span class="tok-kw">if</span> (builtin.single_threaded) {</span>
@@ -602,7 +602,7 @@
 <span class="line" id="L429">    }</span>
 <span class="line" id="L430">}</span>
 <span class="line" id="L431"></span>
-<span class="line" id="L432"><span class="tok-kw">test</span> <span class="tok-str">&quot;Condition - multi signal&quot;</span> {</span>
+<span class="line" id="L432"><span class="tok-kw">test</span> <span class="tok-str">&quot;multi signal&quot;</span> {</span>
 <span class="line" id="L433">    <span class="tok-comment">// This test requires spawning threads</span>
 </span>
 <span class="line" id="L434">    <span class="tok-kw">if</span> (builtin.single_threaded) {</span>
@@ -670,7 +670,7 @@
 <span class="line" id="L491">    }</span>
 <span class="line" id="L492">}</span>
 <span class="line" id="L493"></span>
-<span class="line" id="L494"><span class="tok-kw">test</span> <span class="tok-str">&quot;Condition - broadcasting&quot;</span> {</span>
+<span class="line" id="L494"><span class="tok-kw">test</span> broadcast {</span>
 <span class="line" id="L495">    <span class="tok-comment">// This test requires spawning threads</span>
 </span>
 <span class="line" id="L496">    <span class="tok-kw">if</span> (builtin.single_threaded) {</span>
@@ -743,7 +743,7 @@
 <span class="line" id="L557">    }</span>
 <span class="line" id="L558">}</span>
 <span class="line" id="L559"></span>
-<span class="line" id="L560"><span class="tok-kw">test</span> <span class="tok-str">&quot;Condition - broadcasting - wake all threads&quot;</span> {</span>
+<span class="line" id="L560"><span class="tok-kw">test</span> <span class="tok-str">&quot;broadcasting - wake all threads&quot;</span> {</span>
 <span class="line" id="L561">    <span class="tok-comment">// Tests issue #12877</span>
 </span>
 <span class="line" id="L562">    <span class="tok-comment">// This test requires spawning threads</span>

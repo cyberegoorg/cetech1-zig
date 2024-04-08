@@ -320,79 +320,100 @@
 <span class="line" id="L178">}</span>
 <span class="line" id="L179"></span>
 <span class="line" id="L180"><span class="tok-kw">fn</span> <span class="tok-fn">isOddInteger</span>(x: <span class="tok-type">f64</span>) <span class="tok-type">bool</span> {</span>
-<span class="line" id="L181">    <span class="tok-kw">const</span> r = math.modf(x);</span>
-<span class="line" id="L182">    <span class="tok-kw">return</span> r.fpart == <span class="tok-number">0.0</span> <span class="tok-kw">and</span> <span class="tok-builtin">@as</span>(<span class="tok-type">i64</span>, <span class="tok-builtin">@intFromFloat</span>(r.ipart)) &amp; <span class="tok-number">1</span> == <span class="tok-number">1</span>;</span>
-<span class="line" id="L183">}</span>
-<span class="line" id="L184"></span>
-<span class="line" id="L185"><span class="tok-kw">test</span> <span class="tok-str">&quot;math.pow&quot;</span> {</span>
-<span class="line" id="L186">    <span class="tok-kw">const</span> epsilon = <span class="tok-number">0.000001</span>;</span>
-<span class="line" id="L187"></span>
-<span class="line" id="L188">    <span class="tok-kw">try</span> expect(math.approxEqAbs(<span class="tok-type">f32</span>, pow(<span class="tok-type">f32</span>, <span class="tok-number">0.0</span>, <span class="tok-number">3.3</span>), <span class="tok-number">0.0</span>, epsilon));</span>
-<span class="line" id="L189">    <span class="tok-kw">try</span> expect(math.approxEqAbs(<span class="tok-type">f32</span>, pow(<span class="tok-type">f32</span>, <span class="tok-number">0.8923</span>, <span class="tok-number">3.3</span>), <span class="tok-number">0.686572</span>, epsilon));</span>
-<span class="line" id="L190">    <span class="tok-kw">try</span> expect(math.approxEqAbs(<span class="tok-type">f32</span>, pow(<span class="tok-type">f32</span>, <span class="tok-number">0.2</span>, <span class="tok-number">3.3</span>), <span class="tok-number">0.004936</span>, epsilon));</span>
-<span class="line" id="L191">    <span class="tok-kw">try</span> expect(math.approxEqAbs(<span class="tok-type">f32</span>, pow(<span class="tok-type">f32</span>, <span class="tok-number">1.5</span>, <span class="tok-number">3.3</span>), <span class="tok-number">3.811546</span>, epsilon));</span>
-<span class="line" id="L192">    <span class="tok-kw">try</span> expect(math.approxEqAbs(<span class="tok-type">f32</span>, pow(<span class="tok-type">f32</span>, <span class="tok-number">37.45</span>, <span class="tok-number">3.3</span>), <span class="tok-number">155736.703125</span>, epsilon));</span>
-<span class="line" id="L193">    <span class="tok-kw">try</span> expect(math.approxEqAbs(<span class="tok-type">f32</span>, pow(<span class="tok-type">f32</span>, <span class="tok-number">89.123</span>, <span class="tok-number">3.3</span>), <span class="tok-number">2722489.5</span>, epsilon));</span>
-<span class="line" id="L194"></span>
-<span class="line" id="L195">    <span class="tok-kw">try</span> expect(math.approxEqAbs(<span class="tok-type">f64</span>, pow(<span class="tok-type">f64</span>, <span class="tok-number">0.0</span>, <span class="tok-number">3.3</span>), <span class="tok-number">0.0</span>, epsilon));</span>
-<span class="line" id="L196">    <span class="tok-kw">try</span> expect(math.approxEqAbs(<span class="tok-type">f64</span>, pow(<span class="tok-type">f64</span>, <span class="tok-number">0.8923</span>, <span class="tok-number">3.3</span>), <span class="tok-number">0.686572</span>, epsilon));</span>
-<span class="line" id="L197">    <span class="tok-kw">try</span> expect(math.approxEqAbs(<span class="tok-type">f64</span>, pow(<span class="tok-type">f64</span>, <span class="tok-number">0.2</span>, <span class="tok-number">3.3</span>), <span class="tok-number">0.004936</span>, epsilon));</span>
-<span class="line" id="L198">    <span class="tok-kw">try</span> expect(math.approxEqAbs(<span class="tok-type">f64</span>, pow(<span class="tok-type">f64</span>, <span class="tok-number">1.5</span>, <span class="tok-number">3.3</span>), <span class="tok-number">3.811546</span>, epsilon));</span>
-<span class="line" id="L199">    <span class="tok-kw">try</span> expect(math.approxEqAbs(<span class="tok-type">f64</span>, pow(<span class="tok-type">f64</span>, <span class="tok-number">37.45</span>, <span class="tok-number">3.3</span>), <span class="tok-number">155736.7160616</span>, epsilon));</span>
-<span class="line" id="L200">    <span class="tok-kw">try</span> expect(math.approxEqAbs(<span class="tok-type">f64</span>, pow(<span class="tok-type">f64</span>, <span class="tok-number">89.123</span>, <span class="tok-number">3.3</span>), <span class="tok-number">2722490.231436</span>, epsilon));</span>
-<span class="line" id="L201">}</span>
-<span class="line" id="L202"></span>
-<span class="line" id="L203"><span class="tok-kw">test</span> <span class="tok-str">&quot;math.pow.special&quot;</span> {</span>
-<span class="line" id="L204">    <span class="tok-kw">const</span> epsilon = <span class="tok-number">0.000001</span>;</span>
-<span class="line" id="L205"></span>
-<span class="line" id="L206">    <span class="tok-kw">try</span> expect(pow(<span class="tok-type">f32</span>, <span class="tok-number">4</span>, <span class="tok-number">0.0</span>) == <span class="tok-number">1.0</span>);</span>
-<span class="line" id="L207">    <span class="tok-kw">try</span> expect(pow(<span class="tok-type">f32</span>, <span class="tok-number">7</span>, -<span class="tok-number">0.0</span>) == <span class="tok-number">1.0</span>);</span>
-<span class="line" id="L208">    <span class="tok-kw">try</span> expect(pow(<span class="tok-type">f32</span>, <span class="tok-number">45</span>, <span class="tok-number">1.0</span>) == <span class="tok-number">45</span>);</span>
-<span class="line" id="L209">    <span class="tok-kw">try</span> expect(pow(<span class="tok-type">f32</span>, -<span class="tok-number">45</span>, <span class="tok-number">1.0</span>) == -<span class="tok-number">45</span>);</span>
-<span class="line" id="L210">    <span class="tok-kw">try</span> expect(math.isNan(pow(<span class="tok-type">f32</span>, math.nan(<span class="tok-type">f32</span>), <span class="tok-number">5.0</span>)));</span>
-<span class="line" id="L211">    <span class="tok-kw">try</span> expect(math.isPositiveInf(pow(<span class="tok-type">f32</span>, -math.inf(<span class="tok-type">f32</span>), <span class="tok-number">0.5</span>)));</span>
-<span class="line" id="L212">    <span class="tok-kw">try</span> expect(math.isPositiveInf(pow(<span class="tok-type">f32</span>, -<span class="tok-number">0.0</span>, -<span class="tok-number">0.5</span>)));</span>
-<span class="line" id="L213">    <span class="tok-kw">try</span> expect(pow(<span class="tok-type">f32</span>, -<span class="tok-number">0.0</span>, <span class="tok-number">0.5</span>) == <span class="tok-number">0</span>);</span>
-<span class="line" id="L214">    <span class="tok-kw">try</span> expect(math.isNan(pow(<span class="tok-type">f32</span>, <span class="tok-number">5.0</span>, math.nan(<span class="tok-type">f32</span>))));</span>
-<span class="line" id="L215">    <span class="tok-kw">try</span> expect(math.isPositiveInf(pow(<span class="tok-type">f32</span>, <span class="tok-number">0.0</span>, -<span class="tok-number">1.0</span>)));</span>
-<span class="line" id="L216">    <span class="tok-comment">//expect(math.isNegativeInf(pow(f32, -0.0, -3.0))); TODO is this required?</span>
+<span class="line" id="L181">    <span class="tok-kw">if</span> (<span class="tok-builtin">@abs</span>(x) &gt;= <span class="tok-number">1</span> &lt;&lt; <span class="tok-number">53</span>) {</span>
+<span class="line" id="L182">        <span class="tok-comment">// From https://golang.org/src/math/pow.go</span>
 </span>
-<span class="line" id="L217">    <span class="tok-kw">try</span> expect(math.isPositiveInf(pow(<span class="tok-type">f32</span>, <span class="tok-number">0.0</span>, -math.inf(<span class="tok-type">f32</span>))));</span>
-<span class="line" id="L218">    <span class="tok-kw">try</span> expect(math.isPositiveInf(pow(<span class="tok-type">f32</span>, -<span class="tok-number">0.0</span>, -math.inf(<span class="tok-type">f32</span>))));</span>
-<span class="line" id="L219">    <span class="tok-kw">try</span> expect(pow(<span class="tok-type">f32</span>, <span class="tok-number">0.0</span>, math.inf(<span class="tok-type">f32</span>)) == <span class="tok-number">0.0</span>);</span>
-<span class="line" id="L220">    <span class="tok-kw">try</span> expect(pow(<span class="tok-type">f32</span>, -<span class="tok-number">0.0</span>, math.inf(<span class="tok-type">f32</span>)) == <span class="tok-number">0.0</span>);</span>
-<span class="line" id="L221">    <span class="tok-kw">try</span> expect(math.isPositiveInf(pow(<span class="tok-type">f32</span>, <span class="tok-number">0.0</span>, -<span class="tok-number">2.0</span>)));</span>
-<span class="line" id="L222">    <span class="tok-kw">try</span> expect(math.isPositiveInf(pow(<span class="tok-type">f32</span>, -<span class="tok-number">0.0</span>, -<span class="tok-number">2.0</span>)));</span>
-<span class="line" id="L223">    <span class="tok-kw">try</span> expect(pow(<span class="tok-type">f32</span>, <span class="tok-number">0.0</span>, <span class="tok-number">1.0</span>) == <span class="tok-number">0.0</span>);</span>
-<span class="line" id="L224">    <span class="tok-kw">try</span> expect(pow(<span class="tok-type">f32</span>, -<span class="tok-number">0.0</span>, <span class="tok-number">1.0</span>) == -<span class="tok-number">0.0</span>);</span>
-<span class="line" id="L225">    <span class="tok-kw">try</span> expect(pow(<span class="tok-type">f32</span>, <span class="tok-number">0.0</span>, <span class="tok-number">2.0</span>) == <span class="tok-number">0.0</span>);</span>
-<span class="line" id="L226">    <span class="tok-kw">try</span> expect(pow(<span class="tok-type">f32</span>, -<span class="tok-number">0.0</span>, <span class="tok-number">2.0</span>) == <span class="tok-number">0.0</span>);</span>
-<span class="line" id="L227">    <span class="tok-kw">try</span> expect(math.approxEqAbs(<span class="tok-type">f32</span>, pow(<span class="tok-type">f32</span>, -<span class="tok-number">1.0</span>, math.inf(<span class="tok-type">f32</span>)), <span class="tok-number">1.0</span>, epsilon));</span>
-<span class="line" id="L228">    <span class="tok-kw">try</span> expect(math.approxEqAbs(<span class="tok-type">f32</span>, pow(<span class="tok-type">f32</span>, -<span class="tok-number">1.0</span>, -math.inf(<span class="tok-type">f32</span>)), <span class="tok-number">1.0</span>, epsilon));</span>
-<span class="line" id="L229">    <span class="tok-kw">try</span> expect(math.isPositiveInf(pow(<span class="tok-type">f32</span>, <span class="tok-number">1.2</span>, math.inf(<span class="tok-type">f32</span>))));</span>
-<span class="line" id="L230">    <span class="tok-kw">try</span> expect(math.isPositiveInf(pow(<span class="tok-type">f32</span>, -<span class="tok-number">1.2</span>, math.inf(<span class="tok-type">f32</span>))));</span>
-<span class="line" id="L231">    <span class="tok-kw">try</span> expect(pow(<span class="tok-type">f32</span>, <span class="tok-number">1.2</span>, -math.inf(<span class="tok-type">f32</span>)) == <span class="tok-number">0.0</span>);</span>
-<span class="line" id="L232">    <span class="tok-kw">try</span> expect(pow(<span class="tok-type">f32</span>, -<span class="tok-number">1.2</span>, -math.inf(<span class="tok-type">f32</span>)) == <span class="tok-number">0.0</span>);</span>
-<span class="line" id="L233">    <span class="tok-kw">try</span> expect(pow(<span class="tok-type">f32</span>, <span class="tok-number">0.2</span>, math.inf(<span class="tok-type">f32</span>)) == <span class="tok-number">0.0</span>);</span>
-<span class="line" id="L234">    <span class="tok-kw">try</span> expect(pow(<span class="tok-type">f32</span>, -<span class="tok-number">0.2</span>, math.inf(<span class="tok-type">f32</span>)) == <span class="tok-number">0.0</span>);</span>
-<span class="line" id="L235">    <span class="tok-kw">try</span> expect(math.isPositiveInf(pow(<span class="tok-type">f32</span>, <span class="tok-number">0.2</span>, -math.inf(<span class="tok-type">f32</span>))));</span>
-<span class="line" id="L236">    <span class="tok-kw">try</span> expect(math.isPositiveInf(pow(<span class="tok-type">f32</span>, -<span class="tok-number">0.2</span>, -math.inf(<span class="tok-type">f32</span>))));</span>
-<span class="line" id="L237">    <span class="tok-kw">try</span> expect(math.isPositiveInf(pow(<span class="tok-type">f32</span>, math.inf(<span class="tok-type">f32</span>), <span class="tok-number">1.0</span>)));</span>
-<span class="line" id="L238">    <span class="tok-kw">try</span> expect(pow(<span class="tok-type">f32</span>, math.inf(<span class="tok-type">f32</span>), -<span class="tok-number">1.0</span>) == <span class="tok-number">0.0</span>);</span>
-<span class="line" id="L239">    <span class="tok-comment">//expect(pow(f32, -math.inf(f32), 5.0) == pow(f32, -0.0, -5.0)); TODO support negative 0?</span>
+<span class="line" id="L183">        <span class="tok-comment">// 1 &lt;&lt; 53 is the largest exact integer in the float64 format.</span>
 </span>
-<span class="line" id="L240">    <span class="tok-kw">try</span> expect(pow(<span class="tok-type">f32</span>, -math.inf(<span class="tok-type">f32</span>), -<span class="tok-number">5.2</span>) == pow(<span class="tok-type">f32</span>, -<span class="tok-number">0.0</span>, <span class="tok-number">5.2</span>));</span>
-<span class="line" id="L241">    <span class="tok-kw">try</span> expect(math.isNan(pow(<span class="tok-type">f32</span>, -<span class="tok-number">1.0</span>, <span class="tok-number">1.2</span>)));</span>
-<span class="line" id="L242">    <span class="tok-kw">try</span> expect(math.isNan(pow(<span class="tok-type">f32</span>, -<span class="tok-number">12.4</span>, <span class="tok-number">78.5</span>)));</span>
-<span class="line" id="L243">}</span>
-<span class="line" id="L244"></span>
-<span class="line" id="L245"><span class="tok-kw">test</span> <span class="tok-str">&quot;math.pow.overflow&quot;</span> {</span>
-<span class="line" id="L246">    <span class="tok-kw">try</span> expect(math.isPositiveInf(pow(<span class="tok-type">f64</span>, <span class="tok-number">2</span>, <span class="tok-number">1</span> &lt;&lt; <span class="tok-number">32</span>)));</span>
-<span class="line" id="L247">    <span class="tok-kw">try</span> expect(pow(<span class="tok-type">f64</span>, <span class="tok-number">2</span>, -(<span class="tok-number">1</span> &lt;&lt; <span class="tok-number">32</span>)) == <span class="tok-number">0</span>);</span>
-<span class="line" id="L248">    <span class="tok-kw">try</span> expect(math.isNegativeInf(pow(<span class="tok-type">f64</span>, -<span class="tok-number">2</span>, (<span class="tok-number">1</span> &lt;&lt; <span class="tok-number">32</span>) + <span class="tok-number">1</span>)));</span>
-<span class="line" id="L249">    <span class="tok-kw">try</span> expect(pow(<span class="tok-type">f64</span>, <span class="tok-number">0.5</span>, <span class="tok-number">1</span> &lt;&lt; <span class="tok-number">45</span>) == <span class="tok-number">0</span>);</span>
-<span class="line" id="L250">    <span class="tok-kw">try</span> expect(math.isPositiveInf(pow(<span class="tok-type">f64</span>, <span class="tok-number">0.5</span>, -(<span class="tok-number">1</span> &lt;&lt; <span class="tok-number">45</span>))));</span>
-<span class="line" id="L251">}</span>
-<span class="line" id="L252"></span>
+<span class="line" id="L184">        <span class="tok-comment">// Any number outside this range will be truncated before the decimal point and therefore will always be</span>
+</span>
+<span class="line" id="L185">        <span class="tok-comment">// an even integer.</span>
+</span>
+<span class="line" id="L186">        <span class="tok-comment">// Without this check and if x overflows i64 the @intFromFloat(r.ipart) conversion below will panic</span>
+</span>
+<span class="line" id="L187">        <span class="tok-kw">return</span> <span class="tok-null">false</span>;</span>
+<span class="line" id="L188">    }</span>
+<span class="line" id="L189">    <span class="tok-kw">const</span> r = math.modf(x);</span>
+<span class="line" id="L190">    <span class="tok-kw">return</span> r.fpart == <span class="tok-number">0.0</span> <span class="tok-kw">and</span> <span class="tok-builtin">@as</span>(<span class="tok-type">i64</span>, <span class="tok-builtin">@intFromFloat</span>(r.ipart)) &amp; <span class="tok-number">1</span> == <span class="tok-number">1</span>;</span>
+<span class="line" id="L191">}</span>
+<span class="line" id="L192"></span>
+<span class="line" id="L193"><span class="tok-kw">test</span> isOddInteger {</span>
+<span class="line" id="L194">    <span class="tok-kw">try</span> expect(isOddInteger(math.maxInt(<span class="tok-type">i64</span>) * <span class="tok-number">2</span>) == <span class="tok-null">false</span>);</span>
+<span class="line" id="L195">    <span class="tok-kw">try</span> expect(isOddInteger(math.maxInt(<span class="tok-type">i64</span>) * <span class="tok-number">2</span> + <span class="tok-number">1</span>) == <span class="tok-null">false</span>);</span>
+<span class="line" id="L196">    <span class="tok-kw">try</span> expect(isOddInteger(<span class="tok-number">1</span> &lt;&lt; <span class="tok-number">53</span>) == <span class="tok-null">false</span>);</span>
+<span class="line" id="L197">    <span class="tok-kw">try</span> expect(isOddInteger(<span class="tok-number">12.0</span>) == <span class="tok-null">false</span>);</span>
+<span class="line" id="L198">    <span class="tok-kw">try</span> expect(isOddInteger(<span class="tok-number">15.0</span>) == <span class="tok-null">true</span>);</span>
+<span class="line" id="L199">}</span>
+<span class="line" id="L200"></span>
+<span class="line" id="L201"><span class="tok-kw">test</span> pow {</span>
+<span class="line" id="L202">    <span class="tok-kw">const</span> epsilon = <span class="tok-number">0.000001</span>;</span>
+<span class="line" id="L203"></span>
+<span class="line" id="L204">    <span class="tok-kw">try</span> expect(math.approxEqAbs(<span class="tok-type">f32</span>, pow(<span class="tok-type">f32</span>, <span class="tok-number">0.0</span>, <span class="tok-number">3.3</span>), <span class="tok-number">0.0</span>, epsilon));</span>
+<span class="line" id="L205">    <span class="tok-kw">try</span> expect(math.approxEqAbs(<span class="tok-type">f32</span>, pow(<span class="tok-type">f32</span>, <span class="tok-number">0.8923</span>, <span class="tok-number">3.3</span>), <span class="tok-number">0.686572</span>, epsilon));</span>
+<span class="line" id="L206">    <span class="tok-kw">try</span> expect(math.approxEqAbs(<span class="tok-type">f32</span>, pow(<span class="tok-type">f32</span>, <span class="tok-number">0.2</span>, <span class="tok-number">3.3</span>), <span class="tok-number">0.004936</span>, epsilon));</span>
+<span class="line" id="L207">    <span class="tok-kw">try</span> expect(math.approxEqAbs(<span class="tok-type">f32</span>, pow(<span class="tok-type">f32</span>, <span class="tok-number">1.5</span>, <span class="tok-number">3.3</span>), <span class="tok-number">3.811546</span>, epsilon));</span>
+<span class="line" id="L208">    <span class="tok-kw">try</span> expect(math.approxEqAbs(<span class="tok-type">f32</span>, pow(<span class="tok-type">f32</span>, <span class="tok-number">37.45</span>, <span class="tok-number">3.3</span>), <span class="tok-number">155736.703125</span>, epsilon));</span>
+<span class="line" id="L209">    <span class="tok-kw">try</span> expect(math.approxEqAbs(<span class="tok-type">f32</span>, pow(<span class="tok-type">f32</span>, <span class="tok-number">89.123</span>, <span class="tok-number">3.3</span>), <span class="tok-number">2722489.5</span>, epsilon));</span>
+<span class="line" id="L210"></span>
+<span class="line" id="L211">    <span class="tok-kw">try</span> expect(math.approxEqAbs(<span class="tok-type">f64</span>, pow(<span class="tok-type">f64</span>, <span class="tok-number">0.0</span>, <span class="tok-number">3.3</span>), <span class="tok-number">0.0</span>, epsilon));</span>
+<span class="line" id="L212">    <span class="tok-kw">try</span> expect(math.approxEqAbs(<span class="tok-type">f64</span>, pow(<span class="tok-type">f64</span>, <span class="tok-number">0.8923</span>, <span class="tok-number">3.3</span>), <span class="tok-number">0.686572</span>, epsilon));</span>
+<span class="line" id="L213">    <span class="tok-kw">try</span> expect(math.approxEqAbs(<span class="tok-type">f64</span>, pow(<span class="tok-type">f64</span>, <span class="tok-number">0.2</span>, <span class="tok-number">3.3</span>), <span class="tok-number">0.004936</span>, epsilon));</span>
+<span class="line" id="L214">    <span class="tok-kw">try</span> expect(math.approxEqAbs(<span class="tok-type">f64</span>, pow(<span class="tok-type">f64</span>, <span class="tok-number">1.5</span>, <span class="tok-number">3.3</span>), <span class="tok-number">3.811546</span>, epsilon));</span>
+<span class="line" id="L215">    <span class="tok-kw">try</span> expect(math.approxEqAbs(<span class="tok-type">f64</span>, pow(<span class="tok-type">f64</span>, <span class="tok-number">37.45</span>, <span class="tok-number">3.3</span>), <span class="tok-number">155736.7160616</span>, epsilon));</span>
+<span class="line" id="L216">    <span class="tok-kw">try</span> expect(math.approxEqAbs(<span class="tok-type">f64</span>, pow(<span class="tok-type">f64</span>, <span class="tok-number">89.123</span>, <span class="tok-number">3.3</span>), <span class="tok-number">2722490.231436</span>, epsilon));</span>
+<span class="line" id="L217">}</span>
+<span class="line" id="L218"></span>
+<span class="line" id="L219"><span class="tok-kw">test</span> <span class="tok-str">&quot;special&quot;</span> {</span>
+<span class="line" id="L220">    <span class="tok-kw">const</span> epsilon = <span class="tok-number">0.000001</span>;</span>
+<span class="line" id="L221"></span>
+<span class="line" id="L222">    <span class="tok-kw">try</span> expect(pow(<span class="tok-type">f32</span>, <span class="tok-number">4</span>, <span class="tok-number">0.0</span>) == <span class="tok-number">1.0</span>);</span>
+<span class="line" id="L223">    <span class="tok-kw">try</span> expect(pow(<span class="tok-type">f32</span>, <span class="tok-number">7</span>, -<span class="tok-number">0.0</span>) == <span class="tok-number">1.0</span>);</span>
+<span class="line" id="L224">    <span class="tok-kw">try</span> expect(pow(<span class="tok-type">f32</span>, <span class="tok-number">45</span>, <span class="tok-number">1.0</span>) == <span class="tok-number">45</span>);</span>
+<span class="line" id="L225">    <span class="tok-kw">try</span> expect(pow(<span class="tok-type">f32</span>, -<span class="tok-number">45</span>, <span class="tok-number">1.0</span>) == -<span class="tok-number">45</span>);</span>
+<span class="line" id="L226">    <span class="tok-kw">try</span> expect(math.isNan(pow(<span class="tok-type">f32</span>, math.nan(<span class="tok-type">f32</span>), <span class="tok-number">5.0</span>)));</span>
+<span class="line" id="L227">    <span class="tok-kw">try</span> expect(math.isPositiveInf(pow(<span class="tok-type">f32</span>, -math.inf(<span class="tok-type">f32</span>), <span class="tok-number">0.5</span>)));</span>
+<span class="line" id="L228">    <span class="tok-kw">try</span> expect(math.isPositiveInf(pow(<span class="tok-type">f32</span>, -<span class="tok-number">0.0</span>, -<span class="tok-number">0.5</span>)));</span>
+<span class="line" id="L229">    <span class="tok-kw">try</span> expect(pow(<span class="tok-type">f32</span>, -<span class="tok-number">0.0</span>, <span class="tok-number">0.5</span>) == <span class="tok-number">0</span>);</span>
+<span class="line" id="L230">    <span class="tok-kw">try</span> expect(math.isNan(pow(<span class="tok-type">f32</span>, <span class="tok-number">5.0</span>, math.nan(<span class="tok-type">f32</span>))));</span>
+<span class="line" id="L231">    <span class="tok-kw">try</span> expect(math.isPositiveInf(pow(<span class="tok-type">f32</span>, <span class="tok-number">0.0</span>, -<span class="tok-number">1.0</span>)));</span>
+<span class="line" id="L232">    <span class="tok-comment">//expect(math.isNegativeInf(pow(f32, -0.0, -3.0))); TODO is this required?</span>
+</span>
+<span class="line" id="L233">    <span class="tok-kw">try</span> expect(math.isPositiveInf(pow(<span class="tok-type">f32</span>, <span class="tok-number">0.0</span>, -math.inf(<span class="tok-type">f32</span>))));</span>
+<span class="line" id="L234">    <span class="tok-kw">try</span> expect(math.isPositiveInf(pow(<span class="tok-type">f32</span>, -<span class="tok-number">0.0</span>, -math.inf(<span class="tok-type">f32</span>))));</span>
+<span class="line" id="L235">    <span class="tok-kw">try</span> expect(pow(<span class="tok-type">f32</span>, <span class="tok-number">0.0</span>, math.inf(<span class="tok-type">f32</span>)) == <span class="tok-number">0.0</span>);</span>
+<span class="line" id="L236">    <span class="tok-kw">try</span> expect(pow(<span class="tok-type">f32</span>, -<span class="tok-number">0.0</span>, math.inf(<span class="tok-type">f32</span>)) == <span class="tok-number">0.0</span>);</span>
+<span class="line" id="L237">    <span class="tok-kw">try</span> expect(math.isPositiveInf(pow(<span class="tok-type">f32</span>, <span class="tok-number">0.0</span>, -<span class="tok-number">2.0</span>)));</span>
+<span class="line" id="L238">    <span class="tok-kw">try</span> expect(math.isPositiveInf(pow(<span class="tok-type">f32</span>, -<span class="tok-number">0.0</span>, -<span class="tok-number">2.0</span>)));</span>
+<span class="line" id="L239">    <span class="tok-kw">try</span> expect(pow(<span class="tok-type">f32</span>, <span class="tok-number">0.0</span>, <span class="tok-number">1.0</span>) == <span class="tok-number">0.0</span>);</span>
+<span class="line" id="L240">    <span class="tok-kw">try</span> expect(pow(<span class="tok-type">f32</span>, -<span class="tok-number">0.0</span>, <span class="tok-number">1.0</span>) == -<span class="tok-number">0.0</span>);</span>
+<span class="line" id="L241">    <span class="tok-kw">try</span> expect(pow(<span class="tok-type">f32</span>, <span class="tok-number">0.0</span>, <span class="tok-number">2.0</span>) == <span class="tok-number">0.0</span>);</span>
+<span class="line" id="L242">    <span class="tok-kw">try</span> expect(pow(<span class="tok-type">f32</span>, -<span class="tok-number">0.0</span>, <span class="tok-number">2.0</span>) == <span class="tok-number">0.0</span>);</span>
+<span class="line" id="L243">    <span class="tok-kw">try</span> expect(math.approxEqAbs(<span class="tok-type">f32</span>, pow(<span class="tok-type">f32</span>, -<span class="tok-number">1.0</span>, math.inf(<span class="tok-type">f32</span>)), <span class="tok-number">1.0</span>, epsilon));</span>
+<span class="line" id="L244">    <span class="tok-kw">try</span> expect(math.approxEqAbs(<span class="tok-type">f32</span>, pow(<span class="tok-type">f32</span>, -<span class="tok-number">1.0</span>, -math.inf(<span class="tok-type">f32</span>)), <span class="tok-number">1.0</span>, epsilon));</span>
+<span class="line" id="L245">    <span class="tok-kw">try</span> expect(math.isPositiveInf(pow(<span class="tok-type">f32</span>, <span class="tok-number">1.2</span>, math.inf(<span class="tok-type">f32</span>))));</span>
+<span class="line" id="L246">    <span class="tok-kw">try</span> expect(math.isPositiveInf(pow(<span class="tok-type">f32</span>, -<span class="tok-number">1.2</span>, math.inf(<span class="tok-type">f32</span>))));</span>
+<span class="line" id="L247">    <span class="tok-kw">try</span> expect(pow(<span class="tok-type">f32</span>, <span class="tok-number">1.2</span>, -math.inf(<span class="tok-type">f32</span>)) == <span class="tok-number">0.0</span>);</span>
+<span class="line" id="L248">    <span class="tok-kw">try</span> expect(pow(<span class="tok-type">f32</span>, -<span class="tok-number">1.2</span>, -math.inf(<span class="tok-type">f32</span>)) == <span class="tok-number">0.0</span>);</span>
+<span class="line" id="L249">    <span class="tok-kw">try</span> expect(pow(<span class="tok-type">f32</span>, <span class="tok-number">0.2</span>, math.inf(<span class="tok-type">f32</span>)) == <span class="tok-number">0.0</span>);</span>
+<span class="line" id="L250">    <span class="tok-kw">try</span> expect(pow(<span class="tok-type">f32</span>, -<span class="tok-number">0.2</span>, math.inf(<span class="tok-type">f32</span>)) == <span class="tok-number">0.0</span>);</span>
+<span class="line" id="L251">    <span class="tok-kw">try</span> expect(math.isPositiveInf(pow(<span class="tok-type">f32</span>, <span class="tok-number">0.2</span>, -math.inf(<span class="tok-type">f32</span>))));</span>
+<span class="line" id="L252">    <span class="tok-kw">try</span> expect(math.isPositiveInf(pow(<span class="tok-type">f32</span>, -<span class="tok-number">0.2</span>, -math.inf(<span class="tok-type">f32</span>))));</span>
+<span class="line" id="L253">    <span class="tok-kw">try</span> expect(math.isPositiveInf(pow(<span class="tok-type">f32</span>, math.inf(<span class="tok-type">f32</span>), <span class="tok-number">1.0</span>)));</span>
+<span class="line" id="L254">    <span class="tok-kw">try</span> expect(pow(<span class="tok-type">f32</span>, math.inf(<span class="tok-type">f32</span>), -<span class="tok-number">1.0</span>) == <span class="tok-number">0.0</span>);</span>
+<span class="line" id="L255">    <span class="tok-comment">//expect(pow(f32, -math.inf(f32), 5.0) == pow(f32, -0.0, -5.0)); TODO support negative 0?</span>
+</span>
+<span class="line" id="L256">    <span class="tok-kw">try</span> expect(pow(<span class="tok-type">f32</span>, -math.inf(<span class="tok-type">f32</span>), -<span class="tok-number">5.2</span>) == pow(<span class="tok-type">f32</span>, -<span class="tok-number">0.0</span>, <span class="tok-number">5.2</span>));</span>
+<span class="line" id="L257">    <span class="tok-kw">try</span> expect(math.isNan(pow(<span class="tok-type">f32</span>, -<span class="tok-number">1.0</span>, <span class="tok-number">1.2</span>)));</span>
+<span class="line" id="L258">    <span class="tok-kw">try</span> expect(math.isNan(pow(<span class="tok-type">f32</span>, -<span class="tok-number">12.4</span>, <span class="tok-number">78.5</span>)));</span>
+<span class="line" id="L259">}</span>
+<span class="line" id="L260"></span>
+<span class="line" id="L261"><span class="tok-kw">test</span> <span class="tok-str">&quot;overflow&quot;</span> {</span>
+<span class="line" id="L262">    <span class="tok-kw">try</span> expect(math.isPositiveInf(pow(<span class="tok-type">f64</span>, <span class="tok-number">2</span>, <span class="tok-number">1</span> &lt;&lt; <span class="tok-number">32</span>)));</span>
+<span class="line" id="L263">    <span class="tok-kw">try</span> expect(pow(<span class="tok-type">f64</span>, <span class="tok-number">2</span>, -(<span class="tok-number">1</span> &lt;&lt; <span class="tok-number">32</span>)) == <span class="tok-number">0</span>);</span>
+<span class="line" id="L264">    <span class="tok-kw">try</span> expect(math.isNegativeInf(pow(<span class="tok-type">f64</span>, -<span class="tok-number">2</span>, (<span class="tok-number">1</span> &lt;&lt; <span class="tok-number">32</span>) + <span class="tok-number">1</span>)));</span>
+<span class="line" id="L265">    <span class="tok-kw">try</span> expect(pow(<span class="tok-type">f64</span>, <span class="tok-number">0.5</span>, <span class="tok-number">1</span> &lt;&lt; <span class="tok-number">45</span>) == <span class="tok-number">0</span>);</span>
+<span class="line" id="L266">    <span class="tok-kw">try</span> expect(math.isPositiveInf(pow(<span class="tok-type">f64</span>, <span class="tok-number">0.5</span>, -(<span class="tok-number">1</span> &lt;&lt; <span class="tok-number">45</span>))));</span>
+<span class="line" id="L267">}</span>
+<span class="line" id="L268"></span>
 </code></pre></body>
 </html>

@@ -875,7 +875,7 @@
 <span class="line" id="L758">    };</span>
 <span class="line" id="L759">}</span>
 <span class="line" id="L760"></span>
-<span class="line" id="L761"><span class="tok-kw">test</span> <span class="tok-str">&quot;chacha20 AEAD API&quot;</span> {</span>
+<span class="line" id="L761"><span class="tok-kw">test</span> <span class="tok-str">&quot;AEAD API&quot;</span> {</span>
 <span class="line" id="L762">    <span class="tok-kw">const</span> aeads = [_]<span class="tok-type">type</span>{ ChaCha20Poly1305, XChaCha20Poly1305 };</span>
 <span class="line" id="L763">    <span class="tok-kw">const</span> m = <span class="tok-str">&quot;Ladies and Gentlemen of the class of '99: If I could offer you only one tip for the future, sunscreen would be it.&quot;</span>;</span>
 <span class="line" id="L764">    <span class="tok-kw">const</span> ad = <span class="tok-str">&quot;Additional data&quot;</span>;</span>
@@ -897,7 +897,7 @@
 <span class="line" id="L780"></span>
 <span class="line" id="L781"><span class="tok-comment">// https://tools.ietf.org/html/rfc7539#section-2.4.2</span>
 </span>
-<span class="line" id="L782"><span class="tok-kw">test</span> <span class="tok-str">&quot;crypto.chacha20 test vector sunscreen&quot;</span> {</span>
+<span class="line" id="L782"><span class="tok-kw">test</span> <span class="tok-str">&quot;test vector sunscreen&quot;</span> {</span>
 <span class="line" id="L783">    <span class="tok-kw">const</span> expected_result = [_]<span class="tok-type">u8</span>{</span>
 <span class="line" id="L784">        <span class="tok-number">0x6e</span>, <span class="tok-number">0x2e</span>, <span class="tok-number">0x35</span>, <span class="tok-number">0x9a</span>, <span class="tok-number">0x25</span>, <span class="tok-number">0x68</span>, <span class="tok-number">0xf9</span>, <span class="tok-number">0x80</span>,</span>
 <span class="line" id="L785">        <span class="tok-number">0x41</span>, <span class="tok-number">0xba</span>, <span class="tok-number">0x07</span>, <span class="tok-number">0x28</span>, <span class="tok-number">0xdd</span>, <span class="tok-number">0x0d</span>, <span class="tok-number">0x69</span>, <span class="tok-number">0x81</span>,</span>
@@ -939,7 +939,7 @@
 <span class="line" id="L821"></span>
 <span class="line" id="L822"><span class="tok-comment">// https://tools.ietf.org/html/draft-agl-tls-chacha20poly1305-04#section-7</span>
 </span>
-<span class="line" id="L823"><span class="tok-kw">test</span> <span class="tok-str">&quot;crypto.chacha20 test vector 1&quot;</span> {</span>
+<span class="line" id="L823"><span class="tok-kw">test</span> <span class="tok-str">&quot;test vector 1&quot;</span> {</span>
 <span class="line" id="L824">    <span class="tok-kw">const</span> expected_result = [_]<span class="tok-type">u8</span>{</span>
 <span class="line" id="L825">        <span class="tok-number">0x76</span>, <span class="tok-number">0xb8</span>, <span class="tok-number">0xe0</span>, <span class="tok-number">0xad</span>, <span class="tok-number">0xa0</span>, <span class="tok-number">0xf1</span>, <span class="tok-number">0x3d</span>, <span class="tok-number">0x90</span>,</span>
 <span class="line" id="L826">        <span class="tok-number">0x40</span>, <span class="tok-number">0x5d</span>, <span class="tok-number">0x6a</span>, <span class="tok-number">0xe5</span>, <span class="tok-number">0x53</span>, <span class="tok-number">0x86</span>, <span class="tok-number">0xbd</span>, <span class="tok-number">0x28</span>,</span>
@@ -973,7 +973,7 @@
 <span class="line" id="L854">    <span class="tok-kw">try</span> testing.expectEqualSlices(<span class="tok-type">u8</span>, &amp;expected_result, &amp;result);</span>
 <span class="line" id="L855">}</span>
 <span class="line" id="L856"></span>
-<span class="line" id="L857"><span class="tok-kw">test</span> <span class="tok-str">&quot;crypto.chacha20 test vector 2&quot;</span> {</span>
+<span class="line" id="L857"><span class="tok-kw">test</span> <span class="tok-str">&quot;test vector 2&quot;</span> {</span>
 <span class="line" id="L858">    <span class="tok-kw">const</span> expected_result = [_]<span class="tok-type">u8</span>{</span>
 <span class="line" id="L859">        <span class="tok-number">0x45</span>, <span class="tok-number">0x40</span>, <span class="tok-number">0xf0</span>, <span class="tok-number">0x5a</span>, <span class="tok-number">0x9f</span>, <span class="tok-number">0x1f</span>, <span class="tok-number">0xb2</span>, <span class="tok-number">0x96</span>,</span>
 <span class="line" id="L860">        <span class="tok-number">0xd7</span>, <span class="tok-number">0x73</span>, <span class="tok-number">0x6e</span>, <span class="tok-number">0x7b</span>, <span class="tok-number">0x20</span>, <span class="tok-number">0x8e</span>, <span class="tok-number">0x3c</span>, <span class="tok-number">0x96</span>,</span>
@@ -1007,7 +1007,7 @@
 <span class="line" id="L888">    <span class="tok-kw">try</span> testing.expectEqualSlices(<span class="tok-type">u8</span>, &amp;expected_result, &amp;result);</span>
 <span class="line" id="L889">}</span>
 <span class="line" id="L890"></span>
-<span class="line" id="L891"><span class="tok-kw">test</span> <span class="tok-str">&quot;crypto.chacha20 test vector 3&quot;</span> {</span>
+<span class="line" id="L891"><span class="tok-kw">test</span> <span class="tok-str">&quot;test vector 3&quot;</span> {</span>
 <span class="line" id="L892">    <span class="tok-kw">const</span> expected_result = [_]<span class="tok-type">u8</span>{</span>
 <span class="line" id="L893">        <span class="tok-number">0xde</span>, <span class="tok-number">0x9c</span>, <span class="tok-number">0xba</span>, <span class="tok-number">0x7b</span>, <span class="tok-number">0xf3</span>, <span class="tok-number">0xd6</span>, <span class="tok-number">0x9e</span>, <span class="tok-number">0xf5</span>,</span>
 <span class="line" id="L894">        <span class="tok-number">0xe7</span>, <span class="tok-number">0x86</span>, <span class="tok-number">0xdc</span>, <span class="tok-number">0x63</span>, <span class="tok-number">0x97</span>, <span class="tok-number">0x3f</span>, <span class="tok-number">0x65</span>, <span class="tok-number">0x3a</span>,</span>
@@ -1041,7 +1041,7 @@
 <span class="line" id="L922">    <span class="tok-kw">try</span> testing.expectEqualSlices(<span class="tok-type">u8</span>, &amp;expected_result, &amp;result);</span>
 <span class="line" id="L923">}</span>
 <span class="line" id="L924"></span>
-<span class="line" id="L925"><span class="tok-kw">test</span> <span class="tok-str">&quot;crypto.chacha20 test vector 4&quot;</span> {</span>
+<span class="line" id="L925"><span class="tok-kw">test</span> <span class="tok-str">&quot;test vector 4&quot;</span> {</span>
 <span class="line" id="L926">    <span class="tok-kw">const</span> expected_result = [_]<span class="tok-type">u8</span>{</span>
 <span class="line" id="L927">        <span class="tok-number">0xef</span>, <span class="tok-number">0x3f</span>, <span class="tok-number">0xdf</span>, <span class="tok-number">0xd6</span>, <span class="tok-number">0xc6</span>, <span class="tok-number">0x15</span>, <span class="tok-number">0x78</span>, <span class="tok-number">0xfb</span>,</span>
 <span class="line" id="L928">        <span class="tok-number">0xf5</span>, <span class="tok-number">0xcf</span>, <span class="tok-number">0x35</span>, <span class="tok-number">0xbd</span>, <span class="tok-number">0x3d</span>, <span class="tok-number">0xd3</span>, <span class="tok-number">0x3b</span>, <span class="tok-number">0x80</span>,</span>
@@ -1075,7 +1075,7 @@
 <span class="line" id="L956">    <span class="tok-kw">try</span> testing.expectEqualSlices(<span class="tok-type">u8</span>, &amp;expected_result, &amp;result);</span>
 <span class="line" id="L957">}</span>
 <span class="line" id="L958"></span>
-<span class="line" id="L959"><span class="tok-kw">test</span> <span class="tok-str">&quot;crypto.chacha20 test vector 5&quot;</span> {</span>
+<span class="line" id="L959"><span class="tok-kw">test</span> <span class="tok-str">&quot;test vector 5&quot;</span> {</span>
 <span class="line" id="L960">    <span class="tok-kw">const</span> expected_result = [_]<span class="tok-type">u8</span>{</span>
 <span class="line" id="L961">        <span class="tok-number">0xf7</span>, <span class="tok-number">0x98</span>, <span class="tok-number">0xa1</span>, <span class="tok-number">0x89</span>, <span class="tok-number">0xf1</span>, <span class="tok-number">0x95</span>, <span class="tok-number">0xe6</span>, <span class="tok-number">0x69</span>,</span>
 <span class="line" id="L962">        <span class="tok-number">0x82</span>, <span class="tok-number">0x10</span>, <span class="tok-number">0x5f</span>, <span class="tok-number">0xfb</span>, <span class="tok-number">0x64</span>, <span class="tok-number">0x0b</span>, <span class="tok-number">0xb7</span>, <span class="tok-number">0x75</span>,</span>
@@ -1262,7 +1262,7 @@
 <span class="line" id="L1142">    }</span>
 <span class="line" id="L1143">}</span>
 <span class="line" id="L1144"></span>
-<span class="line" id="L1145"><span class="tok-kw">test</span> <span class="tok-str">&quot;crypto.xchacha20&quot;</span> {</span>
+<span class="line" id="L1145"><span class="tok-kw">test</span> <span class="tok-str">&quot;xchacha20&quot;</span> {</span>
 <span class="line" id="L1146">    <span class="tok-kw">const</span> key = [_]<span class="tok-type">u8</span>{<span class="tok-number">69</span>} ** <span class="tok-number">32</span>;</span>
 <span class="line" id="L1147">    <span class="tok-kw">const</span> nonce = [_]<span class="tok-type">u8</span>{<span class="tok-number">42</span>} ** <span class="tok-number">24</span>;</span>
 <span class="line" id="L1148">    <span class="tok-kw">const</span> m = <span class="tok-str">&quot;Ladies and Gentlemen of the class of '99: If I could offer you only one tip for the future, sunscreen would be it.&quot;</span>;</span>

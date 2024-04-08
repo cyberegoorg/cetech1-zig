@@ -1,16 +1,20 @@
-#/bin/bash
+#!/bin/bash
 
 cd "$(dirname "$0")"
 
 rm -rf tmp
+rm -rf doc
+rm -rf lib
 
 ZIG_VERSION="$(cat .zigversion)"
+BASE_URL="https://pkg.machengine.org/zig"
+#BASE_URL="https://ziglang.org/builds"
 
 function download_zig_all() {
     ARCH=$1
     OS=$2
     ZIG_ARCH="${ARCH}-${OS}"
-    TARBALL="https://pkg.machengine.org/zig/zig-${OS}-${ARCH}-${ZIG_VERSION}.tar.xz"
+    TARBALL="${BASE_URL}/zig-${OS}-${ARCH}-${ZIG_VERSION}.tar.xz"
 
     mkdir -p tmp/${ZIG_ARCH}/zig/
     curl -L $TARBALL | tar zxv -C tmp/${ZIG_ARCH}/zig/ --strip-components 1
@@ -25,7 +29,7 @@ function download_zig_bin() {
     ARCH=$1
     OS=$2
     ZIG_ARCH="${ARCH}-${OS}"
-    TARBALL="https://pkg.machengine.org/zig/zig-${OS}-${ARCH}-${ZIG_VERSION}.tar.xz"
+    TARBALL="${BASE_URL}/zig-${OS}-${ARCH}-${ZIG_VERSION}.tar.xz"
     FILENAME=$(basename -- "$TARBALL")
     
     mkdir -p tmp/${ZIG_ARCH}/zig/
@@ -40,7 +44,7 @@ function download_zig_bin_win() {
     ARCH=$1
     OS=$2
     ZIG_ARCH="${ARCH}-${OS}"
-    TARBALL="https://pkg.machengine.org/zig/zig-${OS}-${ARCH}-${ZIG_VERSION}.zip"
+    TARBALL="${BASE_URL}/zig-${OS}-${ARCH}-${ZIG_VERSION}.zip"
     FILENAME=$(basename -- "$TARBALL")
 
     mkdir -p "tmp/${ZIG_ARCH}/zig/"

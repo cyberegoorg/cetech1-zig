@@ -252,7 +252,7 @@
 <span class="line" id="L137">    <span class="tok-kw">try</span> std.testing.expectEqualSlices(<span class="tok-type">u8</span>, &amp;xp.toBytes(), &amp;expected);</span>
 <span class="line" id="L138">}</span>
 <span class="line" id="L139"></span>
-<span class="line" id="L140"><span class="tok-kw">test</span> <span class="tok-str">&quot;curve25519 small order check&quot;</span> {</span>
+<span class="line" id="L140"><span class="tok-kw">test</span> <span class="tok-str">&quot;small order check&quot;</span> {</span>
 <span class="line" id="L141">    <span class="tok-kw">var</span> s: [<span class="tok-number">32</span>]<span class="tok-type">u8</span> = [_]<span class="tok-type">u8</span>{<span class="tok-number">1</span>} ++ [_]<span class="tok-type">u8</span>{<span class="tok-number">0</span>} ** <span class="tok-number">31</span>;</span>
 <span class="line" id="L142">    <span class="tok-kw">const</span> small_order_ss: [<span class="tok-number">7</span>][<span class="tok-number">32</span>]<span class="tok-type">u8</span> = .{</span>
 <span class="line" id="L143">        .{</span>

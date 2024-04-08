@@ -238,7 +238,7 @@
 <span class="line" id="L115"></span>
 <span class="line" id="L116">    <span class="tok-comment">/// Trusts the file. Malicious file will be able to execute arbitrary code.</span></span>
 <span class="line" id="L117">    <span class="tok-kw">pub</span> <span class="tok-kw">fn</span> <span class="tok-fn">open</span>(path: []<span class="tok-kw">const</span> <span class="tok-type">u8</span>) !ElfDynLib {</span>
-<span class="line" id="L118">        <span class="tok-kw">const</span> fd = <span class="tok-kw">try</span> os.open(path, <span class="tok-number">0</span>, os.O.RDONLY | os.O.CLOEXEC);</span>
+<span class="line" id="L118">        <span class="tok-kw">const</span> fd = <span class="tok-kw">try</span> os.open(path, .{ .ACCMODE = .RDONLY, .CLOEXEC = <span class="tok-null">true</span> }, <span class="tok-number">0</span>);</span>
 <span class="line" id="L119">        <span class="tok-kw">defer</span> os.close(fd);</span>
 <span class="line" id="L120"></span>
 <span class="line" id="L121">        <span class="tok-kw">const</span> stat = <span class="tok-kw">try</span> os.fstat(fd);</span>
@@ -252,7 +252,7 @@
 <span class="line" id="L127">            <span class="tok-null">null</span>,</span>
 <span class="line" id="L128">            mem.alignForward(<span class="tok-type">usize</span>, size, mem.page_size),</span>
 <span class="line" id="L129">            os.PROT.READ,</span>
-<span class="line" id="L130">            os.MAP.PRIVATE,</span>
+<span class="line" id="L130">            .{ .TYPE = .PRIVATE },</span>
 <span class="line" id="L131">            fd,</span>
 <span class="line" id="L132">            <span class="tok-number">0</span>,</span>
 <span class="line" id="L133">        );</span>
@@ -293,7 +293,7 @@
 <span class="line" id="L165">            <span class="tok-null">null</span>,</span>
 <span class="line" id="L166">            virt_addr_end,</span>
 <span class="line" id="L167">            os.PROT.NONE,</span>
-<span class="line" id="L168">            os.MAP.PRIVATE | os.MAP.ANONYMOUS,</span>
+<span class="line" id="L168">            .{ .TYPE = .PRIVATE, .ANONYMOUS = <span class="tok-null">true</span> },</span>
 <span class="line" id="L169">            -<span class="tok-number">1</span>,</span>
 <span class="line" id="L170">            <span class="tok-number">0</span>,</span>
 <span class="line" id="L171">        );</span>
@@ -329,7 +329,7 @@
 <span class="line" id="L197">                                ptr,</span>
 <span class="line" id="L198">                                extended_memsz,</span>
 <span class="line" id="L199">                                prot,</span>
-<span class="line" id="L200">                                os.MAP.PRIVATE | os.MAP.FIXED,</span>
+<span class="line" id="L200">                                .{ .TYPE = .PRIVATE, .FIXED = <span class="tok-null">true</span> },</span>
 <span class="line" id="L201">                                fd,</span>
 <span class="line" id="L202">                                ph.p_offset - extra_bytes,</span>
 <span class="line" id="L203">                            );</span>
@@ -338,7 +338,7 @@
 <span class="line" id="L206">                                ptr,</span>
 <span class="line" id="L207">                                extended_memsz,</span>
 <span class="line" id="L208">                                prot,</span>
-<span class="line" id="L209">                                os.MAP.PRIVATE | os.MAP.FIXED | os.MAP.ANONYMOUS,</span>
+<span class="line" id="L209">                                .{ .TYPE = .PRIVATE, .FIXED = <span class="tok-null">true</span>, .ANONYMOUS = <span class="tok-null">true</span> },</span>
 <span class="line" id="L210">                                -<span class="tok-number">1</span>,</span>
 <span class="line" id="L211">                                <span class="tok-number">0</span>,</span>
 <span class="line" id="L212">                            );</span>
@@ -452,91 +452,103 @@
 <span class="line" id="L320">    dll: windows.HMODULE,</span>
 <span class="line" id="L321"></span>
 <span class="line" id="L322">    <span class="tok-kw">pub</span> <span class="tok-kw">fn</span> <span class="tok-fn">open</span>(path: []<span class="tok-kw">const</span> <span class="tok-type">u8</span>) !WindowsDynLib {</span>
-<span class="line" id="L323">        <span class="tok-kw">const</span> path_w = <span class="tok-kw">try</span> windows.sliceToPrefixedFileW(<span class="tok-null">null</span>, path);</span>
-<span class="line" id="L324">        <span class="tok-kw">return</span> openW(path_w.span().ptr);</span>
-<span class="line" id="L325">    }</span>
-<span class="line" id="L326"></span>
-<span class="line" id="L327">    <span class="tok-kw">pub</span> <span class="tok-kw">fn</span> <span class="tok-fn">openZ</span>(path_c: [*:<span class="tok-number">0</span>]<span class="tok-kw">const</span> <span class="tok-type">u8</span>) !WindowsDynLib {</span>
-<span class="line" id="L328">        <span class="tok-kw">const</span> path_w = <span class="tok-kw">try</span> windows.cStrToPrefixedFileW(<span class="tok-null">null</span>, path_c);</span>
-<span class="line" id="L329">        <span class="tok-kw">return</span> openW(path_w.span().ptr);</span>
-<span class="line" id="L330">    }</span>
-<span class="line" id="L331"></span>
-<span class="line" id="L332">    <span class="tok-kw">pub</span> <span class="tok-kw">fn</span> <span class="tok-fn">openW</span>(path_w: [*:<span class="tok-number">0</span>]<span class="tok-kw">const</span> <span class="tok-type">u16</span>) !WindowsDynLib {</span>
-<span class="line" id="L333">        <span class="tok-kw">var</span> offset: <span class="tok-type">usize</span> = <span class="tok-number">0</span>;</span>
-<span class="line" id="L334">        <span class="tok-kw">if</span> (path_w[<span class="tok-number">0</span>] == <span class="tok-str">'\\'</span> <span class="tok-kw">and</span> path_w[<span class="tok-number">1</span>] == <span class="tok-str">'?'</span> <span class="tok-kw">and</span> path_w[<span class="tok-number">2</span>] == <span class="tok-str">'?'</span> <span class="tok-kw">and</span> path_w[<span class="tok-number">3</span>] == <span class="tok-str">'\\'</span>) {</span>
-<span class="line" id="L335">            <span class="tok-comment">// + 4 to skip over the \??\</span>
-</span>
-<span class="line" id="L336">            offset = <span class="tok-number">4</span>;</span>
-<span class="line" id="L337">        }</span>
-<span class="line" id="L338"></span>
-<span class="line" id="L339">        <span class="tok-kw">return</span> WindowsDynLib{</span>
-<span class="line" id="L340">            .dll = <span class="tok-kw">try</span> windows.LoadLibraryW(path_w + offset),</span>
-<span class="line" id="L341">        };</span>
+<span class="line" id="L323">        <span class="tok-kw">return</span> openEx(path, .none);</span>
+<span class="line" id="L324">    }</span>
+<span class="line" id="L325"></span>
+<span class="line" id="L326">    <span class="tok-kw">pub</span> <span class="tok-kw">fn</span> <span class="tok-fn">openEx</span>(path: []<span class="tok-kw">const</span> <span class="tok-type">u8</span>, flags: windows.LoadLibraryFlags) !WindowsDynLib {</span>
+<span class="line" id="L327">        <span class="tok-kw">const</span> path_w = <span class="tok-kw">try</span> windows.sliceToPrefixedFileW(<span class="tok-null">null</span>, path);</span>
+<span class="line" id="L328">        <span class="tok-kw">return</span> openExW(path_w.span().ptr, flags);</span>
+<span class="line" id="L329">    }</span>
+<span class="line" id="L330"></span>
+<span class="line" id="L331">    <span class="tok-kw">pub</span> <span class="tok-kw">fn</span> <span class="tok-fn">openZ</span>(path_c: [*:<span class="tok-number">0</span>]<span class="tok-kw">const</span> <span class="tok-type">u8</span>) !WindowsDynLib {</span>
+<span class="line" id="L332">        <span class="tok-kw">return</span> openExZ(path_c, .none);</span>
+<span class="line" id="L333">    }</span>
+<span class="line" id="L334"></span>
+<span class="line" id="L335">    <span class="tok-kw">pub</span> <span class="tok-kw">fn</span> <span class="tok-fn">openExZ</span>(path_c: [*:<span class="tok-number">0</span>]<span class="tok-kw">const</span> <span class="tok-type">u8</span>, flags: windows.LoadLibraryFlags) !WindowsDynLib {</span>
+<span class="line" id="L336">        <span class="tok-kw">const</span> path_w = <span class="tok-kw">try</span> windows.cStrToPrefixedFileW(<span class="tok-null">null</span>, path_c);</span>
+<span class="line" id="L337">        <span class="tok-kw">return</span> openExW(path_w.span().ptr, flags);</span>
+<span class="line" id="L338">    }</span>
+<span class="line" id="L339"></span>
+<span class="line" id="L340">    <span class="tok-kw">pub</span> <span class="tok-kw">fn</span> <span class="tok-fn">openW</span>(path_w: [*:<span class="tok-number">0</span>]<span class="tok-kw">const</span> <span class="tok-type">u16</span>) !WindowsDynLib {</span>
+<span class="line" id="L341">        <span class="tok-kw">return</span> openExW(path_w, .none);</span>
 <span class="line" id="L342">    }</span>
 <span class="line" id="L343"></span>
-<span class="line" id="L344">    <span class="tok-kw">pub</span> <span class="tok-kw">fn</span> <span class="tok-fn">close</span>(self: *WindowsDynLib) <span class="tok-type">void</span> {</span>
-<span class="line" id="L345">        windows.FreeLibrary(self.dll);</span>
-<span class="line" id="L346">        self.* = <span class="tok-null">undefined</span>;</span>
-<span class="line" id="L347">    }</span>
-<span class="line" id="L348"></span>
-<span class="line" id="L349">    <span class="tok-kw">pub</span> <span class="tok-kw">fn</span> <span class="tok-fn">lookup</span>(self: *WindowsDynLib, <span class="tok-kw">comptime</span> T: <span class="tok-type">type</span>, name: [:<span class="tok-number">0</span>]<span class="tok-kw">const</span> <span class="tok-type">u8</span>) ?T {</span>
-<span class="line" id="L350">        <span class="tok-kw">if</span> (windows.kernel32.GetProcAddress(self.dll, name.ptr)) |addr| {</span>
-<span class="line" id="L351">            <span class="tok-kw">return</span> <span class="tok-builtin">@as</span>(T, <span class="tok-builtin">@ptrCast</span>(<span class="tok-builtin">@alignCast</span>(addr)));</span>
-<span class="line" id="L352">        } <span class="tok-kw">else</span> {</span>
-<span class="line" id="L353">            <span class="tok-kw">return</span> <span class="tok-null">null</span>;</span>
-<span class="line" id="L354">        }</span>
-<span class="line" id="L355">    }</span>
-<span class="line" id="L356">};</span>
-<span class="line" id="L357"></span>
-<span class="line" id="L358"><span class="tok-kw">pub</span> <span class="tok-kw">const</span> DlDynLib = <span class="tok-kw">struct</span> {</span>
-<span class="line" id="L359">    <span class="tok-kw">pub</span> <span class="tok-kw">const</span> Error = <span class="tok-kw">error</span>{FileNotFound};</span>
+<span class="line" id="L344">    <span class="tok-kw">pub</span> <span class="tok-kw">fn</span> <span class="tok-fn">openExW</span>(path_w: [*:<span class="tok-number">0</span>]<span class="tok-kw">const</span> <span class="tok-type">u16</span>, flags: windows.LoadLibraryFlags) !WindowsDynLib {</span>
+<span class="line" id="L345">        <span class="tok-kw">var</span> offset: <span class="tok-type">usize</span> = <span class="tok-number">0</span>;</span>
+<span class="line" id="L346">        <span class="tok-kw">if</span> (path_w[<span class="tok-number">0</span>] == <span class="tok-str">'\\'</span> <span class="tok-kw">and</span> path_w[<span class="tok-number">1</span>] == <span class="tok-str">'?'</span> <span class="tok-kw">and</span> path_w[<span class="tok-number">2</span>] == <span class="tok-str">'?'</span> <span class="tok-kw">and</span> path_w[<span class="tok-number">3</span>] == <span class="tok-str">'\\'</span>) {</span>
+<span class="line" id="L347">            <span class="tok-comment">// + 4 to skip over the \??\</span>
+</span>
+<span class="line" id="L348">            offset = <span class="tok-number">4</span>;</span>
+<span class="line" id="L349">        }</span>
+<span class="line" id="L350"></span>
+<span class="line" id="L351">        <span class="tok-kw">return</span> WindowsDynLib{</span>
+<span class="line" id="L352">            .dll = <span class="tok-kw">try</span> windows.LoadLibraryExW(path_w + offset, flags),</span>
+<span class="line" id="L353">        };</span>
+<span class="line" id="L354">    }</span>
+<span class="line" id="L355"></span>
+<span class="line" id="L356">    <span class="tok-kw">pub</span> <span class="tok-kw">fn</span> <span class="tok-fn">close</span>(self: *WindowsDynLib) <span class="tok-type">void</span> {</span>
+<span class="line" id="L357">        windows.FreeLibrary(self.dll);</span>
+<span class="line" id="L358">        self.* = <span class="tok-null">undefined</span>;</span>
+<span class="line" id="L359">    }</span>
 <span class="line" id="L360"></span>
-<span class="line" id="L361">    handle: *<span class="tok-type">anyopaque</span>,</span>
-<span class="line" id="L362"></span>
-<span class="line" id="L363">    <span class="tok-kw">pub</span> <span class="tok-kw">fn</span> <span class="tok-fn">open</span>(path: []<span class="tok-kw">const</span> <span class="tok-type">u8</span>) !DlDynLib {</span>
-<span class="line" id="L364">        <span class="tok-kw">const</span> path_c = <span class="tok-kw">try</span> os.toPosixPath(path);</span>
-<span class="line" id="L365">        <span class="tok-kw">return</span> openZ(&amp;path_c);</span>
-<span class="line" id="L366">    }</span>
-<span class="line" id="L367"></span>
-<span class="line" id="L368">    <span class="tok-kw">pub</span> <span class="tok-kw">fn</span> <span class="tok-fn">openZ</span>(path_c: [*:<span class="tok-number">0</span>]<span class="tok-kw">const</span> <span class="tok-type">u8</span>) !DlDynLib {</span>
-<span class="line" id="L369">        <span class="tok-kw">return</span> DlDynLib{</span>
-<span class="line" id="L370">            .handle = system.dlopen(path_c, system.RTLD.LAZY) <span class="tok-kw">orelse</span> {</span>
-<span class="line" id="L371">                <span class="tok-kw">return</span> <span class="tok-kw">error</span>.FileNotFound;</span>
-<span class="line" id="L372">            },</span>
-<span class="line" id="L373">        };</span>
-<span class="line" id="L374">    }</span>
-<span class="line" id="L375"></span>
-<span class="line" id="L376">    <span class="tok-kw">pub</span> <span class="tok-kw">fn</span> <span class="tok-fn">close</span>(self: *DlDynLib) <span class="tok-type">void</span> {</span>
-<span class="line" id="L377">        _ = system.dlclose(self.handle);</span>
-<span class="line" id="L378">        self.* = <span class="tok-null">undefined</span>;</span>
-<span class="line" id="L379">    }</span>
-<span class="line" id="L380"></span>
-<span class="line" id="L381">    <span class="tok-kw">pub</span> <span class="tok-kw">fn</span> <span class="tok-fn">lookup</span>(self: *DlDynLib, <span class="tok-kw">comptime</span> T: <span class="tok-type">type</span>, name: [:<span class="tok-number">0</span>]<span class="tok-kw">const</span> <span class="tok-type">u8</span>) ?T {</span>
-<span class="line" id="L382">        <span class="tok-comment">// dlsym (and other dl-functions) secretly take shadow parameter - return address on stack</span>
+<span class="line" id="L361">    <span class="tok-kw">pub</span> <span class="tok-kw">fn</span> <span class="tok-fn">lookup</span>(self: *WindowsDynLib, <span class="tok-kw">comptime</span> T: <span class="tok-type">type</span>, name: [:<span class="tok-number">0</span>]<span class="tok-kw">const</span> <span class="tok-type">u8</span>) ?T {</span>
+<span class="line" id="L362">        <span class="tok-kw">if</span> (windows.kernel32.GetProcAddress(self.dll, name.ptr)) |addr| {</span>
+<span class="line" id="L363">            <span class="tok-kw">return</span> <span class="tok-builtin">@as</span>(T, <span class="tok-builtin">@ptrCast</span>(<span class="tok-builtin">@alignCast</span>(addr)));</span>
+<span class="line" id="L364">        } <span class="tok-kw">else</span> {</span>
+<span class="line" id="L365">            <span class="tok-kw">return</span> <span class="tok-null">null</span>;</span>
+<span class="line" id="L366">        }</span>
+<span class="line" id="L367">    }</span>
+<span class="line" id="L368">};</span>
+<span class="line" id="L369"></span>
+<span class="line" id="L370"><span class="tok-kw">pub</span> <span class="tok-kw">const</span> DlDynLib = <span class="tok-kw">struct</span> {</span>
+<span class="line" id="L371">    <span class="tok-kw">pub</span> <span class="tok-kw">const</span> Error = <span class="tok-kw">error</span>{FileNotFound};</span>
+<span class="line" id="L372"></span>
+<span class="line" id="L373">    handle: *<span class="tok-type">anyopaque</span>,</span>
+<span class="line" id="L374"></span>
+<span class="line" id="L375">    <span class="tok-kw">pub</span> <span class="tok-kw">fn</span> <span class="tok-fn">open</span>(path: []<span class="tok-kw">const</span> <span class="tok-type">u8</span>) !DlDynLib {</span>
+<span class="line" id="L376">        <span class="tok-kw">const</span> path_c = <span class="tok-kw">try</span> os.toPosixPath(path);</span>
+<span class="line" id="L377">        <span class="tok-kw">return</span> openZ(&amp;path_c);</span>
+<span class="line" id="L378">    }</span>
+<span class="line" id="L379"></span>
+<span class="line" id="L380">    <span class="tok-kw">pub</span> <span class="tok-kw">fn</span> <span class="tok-fn">openZ</span>(path_c: [*:<span class="tok-number">0</span>]<span class="tok-kw">const</span> <span class="tok-type">u8</span>) !DlDynLib {</span>
+<span class="line" id="L381">        <span class="tok-kw">return</span> DlDynLib{</span>
+<span class="line" id="L382">            .handle = system.dlopen(path_c, system.RTLD.LAZY) <span class="tok-kw">orelse</span> {</span>
+<span class="line" id="L383">                <span class="tok-kw">return</span> <span class="tok-kw">error</span>.FileNotFound;</span>
+<span class="line" id="L384">            },</span>
+<span class="line" id="L385">        };</span>
+<span class="line" id="L386">    }</span>
+<span class="line" id="L387"></span>
+<span class="line" id="L388">    <span class="tok-kw">pub</span> <span class="tok-kw">fn</span> <span class="tok-fn">close</span>(self: *DlDynLib) <span class="tok-type">void</span> {</span>
+<span class="line" id="L389">        _ = system.dlclose(self.handle);</span>
+<span class="line" id="L390">        self.* = <span class="tok-null">undefined</span>;</span>
+<span class="line" id="L391">    }</span>
+<span class="line" id="L392"></span>
+<span class="line" id="L393">    <span class="tok-kw">pub</span> <span class="tok-kw">fn</span> <span class="tok-fn">lookup</span>(self: *DlDynLib, <span class="tok-kw">comptime</span> T: <span class="tok-type">type</span>, name: [:<span class="tok-number">0</span>]<span class="tok-kw">const</span> <span class="tok-type">u8</span>) ?T {</span>
+<span class="line" id="L394">        <span class="tok-comment">// dlsym (and other dl-functions) secretly take shadow parameter - return address on stack</span>
 </span>
-<span class="line" id="L383">        <span class="tok-comment">// https://gcc.gnu.org/bugzilla/show_bug.cgi?id=66826</span>
+<span class="line" id="L395">        <span class="tok-comment">// https://gcc.gnu.org/bugzilla/show_bug.cgi?id=66826</span>
 </span>
-<span class="line" id="L384">        <span class="tok-kw">if</span> (<span class="tok-builtin">@call</span>(.never_tail, system.dlsym, .{ self.handle, name.ptr })) |symbol| {</span>
-<span class="line" id="L385">            <span class="tok-kw">return</span> <span class="tok-builtin">@as</span>(T, <span class="tok-builtin">@ptrCast</span>(<span class="tok-builtin">@alignCast</span>(symbol)));</span>
-<span class="line" id="L386">        } <span class="tok-kw">else</span> {</span>
-<span class="line" id="L387">            <span class="tok-kw">return</span> <span class="tok-null">null</span>;</span>
-<span class="line" id="L388">        }</span>
-<span class="line" id="L389">    }</span>
-<span class="line" id="L390">};</span>
-<span class="line" id="L391"></span>
-<span class="line" id="L392"><span class="tok-kw">test</span> <span class="tok-str">&quot;dynamic_library&quot;</span> {</span>
-<span class="line" id="L393">    <span class="tok-kw">const</span> libname = <span class="tok-kw">switch</span> (builtin.os.tag) {</span>
-<span class="line" id="L394">        .linux, .freebsd, .openbsd, .solaris, .illumos =&gt; <span class="tok-str">&quot;invalid_so.so&quot;</span>,</span>
-<span class="line" id="L395">        .windows =&gt; <span class="tok-str">&quot;invalid_dll.dll&quot;</span>,</span>
-<span class="line" id="L396">        .macos, .tvos, .watchos, .ios =&gt; <span class="tok-str">&quot;invalid_dylib.dylib&quot;</span>,</span>
-<span class="line" id="L397">        <span class="tok-kw">else</span> =&gt; <span class="tok-kw">return</span> <span class="tok-kw">error</span>.SkipZigTest,</span>
-<span class="line" id="L398">    };</span>
-<span class="line" id="L399"></span>
-<span class="line" id="L400">    _ = DynLib.open(libname) <span class="tok-kw">catch</span> |err| {</span>
-<span class="line" id="L401">        <span class="tok-kw">try</span> testing.expect(err == <span class="tok-kw">error</span>.FileNotFound);</span>
-<span class="line" id="L402">        <span class="tok-kw">return</span>;</span>
-<span class="line" id="L403">    };</span>
-<span class="line" id="L404">}</span>
-<span class="line" id="L405"></span>
+<span class="line" id="L396">        <span class="tok-kw">if</span> (<span class="tok-builtin">@call</span>(.never_tail, system.dlsym, .{ self.handle, name.ptr })) |symbol| {</span>
+<span class="line" id="L397">            <span class="tok-kw">return</span> <span class="tok-builtin">@as</span>(T, <span class="tok-builtin">@ptrCast</span>(<span class="tok-builtin">@alignCast</span>(symbol)));</span>
+<span class="line" id="L398">        } <span class="tok-kw">else</span> {</span>
+<span class="line" id="L399">            <span class="tok-kw">return</span> <span class="tok-null">null</span>;</span>
+<span class="line" id="L400">        }</span>
+<span class="line" id="L401">    }</span>
+<span class="line" id="L402">};</span>
+<span class="line" id="L403"></span>
+<span class="line" id="L404"><span class="tok-kw">test</span> <span class="tok-str">&quot;dynamic_library&quot;</span> {</span>
+<span class="line" id="L405">    <span class="tok-kw">const</span> libname = <span class="tok-kw">switch</span> (builtin.os.tag) {</span>
+<span class="line" id="L406">        .linux, .freebsd, .openbsd, .solaris, .illumos =&gt; <span class="tok-str">&quot;invalid_so.so&quot;</span>,</span>
+<span class="line" id="L407">        .windows =&gt; <span class="tok-str">&quot;invalid_dll.dll&quot;</span>,</span>
+<span class="line" id="L408">        .macos, .tvos, .watchos, .ios =&gt; <span class="tok-str">&quot;invalid_dylib.dylib&quot;</span>,</span>
+<span class="line" id="L409">        <span class="tok-kw">else</span> =&gt; <span class="tok-kw">return</span> <span class="tok-kw">error</span>.SkipZigTest,</span>
+<span class="line" id="L410">    };</span>
+<span class="line" id="L411"></span>
+<span class="line" id="L412">    _ = DynLib.open(libname) <span class="tok-kw">catch</span> |err| {</span>
+<span class="line" id="L413">        <span class="tok-kw">try</span> testing.expect(err == <span class="tok-kw">error</span>.FileNotFound);</span>
+<span class="line" id="L414">        <span class="tok-kw">return</span>;</span>
+<span class="line" id="L415">    };</span>
+<span class="line" id="L416">}</span>
+<span class="line" id="L417"></span>
 </code></pre></body>
 </html>

@@ -255,12 +255,12 @@
 <span class="line" id="L119">    <span class="tok-kw">return</span> t + t * q;</span>
 <span class="line" id="L120">}</span>
 <span class="line" id="L121"></span>
-<span class="line" id="L122"><span class="tok-kw">test</span> <span class="tok-str">&quot;math.cbrt&quot;</span> {</span>
+<span class="line" id="L122"><span class="tok-kw">test</span> cbrt {</span>
 <span class="line" id="L123">    <span class="tok-kw">try</span> expect(cbrt(<span class="tok-builtin">@as</span>(<span class="tok-type">f32</span>, <span class="tok-number">0.0</span>)) == cbrt32(<span class="tok-number">0.0</span>));</span>
 <span class="line" id="L124">    <span class="tok-kw">try</span> expect(cbrt(<span class="tok-builtin">@as</span>(<span class="tok-type">f64</span>, <span class="tok-number">0.0</span>)) == cbrt64(<span class="tok-number">0.0</span>));</span>
 <span class="line" id="L125">}</span>
 <span class="line" id="L126"></span>
-<span class="line" id="L127"><span class="tok-kw">test</span> <span class="tok-str">&quot;math.cbrt32&quot;</span> {</span>
+<span class="line" id="L127"><span class="tok-kw">test</span> cbrt32 {</span>
 <span class="line" id="L128">    <span class="tok-kw">const</span> epsilon = <span class="tok-number">0.000001</span>;</span>
 <span class="line" id="L129"></span>
 <span class="line" id="L130">    <span class="tok-kw">try</span> expect(math.isPositiveZero(cbrt32(<span class="tok-number">0.0</span>)));</span>
@@ -271,7 +271,7 @@
 <span class="line" id="L135">    <span class="tok-kw">try</span> expect(math.approxEqAbs(<span class="tok-type">f32</span>, cbrt32(<span class="tok-number">123123.234375</span>), <span class="tok-number">49.748501</span>, epsilon));</span>
 <span class="line" id="L136">}</span>
 <span class="line" id="L137"></span>
-<span class="line" id="L138"><span class="tok-kw">test</span> <span class="tok-str">&quot;math.cbrt64&quot;</span> {</span>
+<span class="line" id="L138"><span class="tok-kw">test</span> cbrt64 {</span>
 <span class="line" id="L139">    <span class="tok-kw">const</span> epsilon = <span class="tok-number">0.000001</span>;</span>
 <span class="line" id="L140"></span>
 <span class="line" id="L141">    <span class="tok-kw">try</span> expect(math.isPositiveZero(cbrt64(<span class="tok-number">0.0</span>)));</span>
@@ -282,7 +282,7 @@
 <span class="line" id="L146">    <span class="tok-kw">try</span> expect(math.approxEqAbs(<span class="tok-type">f64</span>, cbrt64(<span class="tok-number">123123.234375</span>), <span class="tok-number">49.748501</span>, epsilon));</span>
 <span class="line" id="L147">}</span>
 <span class="line" id="L148"></span>
-<span class="line" id="L149"><span class="tok-kw">test</span> <span class="tok-str">&quot;math.cbrt.special&quot;</span> {</span>
+<span class="line" id="L149"><span class="tok-kw">test</span> <span class="tok-str">&quot;cbrt.special&quot;</span> {</span>
 <span class="line" id="L150">    <span class="tok-kw">try</span> expect(math.isPositiveZero(cbrt32(<span class="tok-number">0.0</span>)));</span>
 <span class="line" id="L151">    <span class="tok-kw">try</span> expect(<span class="tok-builtin">@as</span>(<span class="tok-type">u32</span>, <span class="tok-builtin">@bitCast</span>(cbrt32(-<span class="tok-number">0.0</span>))) == <span class="tok-builtin">@as</span>(<span class="tok-type">u32</span>, <span class="tok-number">0x80000000</span>));</span>
 <span class="line" id="L152">    <span class="tok-kw">try</span> expect(math.isPositiveInf(cbrt32(math.inf(<span class="tok-type">f32</span>))));</span>
@@ -290,7 +290,7 @@
 <span class="line" id="L154">    <span class="tok-kw">try</span> expect(math.isNan(cbrt32(math.nan(<span class="tok-type">f32</span>))));</span>
 <span class="line" id="L155">}</span>
 <span class="line" id="L156"></span>
-<span class="line" id="L157"><span class="tok-kw">test</span> <span class="tok-str">&quot;math.cbrt64.special&quot;</span> {</span>
+<span class="line" id="L157"><span class="tok-kw">test</span> <span class="tok-str">&quot;cbrt64.special&quot;</span> {</span>
 <span class="line" id="L158">    <span class="tok-kw">try</span> expect(math.isPositiveZero(cbrt64(<span class="tok-number">0.0</span>)));</span>
 <span class="line" id="L159">    <span class="tok-kw">try</span> expect(math.isNegativeZero(cbrt64(-<span class="tok-number">0.0</span>)));</span>
 <span class="line" id="L160">    <span class="tok-kw">try</span> expect(math.isPositiveInf(cbrt64(math.inf(<span class="tok-type">f64</span>))));</span>
