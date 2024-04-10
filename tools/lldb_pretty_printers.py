@@ -351,19 +351,33 @@ def InstRef_SummaryProvider(value, _=None):
     return value if any(value.unsigned == member.unsigned for member in value.type.enum_members) else (
         'InternPool.Index(%d)' % value.unsigned if value.unsigned < 0x80000000 else 'instructions[%d]' % (value.unsigned - 0x80000000))
 
-class Module_Decl__Module_Decl_Index_SynthProvider:
+def InstIndex_SummaryProvider(value, _=None):
+    return 'instructions[%d]' % value.unsigned
+
+class zig_DeclIndex_SynthProvider:
     def __init__(self, value, _=None): self.value = value
     def update(self):
         try:
-            for frame in self.value.thread:
-                mod = frame.FindVariable('mod') or frame.FindVariable('module')
-                if mod: break
-            else: return
-            self.ptr = mod.GetChildMemberWithName('allocated_decls').GetChildAtIndex(self.value.unsigned).address_of.Clone('decl')
+            ip = InternPool_Find(self.value.thread)
+            if not ip: return
+            self.ptr = ip.GetChildMemberWithName('allocated_decls').GetChildAtIndex(self.value.unsigned).address_of.Clone('decl')
         except: pass
     def has_children(self): return True
     def num_children(self): return 1
     def get_child_index(self, name): return 0 if name == 'decl' else -1
+    def get_child_at_index(self, index): return self.ptr if index == 0 else None
+
+class Module_Namespace__Module_Namespace_Index_SynthProvider:
+    def __init__(self, value, _=None): self.value = value
+    def update(self):
+        try:
+            ip = InternPool_Find(self.value.thread)
+            if not ip: return
+            self.ptr = ip.GetChildMemberWithName('allocated_namespaces').GetChildAtIndex(self.value.unsigned).address_of.Clone('namespace')
+        except: pass
+    def has_children(self): return True
+    def num_children(self): return 1
+    def get_child_index(self, name): return 0 if name == 'namespace' else -1
     def get_child_at_index(self, index): return self.ptr if index == 0 else None
 
 class TagOrPayloadPtr_SynthProvider:
@@ -411,7 +425,7 @@ def InternPool_Find(thread):
     for frame in thread:
         ip = frame.FindVariable('ip') or frame.FindVariable('intern_pool')
         if ip: return ip
-        mod = frame.FindVariable('mod') or frame.FindVariable('module')
+        mod = frame.FindVariable('zcu') or frame.FindVariable('mod') or frame.FindVariable('module')
         if mod:
             ip = mod.GetChildMemberWithName('intern_pool')
             if ip: return ip
@@ -440,10 +454,9 @@ class InternPool_Index_SynthProvider:
             for encoding_field in encoding_type.fields:
                 if encoding_field.name == 'data':
                     if encoding_field.type.IsPointerType():
-                        data_type = encoding_field.type.GetPointeeType()
                         extra_index = data.unsigned
-                        self.data = extra.GetChildAtIndex(extra_index).Cast(data_type).Clone('data')
-                        extra_index += data_type.num_fields
+                        self.data = extra.GetChildAtIndex(extra_index).address_of.Cast(encoding_field.type).deref.Clone('data')
+                        extra_index += encoding_field.type.GetPointeeType().num_fields
                     else:
                         self.data = data.Cast(encoding_field.type).Clone('data')
                 elif encoding_field.name == 'trailing':
@@ -604,7 +617,7 @@ type_tag_handlers = {
 
 def value_Value_str_lit(payload):
     for frame in payload.thread:
-        mod = frame.FindVariable('mod') or frame.FindVariable('module')
+        mod = frame.FindVariable('zcu') or frame.FindVariable('mod') or frame.FindVariable('module')
         if mod: break
     else: return
     return '"%s"' % zig_String_decode(mod.GetChildMemberWithName('string_literal_bytes').GetChildMemberWithName('items'), payload.GetChildMemberWithName('index').unsigned, payload.GetChildMemberWithName('len').unsigned)
@@ -695,11 +708,14 @@ def __lldb_init_module(debugger, _=None):
     add(debugger, category='zig.stage2', regex=True, type=MultiArrayList_Entry('Zir\\.Inst'), identifier='TagAndPayload', synth=True, inline_children=True, summary=True)
     add(debugger, category='zig.stage2', regex=True, type='^Zir\\.Inst\\.Data\\.Data__struct_[1-9][0-9]*$', inline_children=True, summary=True)
     add(debugger, category='zig.stage2', type='Zir.Inst::Zir.Inst.Ref', identifier='InstRef', summary=True)
+    add(debugger, category='zig.stage2', type='Zir.Inst::Zir.Inst.Index', identifier='InstIndex', summary=True)
     add(debugger, category='zig.stage2', type='Air.Inst', identifier='TagAndPayload', synth=True, inline_children=True, summary=True)
     add(debugger, category='zig.stage2', type='Air.Inst::Air.Inst.Ref', identifier='InstRef', summary=True)
+    add(debugger, category='zig.stage2', type='Air.Inst::Air.Inst.Index', identifier='InstIndex', summary=True)
     add(debugger, category='zig.stage2', regex=True, type=MultiArrayList_Entry('Air\\.Inst'), identifier='TagAndPayload', synth=True, inline_children=True, summary=True)
     add(debugger, category='zig.stage2', regex=True, type='^Air\\.Inst\\.Data\\.Data__struct_[1-9][0-9]*$', inline_children=True, summary=True)
-    add(debugger, category='zig.stage2', type='Module.Decl::Module.Decl.Index', synth=True)
+    add(debugger, category='zig.stage2', type='zig.DeclIndex', synth=True)
+    add(debugger, category='zig.stage2', type='Module.Namespace::Module.Namespace.Index', synth=True)
     add(debugger, category='zig.stage2', type='Module.LazySrcLoc', identifier='zig_TaggedUnion', synth=True)
     add(debugger, category='zig.stage2', type='InternPool.Index', synth=True)
     add(debugger, category='zig.stage2', type='InternPool.NullTerminatedString', summary=True)
@@ -710,3 +726,4 @@ def __lldb_init_module(debugger, _=None):
     add(debugger, category='zig.stage2', type='InternPool.Key.Ptr.Addr', identifier='zig_TaggedUnion', synth=True)
     add(debugger, category='zig.stage2', type='InternPool.Key.Aggregate.Storage', identifier='zig_TaggedUnion', synth=True)
     add(debugger, category='zig.stage2', type='arch.x86_64.CodeGen.MCValue', identifier='zig_TaggedUnion', synth=True, inline_children=True, summary=True)
+    

@@ -28,7 +28,7 @@ linker_script: ?LazyPath = null,
 version_script: ?LazyPath = null,
 out_filename: []const u8,
 out_lib_filename: []const u8,
-linkage: ?Linkage = null,
+linkage: ?std.builtin.LinkMode = null,
 version: ?std.SemanticVersion,
 kind: Kind,
 major_only_filename: ?[]const u8,
@@ -59,7 +59,13 @@ test_runner: ?[]const u8,
 test_server_mode: bool,
 wasi_exec_model: ?std.builtin.WasiExecModel = null,
 
-installed_headers: ArrayList(*Step),
+installed_headers: ArrayList(HeaderInstallation),
+
+/// This step is used to create an include tree that dependent modules can add to their include
+/// search paths. Installed headers are copied to this step.
+/// This step is created the first time a module links with this artifact and is not
+/// created otherwise.
+installed_headers_include_tree: ?*Step.WriteFile = null,
 
 // keep in sync with src/Compilation.zig:RcIncludes
 /// Behavior of automatic detection of include directories when compiling .rc files.
@@ -161,6 +167,9 @@ dll_export_fns: ?bool = null,
 
 subsystem: ?std.Target.SubSystem = null,
 
+/// (Windows) When targeting the MinGW ABI, use the unicode entry point (wmain/wWinMain)
+mingw_unicode_entry_point: bool = false,
+
 /// How the linker must handle the entry point of the executable.
 entry: Entry = .default,
 
@@ -223,7 +232,7 @@ pub const Options = struct {
     name: []const u8,
     root_module: Module.CreateOptions,
     kind: Kind,
-    linkage: ?Linkage = null,
+    linkage: ?std.builtin.LinkMode = null,
     version: ?std.SemanticVersion = null,
     max_rss: usize = 0,
     filters: []const []const u8 = &.{},
@@ -246,7 +255,89 @@ pub const Kind = enum {
     @"test",
 };
 
-pub const Linkage = enum { dynamic, static };
+pub const HeaderInstallation = union(enum) {
+    file: File,
+    directory: Directory,
+
+    pub const File = struct {
+        source: LazyPath,
+        dest_rel_path: []const u8,
+
+        pub fn dupe(self: File, b: *std.Build) File {
+            // 'path' lazy paths are relative to the build root of some step, inferred from the step
+            // in which they are used. This means that we can't dupe such paths, because they may
+            // come from dependencies with their own build roots and duping the paths as is might
+            // cause the build script to search for the file relative to the wrong root.
+            // As a temporary workaround, we convert build root-relative paths to absolute paths.
+            // If/when the build-root relative paths are updated to encode which build root they are
+            // relative to, this workaround should be removed.
+            const duped_source: LazyPath = switch (self.source) {
+                .path => |root_rel| .{ .cwd_relative = b.pathFromRoot(root_rel) },
+                else => self.source.dupe(b),
+            };
+
+            return .{
+                .source = duped_source,
+                .dest_rel_path = b.dupePath(self.dest_rel_path),
+            };
+        }
+    };
+
+    pub const Directory = struct {
+        source: LazyPath,
+        dest_rel_path: []const u8,
+        options: Directory.Options,
+
+        pub const Options = struct {
+            /// File paths that end in any of these suffixes will be excluded from installation.
+            exclude_extensions: []const []const u8 = &.{},
+            /// Only file paths that end in any of these suffixes will be included in installation.
+            /// `null` means that all suffixes will be included.
+            /// `exclude_extensions` takes precedence over `include_extensions`.
+            include_extensions: ?[]const []const u8 = &.{".h"},
+
+            pub fn dupe(self: Directory.Options, b: *std.Build) Directory.Options {
+                return .{
+                    .exclude_extensions = b.dupeStrings(self.exclude_extensions),
+                    .include_extensions = if (self.include_extensions) |incs| b.dupeStrings(incs) else null,
+                };
+            }
+        };
+
+        pub fn dupe(self: Directory, b: *std.Build) Directory {
+            // 'path' lazy paths are relative to the build root of some step, inferred from the step
+            // in which they are used. This means that we can't dupe such paths, because they may
+            // come from dependencies with their own build roots and duping the paths as is might
+            // cause the build script to search for the file relative to the wrong root.
+            // As a temporary workaround, we convert build root-relative paths to absolute paths.
+            // If/when the build-root relative paths are updated to encode which build root they are
+            // relative to, this workaround should be removed.
+            const duped_source: LazyPath = switch (self.source) {
+                .path => |root_rel| .{ .cwd_relative = b.pathFromRoot(root_rel) },
+                else => self.source.dupe(b),
+            };
+
+            return .{
+                .source = duped_source,
+                .dest_rel_path = b.dupePath(self.dest_rel_path),
+                .options = self.options.dupe(b),
+            };
+        }
+    };
+
+    pub fn getSource(self: HeaderInstallation) LazyPath {
+        return switch (self) {
+            inline .file, .directory => |x| x.source,
+        };
+    }
+
+    pub fn dupe(self: HeaderInstallation, b: *std.Build) HeaderInstallation {
+        return switch (self) {
+            .file => |f| .{ .file = f.dupe(b) },
+            .directory => |d| .{ .directory = d.dupe(b) },
+        };
+    }
+};
 
 pub fn create(owner: *std.Build, options: Options) *Compile {
     const name = owner.dupe(options.name);
@@ -283,10 +374,7 @@ pub fn create(owner: *std.Build, options: Options) *Compile {
             .obj => .Obj,
             .exe, .@"test" => .Exe,
         },
-        .link_mode = if (options.linkage) |some| @as(std.builtin.LinkMode, switch (some) {
-            .dynamic => .Dynamic,
-            .static => .Static,
-        }) else null,
+        .link_mode = options.linkage,
         .version = options.version,
     }) catch @panic("OOM");
 
@@ -310,7 +398,7 @@ pub fn create(owner: *std.Build, options: Options) *Compile {
         .out_lib_filename = undefined,
         .major_only_filename = null,
         .name_only_filename = null,
-        .installed_headers = ArrayList(*Step).init(owner.allocator),
+        .installed_headers = ArrayList(HeaderInstallation).init(owner.allocator),
         .zig_lib_dir = null,
         .exec_cmd_args = null,
         .filters = options.filters,
@@ -382,78 +470,85 @@ pub fn create(owner: *std.Build, options: Options) *Compile {
     return self;
 }
 
-pub fn installHeader(cs: *Compile, src_path: []const u8, dest_rel_path: []const u8) void {
+/// Marks the specified header for installation alongside this artifact.
+/// When a module links with this artifact, all headers marked for installation are added to that
+/// module's include search path.
+pub fn installHeader(cs: *Compile, source: LazyPath, dest_rel_path: []const u8) void {
     const b = cs.step.owner;
-    const install_file = b.addInstallHeaderFile(src_path, dest_rel_path);
-    b.getInstallStep().dependOn(&install_file.step);
-    cs.installed_headers.append(&install_file.step) catch @panic("OOM");
+    const installation: HeaderInstallation = .{ .file = .{
+        .source = source.dupe(b),
+        .dest_rel_path = b.dupePath(dest_rel_path),
+    } };
+    cs.installed_headers.append(installation) catch @panic("OOM");
+    cs.addHeaderInstallationToIncludeTree(installation);
+    installation.getSource().addStepDependencies(&cs.step);
 }
 
-pub const InstallConfigHeaderOptions = struct {
-    install_dir: InstallDir = .header,
-    dest_rel_path: ?[]const u8 = null,
-};
-
-pub fn installConfigHeader(
-    cs: *Compile,
-    config_header: *Step.ConfigHeader,
-    options: InstallConfigHeaderOptions,
-) void {
-    const dest_rel_path = options.dest_rel_path orelse config_header.include_path;
-    const b = cs.step.owner;
-    const install_file = b.addInstallFileWithDir(
-        .{ .generated = &config_header.output_file },
-        options.install_dir,
-        dest_rel_path,
-    );
-    install_file.step.dependOn(&config_header.step);
-    b.getInstallStep().dependOn(&install_file.step);
-    cs.installed_headers.append(&install_file.step) catch @panic("OOM");
-}
-
+/// Marks headers from the specified directory for installation alongside this artifact.
+/// When a module links with this artifact, all headers marked for installation are added to that
+/// module's include search path.
 pub fn installHeadersDirectory(
-    a: *Compile,
-    src_dir_path: []const u8,
-    dest_rel_path: []const u8,
-) void {
-    return installHeadersDirectoryOptions(a, .{
-        .source_dir = .{ .path = src_dir_path },
-        .install_dir = .header,
-        .install_subdir = dest_rel_path,
-    });
-}
-
-pub fn installHeadersDirectoryOptions(
     cs: *Compile,
-    options: std.Build.Step.InstallDir.Options,
+    source: LazyPath,
+    dest_rel_path: []const u8,
+    options: HeaderInstallation.Directory.Options,
 ) void {
     const b = cs.step.owner;
-    const install_dir = b.addInstallDirectory(options);
-    b.getInstallStep().dependOn(&install_dir.step);
-    cs.installed_headers.append(&install_dir.step) catch @panic("OOM");
+    const installation: HeaderInstallation = .{ .directory = .{
+        .source = source.dupe(b),
+        .dest_rel_path = b.dupePath(dest_rel_path),
+        .options = options.dupe(b),
+    } };
+    cs.installed_headers.append(installation) catch @panic("OOM");
+    cs.addHeaderInstallationToIncludeTree(installation);
+    installation.getSource().addStepDependencies(&cs.step);
 }
 
-pub fn installLibraryHeaders(cs: *Compile, l: *Compile) void {
-    assert(l.kind == .lib);
-    const b = cs.step.owner;
-    const install_step = b.getInstallStep();
-    // Copy each element from installed_headers, modifying the builder
-    // to be the new parent's builder.
-    for (l.installed_headers.items) |step| {
-        const step_copy = switch (step.id) {
-            inline .install_file, .install_dir => |id| blk: {
-                const T = id.Type();
-                const ptr = b.allocator.create(T) catch @panic("OOM");
-                ptr.* = step.cast(T).?.*;
-                ptr.dest_builder = b;
-                break :blk &ptr.step;
-            },
-            else => unreachable,
-        };
-        cs.installed_headers.append(step_copy) catch @panic("OOM");
-        install_step.dependOn(step_copy);
+/// Marks the specified config header for installation alongside this artifact.
+/// When a module links with this artifact, all headers marked for installation are added to that
+/// module's include search path.
+pub fn installConfigHeader(cs: *Compile, config_header: *Step.ConfigHeader) void {
+    cs.installHeader(config_header.getOutput(), config_header.include_path);
+}
+
+/// Forwards all headers marked for installation from `lib` to this artifact.
+/// When a module links with this artifact, all headers marked for installation are added to that
+/// module's include search path.
+pub fn installLibraryHeaders(cs: *Compile, lib: *Compile) void {
+    assert(lib.kind == .lib);
+    for (lib.installed_headers.items) |installation| {
+        const installation_copy = installation.dupe(lib.step.owner);
+        cs.installed_headers.append(installation_copy) catch @panic("OOM");
+        cs.addHeaderInstallationToIncludeTree(installation_copy);
+        installation_copy.getSource().addStepDependencies(&cs.step);
     }
-    cs.installed_headers.appendSlice(l.installed_headers.items) catch @panic("OOM");
+}
+
+fn addHeaderInstallationToIncludeTree(cs: *Compile, installation: HeaderInstallation) void {
+    if (cs.installed_headers_include_tree) |wf| switch (installation) {
+        .file => |file| {
+            _ = wf.addCopyFile(file.source, file.dest_rel_path);
+        },
+        .directory => |dir| {
+            _ = wf.addCopyDirectory(dir.source, dir.dest_rel_path, .{
+                .exclude_extensions = dir.options.exclude_extensions,
+                .include_extensions = dir.options.include_extensions,
+            });
+        },
+    };
+}
+
+pub fn getEmittedIncludeTree(cs: *Compile) LazyPath {
+    if (cs.installed_headers_include_tree) |wf| return wf.getDirectory();
+    const b = cs.step.owner;
+    const wf = b.addWriteFiles();
+    cs.installed_headers_include_tree = wf;
+    for (cs.installed_headers.items) |installation| {
+        cs.addHeaderInstallationToIncludeTree(installation);
+    }
+    // The compile step itself does not need to depend on the write files step,
+    // only dependent modules do.
+    return wf.getDirectory();
 }
 
 pub fn addObjCopy(cs: *Compile, options: Step.ObjCopy.Options) *Step.ObjCopy {
@@ -531,11 +626,11 @@ pub fn dependsOnSystemLibrary(self: *const Compile, name: []const u8) bool {
 }
 
 pub fn isDynamicLibrary(self: *const Compile) bool {
-    return self.kind == .lib and self.linkage == Linkage.dynamic;
+    return self.kind == .lib and self.linkage == .dynamic;
 }
 
 pub fn isStaticLibrary(self: *const Compile) bool {
-    return self.kind == .lib and self.linkage != Linkage.dynamic;
+    return self.kind == .lib and self.linkage != .dynamic;
 }
 
 pub fn producesPdbFile(self: *Compile) bool {
@@ -920,7 +1015,7 @@ fn getGeneratedFilePath(self: *Compile, comptime tag_name: []const u8, asking_st
 fn make(step: *Step, prog_node: *std.Progress.Node) !void {
     const b = step.owner;
     const arena = b.allocator;
-    const self = @fieldParentPtr(Compile, "step", step);
+    const self: *Compile = @fieldParentPtr("step", step);
 
     var zig_args = ArrayList([]const u8).init(arena);
     defer zig_args.deinit();
@@ -988,7 +1083,7 @@ fn make(step: *Step, prog_node: *std.Progress.Node) !void {
         var prev_has_cflags = false;
         var prev_has_rcflags = false;
         var prev_search_strategy: Module.SystemLib.SearchStrategy = .paths_first;
-        var prev_preferred_link_mode: std.builtin.LinkMode = .Dynamic;
+        var prev_preferred_link_mode: std.builtin.LinkMode = .dynamic;
         // Track the number of positional arguments so that a nice error can be
         // emitted if there is nothing to link.
         var total_linker_objects: usize = @intFromBool(self.root_module.root_source_file != null);
@@ -1053,16 +1148,16 @@ fn make(step: *Step, prog_node: *std.Progress.Node) !void {
                         {
                             switch (system_lib.search_strategy) {
                                 .no_fallback => switch (system_lib.preferred_link_mode) {
-                                    .Dynamic => try zig_args.append("-search_dylibs_only"),
-                                    .Static => try zig_args.append("-search_static_only"),
+                                    .dynamic => try zig_args.append("-search_dylibs_only"),
+                                    .static => try zig_args.append("-search_static_only"),
                                 },
                                 .paths_first => switch (system_lib.preferred_link_mode) {
-                                    .Dynamic => try zig_args.append("-search_paths_first"),
-                                    .Static => try zig_args.append("-search_paths_first_static"),
+                                    .dynamic => try zig_args.append("-search_paths_first"),
+                                    .static => try zig_args.append("-search_paths_first_static"),
                                 },
                                 .mode_first => switch (system_lib.preferred_link_mode) {
-                                    .Dynamic => try zig_args.append("-search_dylibs_first"),
-                                    .Static => try zig_args.append("-search_static_first"),
+                                    .dynamic => try zig_args.append("-search_dylibs_first"),
+                                    .static => try zig_args.append("-search_static_first"),
                                 },
                             }
                             prev_search_strategy = system_lib.search_strategy;
@@ -1138,7 +1233,7 @@ fn make(step: *Step, prog_node: *std.Progress.Node) !void {
                                 try zig_args.append(full_path_lib);
                                 total_linker_objects += 1;
 
-                                if (other.linkage == Linkage.dynamic and
+                                if (other.linkage == .dynamic and
                                     self.rootModuleTarget().os.tag != .windows)
                                 {
                                     if (fs.path.dirname(full_path_lib)) |dirname| {
@@ -1586,6 +1681,10 @@ fn make(step: *Step, prog_node: *std.Progress.Node) !void {
             .EfiRom => "efi_rom",
             .EfiRuntimeDriver => "efi_runtime_driver",
         });
+    }
+
+    if (self.mingw_unicode_entry_point) {
+        try zig_args.append("-municode");
     }
 
     if (self.error_limit) |err_limit| try zig_args.appendSlice(&.{

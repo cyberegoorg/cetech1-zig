@@ -11,6 +11,7 @@ const assert = std.debug.assert;
 const math = std.math;
 const maxInt = std.math.maxInt;
 const native_arch = builtin.cpu.arch;
+const UnexpectedError = std.posix.UnexpectedError;
 
 test {
     if (builtin.os.tag == .windows) {
@@ -42,6 +43,7 @@ pub const OpenError = error{
     WouldBlock,
     NetworkNotFound,
     AntivirusInterference,
+    BadPathName,
 };
 
 pub const OpenFileOptions = struct {
@@ -120,7 +122,7 @@ pub fn OpenFile(sub_path_w: []const u16, options: OpenFileOptions) OpenError!HAN
         );
         switch (rc) {
             .SUCCESS => return result,
-            .OBJECT_NAME_INVALID => unreachable,
+            .OBJECT_NAME_INVALID => return error.BadPathName,
             .OBJECT_NAME_NOT_FOUND => return error.FileNotFound,
             .OBJECT_PATH_NOT_FOUND => return error.FileNotFound,
             .BAD_NETWORK_PATH => return error.NetworkNotFound, // \\server was not found
@@ -152,14 +154,149 @@ pub fn OpenFile(sub_path_w: []const u16, options: OpenFileOptions) OpenError!HAN
     }
 }
 
-pub const CreatePipeError = error{Unexpected};
+pub fn GetCurrentProcess() HANDLE {
+    const process_pseudo_handle: usize = @bitCast(@as(isize, -1));
+    return @ptrFromInt(process_pseudo_handle);
+}
 
+pub fn GetCurrentProcessId() DWORD {
+    return @truncate(@intFromPtr(teb().ClientId.UniqueProcess));
+}
+
+pub fn GetCurrentThread() HANDLE {
+    const thread_pseudo_handle: usize = @bitCast(@as(isize, -2));
+    return @ptrFromInt(thread_pseudo_handle);
+}
+
+pub fn GetCurrentThreadId() DWORD {
+    return @truncate(@intFromPtr(teb().ClientId.UniqueThread));
+}
+
+pub const CreatePipeError = error{ Unexpected, SystemResources };
+
+var npfs: ?HANDLE = null;
+
+/// A Zig wrapper around `NtCreateNamedPipeFile` and `NtCreateFile` syscalls.
+/// It implements similar behavior to `CreatePipe` and is meant to serve
+/// as a direct substitute for that call.
 pub fn CreatePipe(rd: *HANDLE, wr: *HANDLE, sattr: *const SECURITY_ATTRIBUTES) CreatePipeError!void {
-    if (kernel32.CreatePipe(rd, wr, sattr, 0) == 0) {
-        switch (kernel32.GetLastError()) {
-            else => |err| return unexpectedError(err),
+    // Up to NT 5.2 (Windows XP/Server 2003), `CreatePipe` would generate a pipe similar to:
+    //
+    //      \??\pipe\Win32Pipes.{pid}.{count}
+    //
+    // where `pid` is the process id and count is a incrementing counter.
+    // The implementation was changed after NT 6.0 (Vista) to open a handle to the Named Pipe File System
+    // and use that as the root directory for `NtCreateNamedPipeFile`.
+    // This object is visible under the NPFS but has no filename attached to it.
+    //
+    // This implementation replicates how `CreatePipe` works in modern Windows versions.
+    const opt_dev_handle = @atomicLoad(?HANDLE, &npfs, .seq_cst);
+    const dev_handle = opt_dev_handle orelse blk: {
+        const str = std.unicode.utf8ToUtf16LeStringLiteral("\\Device\\NamedPipe\\");
+        const len: u16 = @truncate(str.len * @sizeOf(u16));
+        const name = UNICODE_STRING{
+            .Length = len,
+            .MaximumLength = len,
+            .Buffer = @constCast(@ptrCast(str)),
+        };
+        const attrs = OBJECT_ATTRIBUTES{
+            .ObjectName = @constCast(&name),
+            .Length = @sizeOf(OBJECT_ATTRIBUTES),
+            .RootDirectory = null,
+            .Attributes = 0,
+            .SecurityDescriptor = null,
+            .SecurityQualityOfService = null,
+        };
+
+        var iosb: IO_STATUS_BLOCK = undefined;
+        var handle: HANDLE = undefined;
+        switch (ntdll.NtCreateFile(
+            &handle,
+            GENERIC_READ | SYNCHRONIZE,
+            @constCast(&attrs),
+            &iosb,
+            null,
+            0,
+            FILE_SHARE_READ | FILE_SHARE_WRITE,
+            FILE_OPEN,
+            FILE_SYNCHRONOUS_IO_NONALERT,
+            null,
+            0,
+        )) {
+            .SUCCESS => {},
+            // Judging from the ReactOS sources this is technically possible.
+            .INSUFFICIENT_RESOURCES => return error.SystemResources,
+            .INVALID_PARAMETER => unreachable,
+            else => |e| return unexpectedStatus(e),
         }
+        if (@cmpxchgStrong(?HANDLE, &npfs, null, handle, .seq_cst, .seq_cst)) |xchg| {
+            CloseHandle(handle);
+            break :blk xchg.?;
+        } else break :blk handle;
+    };
+
+    const name = UNICODE_STRING{ .Buffer = null, .Length = 0, .MaximumLength = 0 };
+    var attrs = OBJECT_ATTRIBUTES{
+        .ObjectName = @constCast(&name),
+        .Length = @sizeOf(OBJECT_ATTRIBUTES),
+        .RootDirectory = dev_handle,
+        .Attributes = OBJ_CASE_INSENSITIVE,
+        .SecurityDescriptor = sattr.lpSecurityDescriptor,
+        .SecurityQualityOfService = null,
+    };
+    if (sattr.bInheritHandle != 0) attrs.Attributes |= OBJ_INHERIT;
+
+    // 120 second relative timeout in 100ns units.
+    const default_timeout: LARGE_INTEGER = (-120 * std.time.ns_per_s) / 100;
+    var iosb: IO_STATUS_BLOCK = undefined;
+    var read: HANDLE = undefined;
+    switch (ntdll.NtCreateNamedPipeFile(
+        &read,
+        GENERIC_READ | FILE_WRITE_ATTRIBUTES | SYNCHRONIZE,
+        &attrs,
+        &iosb,
+        FILE_SHARE_READ | FILE_SHARE_WRITE,
+        FILE_CREATE,
+        FILE_SYNCHRONOUS_IO_NONALERT,
+        FILE_PIPE_BYTE_STREAM_TYPE,
+        FILE_PIPE_BYTE_STREAM_MODE,
+        FILE_PIPE_QUEUE_OPERATION,
+        1,
+        4096,
+        4096,
+        @constCast(&default_timeout),
+    )) {
+        .SUCCESS => {},
+        .INVALID_PARAMETER => unreachable,
+        .INSUFFICIENT_RESOURCES => return error.SystemResources,
+        else => |e| return unexpectedStatus(e),
     }
+    errdefer CloseHandle(read);
+
+    attrs.RootDirectory = read;
+
+    var write: HANDLE = undefined;
+    switch (ntdll.NtCreateFile(
+        &write,
+        GENERIC_WRITE | SYNCHRONIZE | FILE_READ_ATTRIBUTES,
+        &attrs,
+        &iosb,
+        null,
+        0,
+        FILE_SHARE_READ | FILE_SHARE_WRITE,
+        FILE_OPEN,
+        FILE_SYNCHRONOUS_IO_NONALERT | FILE_NON_DIRECTORY_FILE,
+        null,
+        0,
+    )) {
+        .SUCCESS => {},
+        .INVALID_PARAMETER => unreachable,
+        .INSUFFICIENT_RESOURCES => return error.SystemResources,
+        else => |e| return unexpectedStatus(e),
+    }
+
+    rd.* = read;
+    wr.* = write;
 }
 
 pub fn CreateEventEx(attributes: ?*SECURITY_ATTRIBUTES, name: []const u8, flags: DWORD, desired_access: DWORD) !HANDLE {
@@ -411,7 +548,7 @@ pub const GetQueuedCompletionStatusError = error{
     Cancelled,
     EOF,
     Timeout,
-} || std.os.UnexpectedError;
+} || UnexpectedError;
 
 pub fn GetQueuedCompletionStatusEx(
     completion_port: HANDLE,
@@ -1049,35 +1186,32 @@ pub fn SetFilePointerEx_CURRENT_get(handle: HANDLE) SetFilePointerError!u64 {
     return @as(u64, @bitCast(result));
 }
 
-pub fn QueryObjectName(
-    handle: HANDLE,
-    out_buffer: []u16,
-) ![]u16 {
+pub fn QueryObjectName(handle: HANDLE, out_buffer: []u16) ![]u16 {
     const out_buffer_aligned = mem.alignInSlice(out_buffer, @alignOf(OBJECT_NAME_INFORMATION)) orelse return error.NameTooLong;
 
     const info = @as(*OBJECT_NAME_INFORMATION, @ptrCast(out_buffer_aligned));
-    //buffer size is specified in bytes
+    // buffer size is specified in bytes
     const out_buffer_len = std.math.cast(ULONG, out_buffer_aligned.len * 2) orelse std.math.maxInt(ULONG);
-    //last argument would return the length required for full_buffer, not exposed here
-    const rc = ntdll.NtQueryObject(handle, .ObjectNameInformation, info, out_buffer_len, null);
-    switch (rc) {
-        .SUCCESS => {
+    // last argument would return the length required for full_buffer, not exposed here
+    return switch (ntdll.NtQueryObject(handle, .ObjectNameInformation, info, out_buffer_len, null)) {
+        .SUCCESS => blk: {
             // info.Name.Buffer from ObQueryNameString is documented to be null (and MaximumLength == 0)
             // if the object was "unnamed", not sure if this can happen for file handles
-            if (info.Name.MaximumLength == 0) return error.Unexpected;
+            if (info.Name.MaximumLength == 0) break :blk error.Unexpected;
             // resulting string length is specified in bytes
             const path_length_unterminated = @divExact(info.Name.Length, 2);
-            return info.Name.Buffer[0..path_length_unterminated];
+            break :blk info.Name.Buffer.?[0..path_length_unterminated];
         },
-        .ACCESS_DENIED => return error.AccessDenied,
-        .INVALID_HANDLE => return error.InvalidHandle,
+        .ACCESS_DENIED => error.AccessDenied,
+        .INVALID_HANDLE => error.InvalidHandle,
         // triggered when the buffer is too small for the OBJECT_NAME_INFORMATION object (.INFO_LENGTH_MISMATCH),
         // or if the buffer is too small for the file path returned (.BUFFER_OVERFLOW, .BUFFER_TOO_SMALL)
-        .INFO_LENGTH_MISMATCH, .BUFFER_OVERFLOW, .BUFFER_TOO_SMALL => return error.NameTooLong,
-        else => |e| return unexpectedStatus(e),
-    }
+        .INFO_LENGTH_MISMATCH, .BUFFER_OVERFLOW, .BUFFER_TOO_SMALL => error.NameTooLong,
+        else => |e| unexpectedStatus(e),
+    };
 }
-test "QueryObjectName" {
+
+test QueryObjectName {
     if (builtin.os.tag != .windows)
         return;
 
@@ -1245,7 +1379,7 @@ pub fn GetFinalPathNameByHandle(
     }
 }
 
-test "GetFinalPathNameByHandle" {
+test GetFinalPathNameByHandle {
     if (builtin.os.tag != .windows)
         return;
 
@@ -1568,7 +1702,7 @@ pub fn VirtualProtectEx(handle: HANDLE, addr: ?LPVOID, size: SIZE_T, new_prot: D
         .SUCCESS => return old_prot,
         .INVALID_ADDRESS => return error.InvalidAddress,
         // TODO: map errors
-        else => |rc| return std.os.windows.unexpectedStatus(rc),
+        else => |rc| return unexpectedStatus(rc),
     }
 }
 
@@ -1813,7 +1947,7 @@ pub fn SetFileTime(
 pub const LockFileError = error{
     SystemResources,
     WouldBlock,
-} || std.os.UnexpectedError;
+} || UnexpectedError;
 
 pub fn LockFile(
     FileHandle: HANDLE,
@@ -1850,7 +1984,7 @@ pub fn LockFile(
 
 pub const UnlockFileError = error{
     RangeNotLocked,
-} || std.os.UnexpectedError;
+} || UnexpectedError;
 
 pub fn UnlockFile(
     FileHandle: HANDLE,
@@ -2467,7 +2601,7 @@ pub fn ntToWin32Namespace(path: []const u16) !PathSpace {
     }
 }
 
-test "ntToWin32Namespace" {
+test ntToWin32Namespace {
     const L = std.unicode.utf8ToUtf16LeStringLiteral;
 
     try testNtToWin32Namespace(L("UNC"), L("\\??\\UNC"));
@@ -2539,8 +2673,8 @@ pub fn loadWinsockExtensionFunction(comptime T: type, sock: ws2_32.SOCKET, guid:
 
 /// Call this when you made a windows DLL call or something that does SetLastError
 /// and you get an unexpected error.
-pub fn unexpectedError(err: Win32Error) std.os.UnexpectedError {
-    if (std.os.unexpected_error_tracing) {
+pub fn unexpectedError(err: Win32Error) UnexpectedError {
+    if (std.posix.unexpected_error_tracing) {
         // 614 is the length of the longest windows error description
         var buf_wstr: [614]WCHAR = undefined;
         const len = kernel32.FormatMessageW(
@@ -2561,14 +2695,14 @@ pub fn unexpectedError(err: Win32Error) std.os.UnexpectedError {
     return error.Unexpected;
 }
 
-pub fn unexpectedWSAError(err: ws2_32.WinsockError) std.os.UnexpectedError {
+pub fn unexpectedWSAError(err: ws2_32.WinsockError) UnexpectedError {
     return unexpectedError(@as(Win32Error, @enumFromInt(@intFromEnum(err))));
 }
 
 /// Call this when you made a windows NtDll call
 /// and you get an unexpected status.
-pub fn unexpectedStatus(status: NTSTATUS) std.os.UnexpectedError {
-    if (std.os.unexpected_error_tracing) {
+pub fn unexpectedStatus(status: NTSTATUS) UnexpectedError {
+    if (std.posix.unexpected_error_tracing) {
         std.debug.print("error.Unexpected NTSTATUS=0x{x}\n", .{@intFromEnum(status)});
         std.debug.dumpCurrentStackTrace(@returnAddress());
     }
@@ -3014,29 +3148,29 @@ pub const OVERLAPPED_ENTRY = extern struct {
 
 pub const MAX_PATH = 260;
 
-// TODO issue #305
-pub const FILE_INFO_BY_HANDLE_CLASS = u32;
-pub const FileBasicInfo = 0;
-pub const FileStandardInfo = 1;
-pub const FileNameInfo = 2;
-pub const FileRenameInfo = 3;
-pub const FileDispositionInfo = 4;
-pub const FileAllocationInfo = 5;
-pub const FileEndOfFileInfo = 6;
-pub const FileStreamInfo = 7;
-pub const FileCompressionInfo = 8;
-pub const FileAttributeTagInfo = 9;
-pub const FileIdBothDirectoryInfo = 10;
-pub const FileIdBothDirectoryRestartInfo = 11;
-pub const FileIoPriorityHintInfo = 12;
-pub const FileRemoteProtocolInfo = 13;
-pub const FileFullDirectoryInfo = 14;
-pub const FileFullDirectoryRestartInfo = 15;
-pub const FileStorageInfo = 16;
-pub const FileAlignmentInfo = 17;
-pub const FileIdInfo = 18;
-pub const FileIdExtdDirectoryInfo = 19;
-pub const FileIdExtdDirectoryRestartInfo = 20;
+pub const FILE_INFO_BY_HANDLE_CLASS = enum(u32) {
+    FileBasicInfo = 0,
+    FileStandardInfo = 1,
+    FileNameInfo = 2,
+    FileRenameInfo = 3,
+    FileDispositionInfo = 4,
+    FileAllocationInfo = 5,
+    FileEndOfFileInfo = 6,
+    FileStreamInfo = 7,
+    FileCompressionInfo = 8,
+    FileAttributeTagInfo = 9,
+    FileIdBothDirectoryInfo = 10,
+    FileIdBothDirectoryRestartInfo = 11,
+    FileIoPriorityHintInfo = 12,
+    FileRemoteProtocolInfo = 13,
+    FileFullDirectoryInfo = 14,
+    FileFullDirectoryRestartInfo = 15,
+    FileStorageInfo = 16,
+    FileAlignmentInfo = 17,
+    FileIdInfo = 18,
+    FileIdExtdDirectoryInfo = 19,
+    FileIdExtdDirectoryRestartInfo = 20,
+};
 
 pub const BY_HANDLE_FILE_INFORMATION = extern struct {
     dwFileAttributes: DWORD,
@@ -3184,6 +3318,25 @@ pub const FILE_ATTRIBUTE_SPARSE_FILE = 0x200;
 pub const FILE_ATTRIBUTE_SYSTEM = 0x4;
 pub const FILE_ATTRIBUTE_TEMPORARY = 0x100;
 pub const FILE_ATTRIBUTE_VIRTUAL = 0x10000;
+
+pub const FILE_ALL_ACCESS = STANDARD_RIGHTS_REQUIRED | SYNCHRONIZE | 0x1ff;
+pub const FILE_GENERIC_READ = STANDARD_RIGHTS_READ | FILE_READ_DATA | FILE_READ_ATTRIBUTES | FILE_READ_EA | SYNCHRONIZE;
+pub const FILE_GENERIC_WRITE = STANDARD_RIGHTS_WRITE | FILE_WRITE_DATA | FILE_WRITE_ATTRIBUTES | FILE_WRITE_EA | FILE_APPEND_DATA | SYNCHRONIZE;
+pub const FILE_GENERIC_EXECUTE = STANDARD_RIGHTS_EXECUTE | FILE_READ_ATTRIBUTES | FILE_EXECUTE | SYNCHRONIZE;
+
+// Flags for NtCreateNamedPipeFile
+// NamedPipeType
+pub const FILE_PIPE_BYTE_STREAM_TYPE = 0x0;
+pub const FILE_PIPE_MESSAGE_TYPE = 0x1;
+pub const FILE_PIPE_ACCEPT_REMOTE_CLIENTS = 0x0;
+pub const FILE_PIPE_REJECT_REMOTE_CLIENTS = 0x2;
+pub const FILE_PIPE_TYPE_VALID_MASK = 0x3;
+// CompletionMode
+pub const FILE_PIPE_QUEUE_OPERATION = 0x0;
+pub const FILE_PIPE_COMPLETE_OPERATION = 0x1;
+// ReadMode
+pub const FILE_PIPE_BYTE_STREAM_MODE = 0x0;
+pub const FILE_PIPE_MESSAGE_MODE = 0x1;
 
 // flags for CreateEvent
 pub const CREATE_EVENT_INITIAL_SET = 0x00000002;
@@ -3386,7 +3539,7 @@ pub const GUID = extern struct {
     }
 };
 
-test "GUID" {
+test GUID {
     try std.testing.expectEqual(
         GUID{
             .Data1 = 0x01234567,
@@ -3796,295 +3949,305 @@ pub const EXCEPTION_RECORD = extern struct {
     ExceptionInformation: [15]usize,
 };
 
-pub usingnamespace switch (native_arch) {
-    .x86 => struct {
-        pub const FLOATING_SAVE_AREA = extern struct {
-            ControlWord: DWORD,
-            StatusWord: DWORD,
-            TagWord: DWORD,
-            ErrorOffset: DWORD,
-            ErrorSelector: DWORD,
-            DataOffset: DWORD,
-            DataSelector: DWORD,
-            RegisterArea: [80]BYTE,
-            Cr0NpxState: DWORD,
-        };
-
-        pub const CONTEXT = extern struct {
-            ContextFlags: DWORD,
-            Dr0: DWORD,
-            Dr1: DWORD,
-            Dr2: DWORD,
-            Dr3: DWORD,
-            Dr6: DWORD,
-            Dr7: DWORD,
-            FloatSave: FLOATING_SAVE_AREA,
-            SegGs: DWORD,
-            SegFs: DWORD,
-            SegEs: DWORD,
-            SegDs: DWORD,
-            Edi: DWORD,
-            Esi: DWORD,
-            Ebx: DWORD,
-            Edx: DWORD,
-            Ecx: DWORD,
-            Eax: DWORD,
-            Ebp: DWORD,
-            Eip: DWORD,
-            SegCs: DWORD,
-            EFlags: DWORD,
-            Esp: DWORD,
-            SegSs: DWORD,
-            ExtendedRegisters: [512]BYTE,
-
-            pub fn getRegs(ctx: *const CONTEXT) struct { bp: usize, ip: usize } {
-                return .{ .bp = ctx.Ebp, .ip = ctx.Eip };
-            }
-        };
+pub const FLOATING_SAVE_AREA = switch (native_arch) {
+    .x86 => extern struct {
+        ControlWord: DWORD,
+        StatusWord: DWORD,
+        TagWord: DWORD,
+        ErrorOffset: DWORD,
+        ErrorSelector: DWORD,
+        DataOffset: DWORD,
+        DataSelector: DWORD,
+        RegisterArea: [80]BYTE,
+        Cr0NpxState: DWORD,
     },
-    .x86_64 => struct {
-        pub const M128A = extern struct {
+    else => @compileError("FLOATING_SAVE_AREA only defined on x86"),
+};
+
+pub const M128A = switch (native_arch) {
+    .x86_64 => extern struct {
+        Low: ULONGLONG,
+        High: LONGLONG,
+    },
+    else => @compileError("M128A only defined on x86_64"),
+};
+
+pub const XMM_SAVE_AREA32 = switch (native_arch) {
+    .x86_64 => extern struct {
+        ControlWord: WORD,
+        StatusWord: WORD,
+        TagWord: BYTE,
+        Reserved1: BYTE,
+        ErrorOpcode: WORD,
+        ErrorOffset: DWORD,
+        ErrorSelector: WORD,
+        Reserved2: WORD,
+        DataOffset: DWORD,
+        DataSelector: WORD,
+        Reserved3: WORD,
+        MxCsr: DWORD,
+        MxCsr_Mask: DWORD,
+        FloatRegisters: [8]M128A,
+        XmmRegisters: [16]M128A,
+        Reserved4: [96]BYTE,
+    },
+    else => @compileError("XMM_SAVE_AREA32 only defined on x86_64"),
+};
+
+pub const NEON128 = switch (native_arch) {
+    .aarch64 => extern union {
+        DUMMYSTRUCTNAME: extern struct {
             Low: ULONGLONG,
             High: LONGLONG,
-        };
-
-        pub const XMM_SAVE_AREA32 = extern struct {
-            ControlWord: WORD,
-            StatusWord: WORD,
-            TagWord: BYTE,
-            Reserved1: BYTE,
-            ErrorOpcode: WORD,
-            ErrorOffset: DWORD,
-            ErrorSelector: WORD,
-            Reserved2: WORD,
-            DataOffset: DWORD,
-            DataSelector: WORD,
-            Reserved3: WORD,
-            MxCsr: DWORD,
-            MxCsr_Mask: DWORD,
-            FloatRegisters: [8]M128A,
-            XmmRegisters: [16]M128A,
-            Reserved4: [96]BYTE,
-        };
-
-        pub const CONTEXT = extern struct {
-            P1Home: DWORD64 align(16),
-            P2Home: DWORD64,
-            P3Home: DWORD64,
-            P4Home: DWORD64,
-            P5Home: DWORD64,
-            P6Home: DWORD64,
-            ContextFlags: DWORD,
-            MxCsr: DWORD,
-            SegCs: WORD,
-            SegDs: WORD,
-            SegEs: WORD,
-            SegFs: WORD,
-            SegGs: WORD,
-            SegSs: WORD,
-            EFlags: DWORD,
-            Dr0: DWORD64,
-            Dr1: DWORD64,
-            Dr2: DWORD64,
-            Dr3: DWORD64,
-            Dr6: DWORD64,
-            Dr7: DWORD64,
-            Rax: DWORD64,
-            Rcx: DWORD64,
-            Rdx: DWORD64,
-            Rbx: DWORD64,
-            Rsp: DWORD64,
-            Rbp: DWORD64,
-            Rsi: DWORD64,
-            Rdi: DWORD64,
-            R8: DWORD64,
-            R9: DWORD64,
-            R10: DWORD64,
-            R11: DWORD64,
-            R12: DWORD64,
-            R13: DWORD64,
-            R14: DWORD64,
-            R15: DWORD64,
-            Rip: DWORD64,
-            DUMMYUNIONNAME: extern union {
-                FltSave: XMM_SAVE_AREA32,
-                FloatSave: XMM_SAVE_AREA32,
-                DUMMYSTRUCTNAME: extern struct {
-                    Header: [2]M128A,
-                    Legacy: [8]M128A,
-                    Xmm0: M128A,
-                    Xmm1: M128A,
-                    Xmm2: M128A,
-                    Xmm3: M128A,
-                    Xmm4: M128A,
-                    Xmm5: M128A,
-                    Xmm6: M128A,
-                    Xmm7: M128A,
-                    Xmm8: M128A,
-                    Xmm9: M128A,
-                    Xmm10: M128A,
-                    Xmm11: M128A,
-                    Xmm12: M128A,
-                    Xmm13: M128A,
-                    Xmm14: M128A,
-                    Xmm15: M128A,
-                },
-            },
-            VectorRegister: [26]M128A,
-            VectorControl: DWORD64,
-            DebugControl: DWORD64,
-            LastBranchToRip: DWORD64,
-            LastBranchFromRip: DWORD64,
-            LastExceptionToRip: DWORD64,
-            LastExceptionFromRip: DWORD64,
-
-            pub fn getRegs(ctx: *const CONTEXT) struct { bp: usize, ip: usize, sp: usize } {
-                return .{ .bp = ctx.Rbp, .ip = ctx.Rip, .sp = ctx.Rsp };
-            }
-
-            pub fn setIp(ctx: *CONTEXT, ip: usize) void {
-                ctx.Rip = ip;
-            }
-
-            pub fn setSp(ctx: *CONTEXT, sp: usize) void {
-                ctx.Rsp = sp;
-            }
-        };
-
-        pub const RUNTIME_FUNCTION = extern struct {
-            BeginAddress: DWORD,
-            EndAddress: DWORD,
-            UnwindData: DWORD,
-        };
-
-        pub const KNONVOLATILE_CONTEXT_POINTERS = extern struct {
-            FloatingContext: [16]?*M128A,
-            IntegerContext: [16]?*ULONG64,
-        };
+        },
+        D: [2]f64,
+        S: [4]f32,
+        H: [8]WORD,
+        B: [16]BYTE,
     },
-    .aarch64 => struct {
-        pub const NEON128 = extern union {
+    else => @compileError("NEON128 only defined on aarch64"),
+};
+
+pub const CONTEXT = switch (native_arch) {
+    .x86 => extern struct {
+        ContextFlags: DWORD,
+        Dr0: DWORD,
+        Dr1: DWORD,
+        Dr2: DWORD,
+        Dr3: DWORD,
+        Dr6: DWORD,
+        Dr7: DWORD,
+        FloatSave: FLOATING_SAVE_AREA,
+        SegGs: DWORD,
+        SegFs: DWORD,
+        SegEs: DWORD,
+        SegDs: DWORD,
+        Edi: DWORD,
+        Esi: DWORD,
+        Ebx: DWORD,
+        Edx: DWORD,
+        Ecx: DWORD,
+        Eax: DWORD,
+        Ebp: DWORD,
+        Eip: DWORD,
+        SegCs: DWORD,
+        EFlags: DWORD,
+        Esp: DWORD,
+        SegSs: DWORD,
+        ExtendedRegisters: [512]BYTE,
+
+        pub fn getRegs(ctx: *const CONTEXT) struct { bp: usize, ip: usize } {
+            return .{ .bp = ctx.Ebp, .ip = ctx.Eip };
+        }
+    },
+    .x86_64 => extern struct {
+        P1Home: DWORD64 align(16),
+        P2Home: DWORD64,
+        P3Home: DWORD64,
+        P4Home: DWORD64,
+        P5Home: DWORD64,
+        P6Home: DWORD64,
+        ContextFlags: DWORD,
+        MxCsr: DWORD,
+        SegCs: WORD,
+        SegDs: WORD,
+        SegEs: WORD,
+        SegFs: WORD,
+        SegGs: WORD,
+        SegSs: WORD,
+        EFlags: DWORD,
+        Dr0: DWORD64,
+        Dr1: DWORD64,
+        Dr2: DWORD64,
+        Dr3: DWORD64,
+        Dr6: DWORD64,
+        Dr7: DWORD64,
+        Rax: DWORD64,
+        Rcx: DWORD64,
+        Rdx: DWORD64,
+        Rbx: DWORD64,
+        Rsp: DWORD64,
+        Rbp: DWORD64,
+        Rsi: DWORD64,
+        Rdi: DWORD64,
+        R8: DWORD64,
+        R9: DWORD64,
+        R10: DWORD64,
+        R11: DWORD64,
+        R12: DWORD64,
+        R13: DWORD64,
+        R14: DWORD64,
+        R15: DWORD64,
+        Rip: DWORD64,
+        DUMMYUNIONNAME: extern union {
+            FltSave: XMM_SAVE_AREA32,
+            FloatSave: XMM_SAVE_AREA32,
             DUMMYSTRUCTNAME: extern struct {
-                Low: ULONGLONG,
-                High: LONGLONG,
+                Header: [2]M128A,
+                Legacy: [8]M128A,
+                Xmm0: M128A,
+                Xmm1: M128A,
+                Xmm2: M128A,
+                Xmm3: M128A,
+                Xmm4: M128A,
+                Xmm5: M128A,
+                Xmm6: M128A,
+                Xmm7: M128A,
+                Xmm8: M128A,
+                Xmm9: M128A,
+                Xmm10: M128A,
+                Xmm11: M128A,
+                Xmm12: M128A,
+                Xmm13: M128A,
+                Xmm14: M128A,
+                Xmm15: M128A,
             },
-            D: [2]f64,
-            S: [4]f32,
-            H: [8]WORD,
-            B: [16]BYTE,
-        };
+        },
+        VectorRegister: [26]M128A,
+        VectorControl: DWORD64,
+        DebugControl: DWORD64,
+        LastBranchToRip: DWORD64,
+        LastBranchFromRip: DWORD64,
+        LastExceptionToRip: DWORD64,
+        LastExceptionFromRip: DWORD64,
 
-        pub const CONTEXT = extern struct {
-            ContextFlags: ULONG align(16),
-            Cpsr: ULONG,
-            DUMMYUNIONNAME: extern union {
-                DUMMYSTRUCTNAME: extern struct {
-                    X0: DWORD64,
-                    X1: DWORD64,
-                    X2: DWORD64,
-                    X3: DWORD64,
-                    X4: DWORD64,
-                    X5: DWORD64,
-                    X6: DWORD64,
-                    X7: DWORD64,
-                    X8: DWORD64,
-                    X9: DWORD64,
-                    X10: DWORD64,
-                    X11: DWORD64,
-                    X12: DWORD64,
-                    X13: DWORD64,
-                    X14: DWORD64,
-                    X15: DWORD64,
-                    X16: DWORD64,
-                    X17: DWORD64,
-                    X18: DWORD64,
-                    X19: DWORD64,
-                    X20: DWORD64,
-                    X21: DWORD64,
-                    X22: DWORD64,
-                    X23: DWORD64,
-                    X24: DWORD64,
-                    X25: DWORD64,
-                    X26: DWORD64,
-                    X27: DWORD64,
-                    X28: DWORD64,
-                    Fp: DWORD64,
-                    Lr: DWORD64,
-                },
-                X: [31]DWORD64,
-            },
-            Sp: DWORD64,
-            Pc: DWORD64,
-            V: [32]NEON128,
-            Fpcr: DWORD,
-            Fpsr: DWORD,
-            Bcr: [8]DWORD,
-            Bvr: [8]DWORD64,
-            Wcr: [2]DWORD,
-            Wvr: [2]DWORD64,
+        pub fn getRegs(ctx: *const CONTEXT) struct { bp: usize, ip: usize, sp: usize } {
+            return .{ .bp = ctx.Rbp, .ip = ctx.Rip, .sp = ctx.Rsp };
+        }
 
-            pub fn getRegs(ctx: *const CONTEXT) struct { bp: usize, ip: usize, sp: usize } {
-                return .{
-                    .bp = ctx.DUMMYUNIONNAME.DUMMYSTRUCTNAME.Fp,
-                    .ip = ctx.Pc,
-                    .sp = ctx.Sp,
-                };
-            }
+        pub fn setIp(ctx: *CONTEXT, ip: usize) void {
+            ctx.Rip = ip;
+        }
 
-            pub fn setIp(ctx: *CONTEXT, ip: usize) void {
-                ctx.Pc = ip;
-            }
-
-            pub fn setSp(ctx: *CONTEXT, sp: usize) void {
-                ctx.Sp = sp;
-            }
-        };
-
-        pub const RUNTIME_FUNCTION = extern struct {
-            BeginAddress: DWORD,
-            DUMMYUNIONNAME: extern union {
-                UnwindData: DWORD,
-                DUMMYSTRUCTNAME: packed struct {
-                    Flag: u2,
-                    FunctionLength: u11,
-                    RegF: u3,
-                    RegI: u4,
-                    H: u1,
-                    CR: u2,
-                    FrameSize: u9,
-                },
-            },
-        };
-
-        pub const KNONVOLATILE_CONTEXT_POINTERS = extern struct {
-            X19: ?*DWORD64,
-            X20: ?*DWORD64,
-            X21: ?*DWORD64,
-            X22: ?*DWORD64,
-            X23: ?*DWORD64,
-            X24: ?*DWORD64,
-            X25: ?*DWORD64,
-            X26: ?*DWORD64,
-            X27: ?*DWORD64,
-            X28: ?*DWORD64,
-            Fp: ?*DWORD64,
-            Lr: ?*DWORD64,
-            D8: ?*DWORD64,
-            D9: ?*DWORD64,
-            D10: ?*DWORD64,
-            D11: ?*DWORD64,
-            D12: ?*DWORD64,
-            D13: ?*DWORD64,
-            D14: ?*DWORD64,
-            D15: ?*DWORD64,
-        };
+        pub fn setSp(ctx: *CONTEXT, sp: usize) void {
+            ctx.Rsp = sp;
+        }
     },
-    else => struct {},
+    .aarch64 => extern struct {
+        ContextFlags: ULONG align(16),
+        Cpsr: ULONG,
+        DUMMYUNIONNAME: extern union {
+            DUMMYSTRUCTNAME: extern struct {
+                X0: DWORD64,
+                X1: DWORD64,
+                X2: DWORD64,
+                X3: DWORD64,
+                X4: DWORD64,
+                X5: DWORD64,
+                X6: DWORD64,
+                X7: DWORD64,
+                X8: DWORD64,
+                X9: DWORD64,
+                X10: DWORD64,
+                X11: DWORD64,
+                X12: DWORD64,
+                X13: DWORD64,
+                X14: DWORD64,
+                X15: DWORD64,
+                X16: DWORD64,
+                X17: DWORD64,
+                X18: DWORD64,
+                X19: DWORD64,
+                X20: DWORD64,
+                X21: DWORD64,
+                X22: DWORD64,
+                X23: DWORD64,
+                X24: DWORD64,
+                X25: DWORD64,
+                X26: DWORD64,
+                X27: DWORD64,
+                X28: DWORD64,
+                Fp: DWORD64,
+                Lr: DWORD64,
+            },
+            X: [31]DWORD64,
+        },
+        Sp: DWORD64,
+        Pc: DWORD64,
+        V: [32]NEON128,
+        Fpcr: DWORD,
+        Fpsr: DWORD,
+        Bcr: [8]DWORD,
+        Bvr: [8]DWORD64,
+        Wcr: [2]DWORD,
+        Wvr: [2]DWORD64,
+
+        pub fn getRegs(ctx: *const CONTEXT) struct { bp: usize, ip: usize, sp: usize } {
+            return .{
+                .bp = ctx.DUMMYUNIONNAME.DUMMYSTRUCTNAME.Fp,
+                .ip = ctx.Pc,
+                .sp = ctx.Sp,
+            };
+        }
+
+        pub fn setIp(ctx: *CONTEXT, ip: usize) void {
+            ctx.Pc = ip;
+        }
+
+        pub fn setSp(ctx: *CONTEXT, sp: usize) void {
+            ctx.Sp = sp;
+        }
+    },
+    else => @compileError("CONTEXT is not defined for this architecture"),
+};
+
+pub const RUNTIME_FUNCTION = switch (native_arch) {
+    .x86_64 => extern struct {
+        BeginAddress: DWORD,
+        EndAddress: DWORD,
+        UnwindData: DWORD,
+    },
+    .aarch64 => extern struct {
+        BeginAddress: DWORD,
+        DUMMYUNIONNAME: extern union {
+            UnwindData: DWORD,
+            DUMMYSTRUCTNAME: packed struct {
+                Flag: u2,
+                FunctionLength: u11,
+                RegF: u3,
+                RegI: u4,
+                H: u1,
+                CR: u2,
+                FrameSize: u9,
+            },
+        },
+    },
+    else => @compileError("RUNTIME_FUNCTION is not defined for this architecture"),
+};
+
+pub const KNONVOLATILE_CONTEXT_POINTERS = switch (native_arch) {
+    .x86_64 => extern struct {
+        FloatingContext: [16]?*M128A,
+        IntegerContext: [16]?*ULONG64,
+    },
+    .aarch64 => extern struct {
+        X19: ?*DWORD64,
+        X20: ?*DWORD64,
+        X21: ?*DWORD64,
+        X22: ?*DWORD64,
+        X23: ?*DWORD64,
+        X24: ?*DWORD64,
+        X25: ?*DWORD64,
+        X26: ?*DWORD64,
+        X27: ?*DWORD64,
+        X28: ?*DWORD64,
+        Fp: ?*DWORD64,
+        Lr: ?*DWORD64,
+        D8: ?*DWORD64,
+        D9: ?*DWORD64,
+        D10: ?*DWORD64,
+        D11: ?*DWORD64,
+        D12: ?*DWORD64,
+        D13: ?*DWORD64,
+        D14: ?*DWORD64,
+        D15: ?*DWORD64,
+    },
+    else => @compileError("KNONVOLATILE_CONTEXT_POINTERS is not defined for this architecture"),
 };
 
 pub const EXCEPTION_POINTERS = extern struct {
     ExceptionRecord: *EXCEPTION_RECORD,
-    ContextRecord: *std.os.windows.CONTEXT,
+    ContextRecord: *CONTEXT,
 };
 
 pub const VECTORED_EXCEPTION_HANDLER = *const fn (ExceptionInfo: *EXCEPTION_POINTERS) callconv(WINAPI) c_long;
@@ -4140,7 +4303,7 @@ pub const OBJ_VALID_ATTRIBUTES = 0x000003F2;
 pub const UNICODE_STRING = extern struct {
     Length: c_ushort,
     MaximumLength: c_ushort,
-    Buffer: [*]WCHAR,
+    Buffer: ?[*]WCHAR,
 };
 
 pub const ACTIVATION_CONTEXT_DATA = opaque {};
@@ -4165,7 +4328,11 @@ pub const THREAD_BASIC_INFORMATION = extern struct {
 };
 
 pub const TEB = extern struct {
-    Reserved1: [12]PVOID,
+    NtTib: NT_TIB,
+    EnvironmentPointer: PVOID,
+    ClientId: CLIENT_ID,
+    ActiveRpcHandle: PVOID,
+    ThreadLocalStoragePointer: PVOID,
     ProcessEnvironmentBlock: *PEB,
     Reserved2: [399]PVOID,
     Reserved3: [1952]u8,
@@ -4176,6 +4343,25 @@ pub const TEB = extern struct {
     Reserved6: [4]PVOID,
     TlsExpansionSlots: PVOID,
 };
+
+comptime {
+    // Offsets taken from WinDbg info and Geoff Chappell[1] (RIP)
+    // [1]: https://www.geoffchappell.com/studies/windows/km/ntoskrnl/inc/api/pebteb/teb/index.htm
+    assert(@offsetOf(TEB, "NtTib") == 0x00);
+    if (@sizeOf(usize) == 4) {
+        assert(@offsetOf(TEB, "EnvironmentPointer") == 0x1C);
+        assert(@offsetOf(TEB, "ClientId") == 0x20);
+        assert(@offsetOf(TEB, "ActiveRpcHandle") == 0x28);
+        assert(@offsetOf(TEB, "ThreadLocalStoragePointer") == 0x2C);
+        assert(@offsetOf(TEB, "ProcessEnvironmentBlock") == 0x30);
+    } else if (@sizeOf(usize) == 8) {
+        assert(@offsetOf(TEB, "EnvironmentPointer") == 0x38);
+        assert(@offsetOf(TEB, "ClientId") == 0x40);
+        assert(@offsetOf(TEB, "ActiveRpcHandle") == 0x50);
+        assert(@offsetOf(TEB, "ThreadLocalStoragePointer") == 0x58);
+        assert(@offsetOf(TEB, "ProcessEnvironmentBlock") == 0x60);
+    }
+}
 
 pub const EXCEPTION_REGISTRATION_RECORD = extern struct {
     Next: ?*EXCEPTION_REGISTRATION_RECORD,

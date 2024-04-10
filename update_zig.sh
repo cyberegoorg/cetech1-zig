@@ -20,8 +20,8 @@ function download_zig_all() {
     curl -L $TARBALL | tar zxv -C tmp/${ZIG_ARCH}/zig/ --strip-components 1
 
     cp -r tmp/${ZIG_ARCH}/zig/ .
-    mkdir -p ./tmp/bin/${ZIG_ARCH}/
-    mv zig ./tmp/bin/${ZIG_ARCH}/
+    mkdir -p ./tmp/bin/${ZIG_ARCH}/zig
+    mv zig ./tmp/bin/${ZIG_ARCH}/zig
     rm -rf tmp/${ZIG_ARCH}
 }
 
@@ -48,10 +48,10 @@ function download_zig_bin_win() {
     FILENAME=$(basename -- "$TARBALL")
 
     mkdir -p "tmp/${ZIG_ARCH}/zig/"
-    mkdir -p tmp/bin/${ZIG_ARCH}/
+    mkdir -p tmp/bin/${ZIG_ARCH}/zig
     curl -o "tmp/${ZIG_ARCH}/zig/zig.zip" $TARBALL
     unzip -o "tmp/${ZIG_ARCH}/zig/zig.zip" -d "tmp/${ZIG_ARCH}/zig/"
-    mv "tmp/${ZIG_ARCH}/zig/${FILENAME%.*}/zig.exe" ./tmp/bin/${ZIG_ARCH}/
+    mv "tmp/${ZIG_ARCH}/zig/${FILENAME%.*}/zig.exe" ./tmp/bin/${ZIG_ARCH}/zig
     rm -rf tmp/${ZIG_ARCH}
 }
 
