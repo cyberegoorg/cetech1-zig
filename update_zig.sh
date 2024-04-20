@@ -7,8 +7,8 @@ rm -rf doc
 rm -rf lib
 
 ZIG_VERSION="$(cat .zigversion)"
-BASE_URL="https://pkg.machengine.org/zig"
-#BASE_URL="https://ziglang.org/builds"
+#BASE_URL="https://pkg.machengine.org/zig"
+BASE_URL="https://ziglang.org/builds"
 
 function download_zig_all() {
     ARCH=$1
