@@ -602,7 +602,7 @@ type_tag_handlers = {
     'error_set': lambda payload: type_tag_handlers['error_set_merged'](payload.GetChildMemberWithName('names')),
     'error_set_single': lambda payload: 'error{%s}' % zig_String_AsIdentifier(payload, zig_IsFieldName),
     'error_set_merged': lambda payload: 'error{%s}' % ','.join(zig_String_AsIdentifier(child.GetChildMemberWithName('key'), zig_IsFieldName) for child in payload.GetChildMemberWithName('entries').children),
-    'error_set_inferred': lambda payload: '@typeInfo(@typeInfo(@TypeOf(%s)).Fn.return_type.?).ErrorUnion.error_set' % OwnerDecl_RenderFullyQualifiedName(payload.GetChildMemberWithName('func')),
+    'error_set_inferred': lambda payload: '@typeInfo(@typeInfo(@TypeOf(%s)).@"fn".return_type.?).error_union.error_set' % OwnerDecl_RenderFullyQualifiedName(payload.GetChildMemberWithName('func')),
 
     'enum_full': OwnerDecl_RenderFullyQualifiedName,
     'enum_nonexhaustive': OwnerDecl_RenderFullyQualifiedName,
@@ -726,4 +726,3 @@ def __lldb_init_module(debugger, _=None):
     add(debugger, category='zig.stage2', type='InternPool.Key.Ptr.Addr', identifier='zig_TaggedUnion', synth=True)
     add(debugger, category='zig.stage2', type='InternPool.Key.Aggregate.Storage', identifier='zig_TaggedUnion', synth=True)
     add(debugger, category='zig.stage2', type='arch.x86_64.CodeGen.MCValue', identifier='zig_TaggedUnion', synth=True, inline_children=True, summary=True)
-    

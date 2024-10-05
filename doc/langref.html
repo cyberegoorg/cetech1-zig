@@ -401,7 +401,10 @@
         </ul></li>
         <li><a id="toc-struct" href="#struct">struct</a>
         <ul>
-            <li><a id="toc-Default-Field-Values" href="#Default-Field-Values">Default Field Values</a></li>
+            <li><a id="toc-Default-Field-Values" href="#Default-Field-Values">Default Field Values</a>
+            <ul>
+                <li><a id="toc-Faulty-Default-Field-Values" href="#Faulty-Default-Field-Values">Faulty Default Field Values</a></li>
+            </ul></li>
             <li><a id="toc-extern-struct" href="#extern-struct">extern struct</a></li>
             <li><a id="toc-packed-struct" href="#packed-struct">packed struct</a></li>
             <li><a id="toc-Struct-Naming" href="#Struct-Naming">Struct Naming</a></li>
@@ -431,6 +434,7 @@
         <ul>
             <li><a id="toc-Exhaustive-Switching" href="#Exhaustive-Switching">Exhaustive Switching</a></li>
             <li><a id="toc-Switching-with-Enum-Literals" href="#Switching-with-Enum-Literals">Switching with Enum Literals</a></li>
+            <li><a id="toc-Labeled-switch" href="#Labeled-switch">Labeled switch</a></li>
             <li><a id="toc-Inline-Switch-Prongs" href="#Inline-Switch-Prongs">Inline Switch Prongs</a></li>
         </ul></li>
         <li><a id="toc-while" href="#while">while</a>
@@ -550,6 +554,7 @@
             <li><a id="toc-bitCast" href="#bitCast">@bitCast</a></li>
             <li><a id="toc-bitOffsetOf" href="#bitOffsetOf">@bitOffsetOf</a></li>
             <li><a id="toc-bitSizeOf" href="#bitSizeOf">@bitSizeOf</a></li>
+            <li><a id="toc-branchHint" href="#branchHint">@branchHint</a></li>
             <li><a id="toc-breakpoint" href="#breakpoint">@breakpoint</a></li>
             <li><a id="toc-mulAdd" href="#mulAdd">@mulAdd</a></li>
             <li><a id="toc-byteSwap" href="#byteSwap">@byteSwap</a></li>
@@ -615,7 +620,6 @@
             <li><a id="toc-returnAddress" href="#returnAddress">@returnAddress</a></li>
             <li><a id="toc-select" href="#select">@select</a></li>
             <li><a id="toc-setAlignStack" href="#setAlignStack">@setAlignStack</a></li>
-            <li><a id="toc-setCold" href="#setCold">@setCold</a></li>
             <li><a id="toc-setEvalBranchQuota" href="#setEvalBranchQuota">@setEvalBranchQuota</a></li>
             <li><a id="toc-setFloatMode" href="#setFloatMode">@setFloatMode</a></li>
             <li><a id="toc-setRuntimeSafety" href="#setRuntimeSafety">@setRuntimeSafety</a></li>
@@ -1156,7 +1160,7 @@ value: 1234
         </tr>
         <tr>
             <th scope="row"><code><span class="tok-type">f80</span></code></th>
-          <td><code class="c">double</code></td>
+          <td><code class="c">long double</code></td>
           <td>80-bit floating point (64-bit mantissa) IEEE-754-2008 80-bit extended precision</td>
         </tr>
         <tr>
@@ -1359,12 +1363,12 @@ true
         </tr>
         <tr>
             <th scope="row"><code>\u{NNNNNN}</code></th>
-          <td>hexadecimal Unicode code point UTF-8 encoded (1 or more digits)</td>
+          <td>hexadecimal Unicode scalar value UTF-8 encoded (1 or more digits)</td>
         </tr>
         </tbody>
       </table>
       </div>
-      <p>Note that the maximum valid Unicode point is <code><span class="tok-number">0x10ffff</span></code>.</p>
+      <p>Note that the maximum valid Unicode scalar value is <code><span class="tok-number">0x10ffff</span></code>.</p>
       
       <h4 id="Multiline-String-Literals"><a href="#toc-Multiline-String-Literals">Multiline String Literals</a> <a class="hdr" href="#Multiline-String-Literals">§</a></h4>
 
@@ -1377,13 +1381,13 @@ true
       the string literal continues.
       </p>
       <figure><figcaption class="zig-cap"><cite class="file">multiline_string_literals.zig</cite></figcaption><pre><code><span class="tok-kw">const</span> hello_world_in_c =
-    <span class="tok-str">\\#include &lt;stdio.h&gt;
-</span>    <span class="tok-str">\\
-</span>    <span class="tok-str">\\int main(int argc, char **argv) {
-</span>    <span class="tok-str">\\    printf(&quot;hello world\n&quot;);
-</span>    <span class="tok-str">\\    return 0;
-</span>    <span class="tok-str">\\}
-</span>;</code></pre></figure>
+    <span class="tok-str">\\#include &lt;stdio.h&gt;</span>
+    <span class="tok-str">\\</span>
+    <span class="tok-str">\\int main(int argc, char **argv) {</span>
+    <span class="tok-str">\\    printf(&quot;hello world\n&quot;);</span>
+    <span class="tok-str">\\    return 0;</span>
+    <span class="tok-str">\\}</span>
+;</code></pre></figure>
 
       <p>See also:</p><ul>
 <li><a href="#embedFile">@embedFile</a></li>
@@ -1411,9 +1415,9 @@ true
 </span>    y += 1;
     <span class="sgr-32m">~~^~~~
 </span><span class="sgr-2m">referenced by:
-    main: /home/ci/actions-runner/_work/zig-bootstrap/zig/doc/langref/constant_identifier_cannot_change.zig:12:5
-    callMain: /home/ci/actions-runner/_work/zig-bootstrap/out/host/lib/zig/std/start.zig:514:17
-    remaining reference traces hidden; use '-freference-trace' to see all reference traces
+    main: /home/ci/actions-runner/_work/zig-bootstrap/zig/doc/langref/constant_identifier_cannot_change.zig:12:8
+    posixCallMainAndExit: /home/ci/actions-runner/_work/zig-bootstrap/out/host/lib/zig/std/start.zig:611:22
+    4 reference(s) hidden; use '-freference-trace=6' to see all references
 </span>
 </samp></pre></figure>
 
@@ -1519,7 +1523,7 @@ All 2 tests passed.
       </p>
       <aside>
         This documentation discusses the features of the default test runner as provided by the Zig Standard Library.
-        Its source code is located in <code class="file">lib/test_runner.zig</code>.
+        Its source code is located in <code class="file">lib/compiler/test_runner.zig</code>.
       </aside>
       <p>
         The shell output shown above displays two lines after the <kbd>zig test</kbd> command. These lines are
@@ -1597,16 +1601,16 @@ All 2 tests passed.
     <span class="tok-kw">try</span> std.testing.expect(<span class="tok-null">true</span>);
 }</code></pre></figure><figure><figcaption class="shell-cap">Shell</figcaption><pre><samp>$ <kbd>zig test testing_failure.zig</kbd>
 1/2 testing_failure.test.expect this to fail...FAIL (TestUnexpectedResult)
-/home/ci/actions-runner/_work/zig-bootstrap/out/host/lib/zig/std/testing.zig:540:14: 0x103cc2f in expect (test)
+/home/ci/actions-runner/_work/zig-bootstrap/out/host/lib/zig/std/testing.zig:546:14: 0x10407df in expect (test)
     if (!ok) return error.TestUnexpectedResult;
              ^
-/home/ci/actions-runner/_work/zig-bootstrap/zig/doc/langref/testing_failure.zig:4:5: 0x103cd45 in test.expect this to fail (test)
+/home/ci/actions-runner/_work/zig-bootstrap/zig/doc/langref/testing_failure.zig:4:5: 0x1040885 in test.expect this to fail (test)
     try std.testing.expect(false);
     ^
 2/2 testing_failure.test.expect this to succeed...OK
 1 passed; 0 skipped; 1 failed.
 error: the following test command failed with exit code 1:
-/home/ci/actions-runner/_work/zig-bootstrap/out/zig-local-cache/o/5532295947cf8b137c6121f0c535ba50/test
+/home/ci/actions-runner/_work/zig-bootstrap/out/zig-local-cache/o/92c8974df3d0a9b681ae27312c5b88c5/test --seed=0xc8c13bb1
 </samp></pre></figure>
 
       
@@ -1649,32 +1653,32 @@ error: the following test command failed with exit code 1:
     <span class="tok-kw">try</span> std.testing.expect(list.items.len == <span class="tok-number">1</span>);
 }</code></pre></figure><figure><figcaption class="shell-cap">Shell</figcaption><pre><samp>$ <kbd>zig test testing_detect_leak.zig</kbd>
 1/1 testing_detect_leak.test.detect leak...OK
-[gpa] (err): memory address 0x7fdb70419000 leaked:
-/home/ci/actions-runner/_work/zig-bootstrap/out/host/lib/zig/std/array_list.zig:457:67: 0x104f44e in ensureTotalCapacityPrecise (test)
+[gpa] (err): memory address 0x7fd8d6710000 leaked:
+/home/ci/actions-runner/_work/zig-bootstrap/out/host/lib/zig/std/array_list.zig:475:67: 0x106734e in ensureTotalCapacityPrecise (test)
                 const new_memory = try self.allocator.alignedAlloc(T, alignment, new_capacity);
                                                                   ^
-/home/ci/actions-runner/_work/zig-bootstrap/out/host/lib/zig/std/array_list.zig:434:51: 0x10453b0 in ensureTotalCapacity (test)
+/home/ci/actions-runner/_work/zig-bootstrap/out/host/lib/zig/std/array_list.zig:452:51: 0x1048b60 in ensureTotalCapacity (test)
             return self.ensureTotalCapacityPrecise(better_capacity);
                                                   ^
-/home/ci/actions-runner/_work/zig-bootstrap/out/host/lib/zig/std/array_list.zig:483:41: 0x1041d80 in addOne (test)
+/home/ci/actions-runner/_work/zig-bootstrap/out/host/lib/zig/std/array_list.zig:501:41: 0x1045620 in addOne (test)
             try self.ensureTotalCapacity(newlen);
                                         ^
-/home/ci/actions-runner/_work/zig-bootstrap/out/host/lib/zig/std/array_list.zig:262:49: 0x103ecdd in append (test)
+/home/ci/actions-runner/_work/zig-bootstrap/out/host/lib/zig/std/array_list.zig:262:49: 0x104260d in append (test)
             const new_item_ptr = try self.addOne();
                                                 ^
-/home/ci/actions-runner/_work/zig-bootstrap/zig/doc/langref/testing_detect_leak.zig:6:20: 0x103cf22 in test.detect leak (test)
+/home/ci/actions-runner/_work/zig-bootstrap/zig/doc/langref/testing_detect_leak.zig:6:20: 0x1040852 in test.detect leak (test)
     try list.append('☔');
                    ^
-/home/ci/actions-runner/_work/zig-bootstrap/out/host/lib/zig/compiler/test_runner.zig:157:25: 0x104c379 in mainTerminal (test)
+/home/ci/actions-runner/_work/zig-bootstrap/out/host/lib/zig/compiler/test_runner.zig:208:25: 0x10e694c in mainTerminal (test)
         if (test_fn.func()) |_| {
                         ^
-/home/ci/actions-runner/_work/zig-bootstrap/out/host/lib/zig/compiler/test_runner.zig:37:28: 0x104265b in main (test)
+/home/ci/actions-runner/_work/zig-bootstrap/out/host/lib/zig/compiler/test_runner.zig:57:28: 0x10e0850 in main (test)
         return mainTerminal();
                            ^
-/home/ci/actions-runner/_work/zig-bootstrap/out/host/lib/zig/std/start.zig:514:22: 0x103f1d9 in posixCallMainAndExit (test)
+/home/ci/actions-runner/_work/zig-bootstrap/out/host/lib/zig/std/start.zig:611:22: 0x10dfda6 in posixCallMainAndExit (test)
             root.main();
                      ^
-/home/ci/actions-runner/_work/zig-bootstrap/out/host/lib/zig/std/start.zig:266:5: 0x103ed41 in _start (test)
+/home/ci/actions-runner/_work/zig-bootstrap/out/host/lib/zig/std/start.zig:250:5: 0x10df9cf in _start (test)
     asm volatile (switch (native_arch) {
     ^
 
@@ -1682,7 +1686,7 @@ All 1 tests passed.
 1 errors were logged.
 1 tests leaked memory.
 error: the following test command failed with exit code 1:
-/home/ci/actions-runner/_work/zig-bootstrap/out/zig-local-cache/o/c13681753b8ec5180a4f0745df90e803/test
+/home/ci/actions-runner/_work/zig-bootstrap/out/zig-local-cache/o/a58ad67ca54b5fd2f5ea7c24634116ff/test --seed=0xc51fee1a
 </samp></pre></figure>
 
       <p>See also:</p><ul>
@@ -3023,6 +3027,10 @@ All 4 tests passed.
             }
         }
     }
+
+    <span class="tok-comment">// initialize a multidimensional array to zeros</span>
+    <span class="tok-kw">const</span> all_zero: [<span class="tok-number">4</span>][<span class="tok-number">4</span>]<span class="tok-type">f32</span> = .{.{<span class="tok-number">0</span>} ** <span class="tok-number">4</span>} ** <span class="tok-number">4</span>;
+    <span class="tok-kw">try</span> expect(all_zero[<span class="tok-number">0</span>][<span class="tok-number">0</span>] == <span class="tok-number">0</span>);
 }</code></pre></figure><figure><figcaption class="shell-cap">Shell</figcaption><pre><samp>$ <kbd>zig test test_multidimensional_arrays.zig</kbd>
 1/1 test_multidimensional_arrays.test.multidimensional arrays...OK
 All 1 tests passed.
@@ -3173,16 +3181,19 @@ All 2 tests passed.
           <li><code>*T</code> - single-item pointer to exactly one item.
             <ul>
               <li>Supports deref syntax: <code>ptr.*</code></li>
+              <li>Supports slice syntax: <code>ptr[<span class="tok-number">0</span>..<span class="tok-number">1</span>]</code></li>
+              <li>Supports pointer subtraction: <code>ptr - ptr</code></li>
             </ul>
           </li>
           <li><code>[*]T</code> - many-item pointer to unknown number of items.
             <ul>
               <li>Supports index syntax: <code>ptr[i]</code></li>
               <li>Supports slice syntax: <code>ptr[start..end]</code> and <code>ptr[start..]</code></li>
-              <li>Supports pointer arithmetic: <code>ptr + x</code>, <code>ptr - x</code></li>
-              <li><code>T</code> must have a known size, which means that it cannot be
-              <code><span class="tok-type">anyopaque</span></code> or any other <a href="#opaque">opaque type</a>.</li>
+              <li>Supports pointer-integer arithmetic: <code>ptr + int</code>, <code>ptr - int</code></li>
+              <li>Supports pointer subtraction: <code>ptr - ptr</code></li>
             </ul>
+            <code>T</code> must have a known size, which means that it cannot be
+            <code><span class="tok-type">anyopaque</span></code> or any other <a href="#opaque">opaque type</a>.
           </li>
       </ul>
       <p>These types are closely related to <a href="#Arrays">Arrays</a> and <a href="#Slices">Slices</a>:</p>
@@ -3192,6 +3203,7 @@ All 2 tests passed.
                 <li>Supports index syntax: <code>array_ptr[i]</code></li>
                 <li>Supports slice syntax: <code>array_ptr[start..end]</code></li>
                 <li>Supports len property: <code>array_ptr.len</code></li>
+                <li>Supports pointer subtraction: <code>array_ptr - array_ptr</code></li>
             </ul>
             </li>
         </ul>
@@ -3237,10 +3249,25 @@ All 2 tests passed.
     <span class="tok-kw">try</span> expect(array[<span class="tok-number">2</span>] == <span class="tok-number">3</span>);
     ptr.* += <span class="tok-number">1</span>;
     <span class="tok-kw">try</span> expect(array[<span class="tok-number">2</span>] == <span class="tok-number">4</span>);
+}
+
+<span class="tok-kw">test</span> <span class="tok-str">&quot;slice syntax&quot;</span> {
+    <span class="tok-comment">// Get a pointer to a variable:</span>
+    <span class="tok-kw">var</span> x: <span class="tok-type">i32</span> = <span class="tok-number">1234</span>;
+    <span class="tok-kw">const</span> x_ptr = &amp;x;
+
+    <span class="tok-comment">// Convert to array pointer using slice syntax:</span>
+    <span class="tok-kw">const</span> x_array_ptr = x_ptr[<span class="tok-number">0</span>..<span class="tok-number">1</span>];
+    <span class="tok-kw">try</span> expect(<span class="tok-builtin">@TypeOf</span>(x_array_ptr) == *[<span class="tok-number">1</span>]<span class="tok-type">i32</span>);
+
+    <span class="tok-comment">// Coerce to many-item pointer:</span>
+    <span class="tok-kw">const</span> x_many_ptr: [*]<span class="tok-type">i32</span> = x_array_ptr;
+    <span class="tok-kw">try</span> expect(x_many_ptr[<span class="tok-number">0</span>] == <span class="tok-number">1234</span>);
 }</code></pre></figure><figure><figcaption class="shell-cap">Shell</figcaption><pre><samp>$ <kbd>zig test test_single_item_pointer.zig</kbd>
-1/2 test_single_item_pointer.test.address of syntax...OK
-2/2 test_single_item_pointer.test.pointer array access...OK
-All 2 tests passed.
+1/3 test_single_item_pointer.test.address of syntax...OK
+2/3 test_single_item_pointer.test.pointer array access...OK
+3/3 test_single_item_pointer.test.slice syntax...OK
+All 3 tests passed.
 </samp></pre></figure>
 
       <p>
@@ -3259,6 +3286,9 @@ All 2 tests passed.
     <span class="tok-comment">// slicing a many-item pointer without an end is equivalent to</span>
     <span class="tok-comment">// pointer arithmetic: `ptr[start..] == ptr + start`</span>
     <span class="tok-kw">try</span> expect(ptr[<span class="tok-number">1</span>..] == ptr + <span class="tok-number">1</span>);
+
+    <span class="tok-comment">// subtraction between any two pointers except slices based on element size is supported</span>
+    <span class="tok-kw">try</span> expect(&amp;ptr[<span class="tok-number">1</span>] - &amp;ptr[<span class="tok-number">0</span>] == <span class="tok-number">1</span>);
 }
 
 <span class="tok-kw">test</span> <span class="tok-str">&quot;pointer arithmetic with slices&quot;</span> {
@@ -3411,7 +3441,7 @@ All 1 tests passed.
 
 <span class="tok-kw">test</span> <span class="tok-str">&quot;pointer child type&quot;</span> {
     <span class="tok-comment">// pointer types have a `child` field which tells you the type they point to.</span>
-    <span class="tok-kw">try</span> expect(<span class="tok-builtin">@typeInfo</span>(*<span class="tok-type">u32</span>).Pointer.child == <span class="tok-type">u32</span>);
+    <span class="tok-kw">try</span> expect(<span class="tok-builtin">@typeInfo</span>(*<span class="tok-type">u32</span>).pointer.child == <span class="tok-type">u32</span>);
 }</code></pre></figure><figure><figcaption class="shell-cap">Shell</figcaption><pre><samp>$ <kbd>zig test test_pointer_casting.zig</kbd>
 1/2 test_pointer_casting.test.pointer casting...OK
 2/2 test_pointer_casting.test.pointer child type...OK
@@ -3444,7 +3474,7 @@ All 2 tests passed.
     <span class="tok-kw">try</span> expect(<span class="tok-builtin">@TypeOf</span>(&amp;x) == *<span class="tok-type">i32</span>);
     <span class="tok-kw">try</span> expect(*<span class="tok-type">i32</span> == *<span class="tok-kw">align</span>(align_of_i32) <span class="tok-type">i32</span>);
     <span class="tok-kw">if</span> (builtin.target.cpu.arch == .x86_64) {
-        <span class="tok-kw">try</span> expect(<span class="tok-builtin">@typeInfo</span>(*<span class="tok-type">i32</span>).Pointer.alignment == <span class="tok-number">4</span>);
+        <span class="tok-kw">try</span> expect(<span class="tok-builtin">@typeInfo</span>(*<span class="tok-type">i32</span>).pointer.alignment == <span class="tok-number">4</span>);
     }
 }</code></pre></figure><figure><figcaption class="shell-cap">Shell</figcaption><pre><samp>$ <kbd>zig test test_variable_alignment.zig</kbd>
 1/1 test_variable_alignment.test.variable alignment...OK
@@ -3464,7 +3494,7 @@ All 1 tests passed.
 <span class="tok-kw">var</span> foo: <span class="tok-type">u8</span> <span class="tok-kw">align</span>(<span class="tok-number">4</span>) = <span class="tok-number">100</span>;
 
 <span class="tok-kw">test</span> <span class="tok-str">&quot;global variable alignment&quot;</span> {
-    <span class="tok-kw">try</span> expect(<span class="tok-builtin">@typeInfo</span>(<span class="tok-builtin">@TypeOf</span>(&amp;foo)).Pointer.alignment == <span class="tok-number">4</span>);
+    <span class="tok-kw">try</span> expect(<span class="tok-builtin">@typeInfo</span>(<span class="tok-builtin">@TypeOf</span>(&amp;foo)).pointer.alignment == <span class="tok-number">4</span>);
     <span class="tok-kw">try</span> expect(<span class="tok-builtin">@TypeOf</span>(&amp;foo) == *<span class="tok-kw">align</span>(<span class="tok-number">4</span>) <span class="tok-type">u8</span>);
     <span class="tok-kw">const</span> as_pointer_to_array: *<span class="tok-kw">align</span>(<span class="tok-number">4</span>) [<span class="tok-number">1</span>]<span class="tok-type">u8</span> = &amp;foo;
     <span class="tok-kw">const</span> as_slice: []<span class="tok-kw">align</span>(<span class="tok-number">4</span>) <span class="tok-type">u8</span> = as_pointer_to_array;
@@ -3514,28 +3544,28 @@ All 2 tests passed.
     <span class="tok-kw">const</span> int_slice = std.mem.bytesAsSlice(<span class="tok-type">u32</span>, <span class="tok-builtin">@as</span>([]<span class="tok-kw">align</span>(<span class="tok-number">4</span>) <span class="tok-type">u8</span>, <span class="tok-builtin">@alignCast</span>(slice4)));
     <span class="tok-kw">return</span> int_slice[<span class="tok-number">0</span>];
 }</code></pre></figure><figure><figcaption class="shell-cap">Shell</figcaption><pre><samp>$ <kbd>zig test test_incorrect_pointer_alignment.zig</kbd>
-1/1 test_incorrect_pointer_alignment.test.pointer alignment safety...thread 3239042 panic: incorrect alignment
-/home/ci/actions-runner/_work/zig-bootstrap/zig/doc/langref/test_incorrect_pointer_alignment.zig:10:68: 0x103cf1a in foo (test)
+1/1 test_incorrect_pointer_alignment.test.pointer alignment safety...thread 3324062 panic: incorrect alignment
+/home/ci/actions-runner/_work/zig-bootstrap/zig/doc/langref/test_incorrect_pointer_alignment.zig:10:68: 0x1040b2a in foo (test)
     const int_slice = std.mem.bytesAsSlice(u32, @as([]align(4) u8, @alignCast(slice4)));
                                                                    ^
-/home/ci/actions-runner/_work/zig-bootstrap/zig/doc/langref/test_incorrect_pointer_alignment.zig:6:31: 0x103cdb7 in test.pointer alignment safety (test)
+/home/ci/actions-runner/_work/zig-bootstrap/zig/doc/langref/test_incorrect_pointer_alignment.zig:6:31: 0x10409c7 in test.pointer alignment safety (test)
     try std.testing.expect(foo(bytes) == 0x11111111);
                               ^
-/home/ci/actions-runner/_work/zig-bootstrap/out/host/lib/zig/compiler/test_runner.zig:157:25: 0x1047c29 in mainTerminal (test)
+/home/ci/actions-runner/_work/zig-bootstrap/out/host/lib/zig/compiler/test_runner.zig:208:25: 0x10d91cc in mainTerminal (test)
         if (test_fn.func()) |_| {
                         ^
-/home/ci/actions-runner/_work/zig-bootstrap/out/host/lib/zig/compiler/test_runner.zig:37:28: 0x103e06b in main (test)
+/home/ci/actions-runner/_work/zig-bootstrap/out/host/lib/zig/compiler/test_runner.zig:57:28: 0x10d1420 in main (test)
         return mainTerminal();
                            ^
-/home/ci/actions-runner/_work/zig-bootstrap/out/host/lib/zig/std/start.zig:514:22: 0x103d3e9 in posixCallMainAndExit (test)
+/home/ci/actions-runner/_work/zig-bootstrap/out/host/lib/zig/std/start.zig:611:22: 0x10d0976 in posixCallMainAndExit (test)
             root.main();
                      ^
-/home/ci/actions-runner/_work/zig-bootstrap/out/host/lib/zig/std/start.zig:266:5: 0x103cf51 in _start (test)
+/home/ci/actions-runner/_work/zig-bootstrap/out/host/lib/zig/std/start.zig:250:5: 0x10d059f in _start (test)
     asm volatile (switch (native_arch) {
     ^
 ???:?:?: 0x0 in ??? (???)
 error: the following test command crashed:
-/home/ci/actions-runner/_work/zig-bootstrap/out/zig-local-cache/o/ae8a33c2d15af1f61dbb1752afd879c1/test
+/home/ci/actions-runner/_work/zig-bootstrap/out/zig-local-cache/o/d6e1e1ccb8e9a6496212b49172bac178/test --seed=0xb38a6cde
 </samp></pre></figure>
 
       
@@ -3588,13 +3618,13 @@ All 1 tests passed.
 </span>    _ = printf(&amp;non_null_terminated_msg);
                <span class="sgr-32m">^~~~~~~~~~~~~~~~~~~~~~~~
 </span><span class="sgr-1m">/home/ci/actions-runner/_work/zig-bootstrap/zig/doc/langref/sentinel-terminated_pointer.zig:11:16: </span><span class="sgr-36m">note: </span><span class="sgr-1m">destination pointer requires '0' sentinel
-</span><span class="sgr-1m">/home/ci/actions-runner/_work/zig-bootstrap/zig/doc/langref/sentinel-terminated_pointer.zig:4:35: </span><span class="sgr-36m">note: </span><span class="sgr-1m">parameter type declared here
+</span><span class="sgr-1m">/home/ci/actions-runner/_work/zig-bootstrap/zig/doc/langref/sentinel-terminated_pointer.zig:4:34: </span><span class="sgr-36m">note: </span><span class="sgr-1m">parameter type declared here
 </span>pub extern &quot;c&quot; fn printf(format: [*:0]const u8, ...) c_int;
-                                 <span class="sgr-32m">~^~~~~~~~~~~~
+                                 <span class="sgr-32m">^~~~~~~~~~~~~
 </span><span class="sgr-2m">referenced by:
-    callMain: /home/ci/actions-runner/_work/zig-bootstrap/out/host/lib/zig/std/start.zig:524:32
-    callMainWithArgs: /home/ci/actions-runner/_work/zig-bootstrap/out/host/lib/zig/std/start.zig:482:12
-    remaining reference traces hidden; use '-freference-trace' to see all reference traces
+    main: /home/ci/actions-runner/_work/zig-bootstrap/out/host/lib/zig/std/start.zig:620:37
+    comptime: /home/ci/actions-runner/_work/zig-bootstrap/out/host/lib/zig/std/start.zig:59:30
+    2 reference(s) hidden; use '-freference-trace=4' to see all references
 </span>
 </samp></pre></figure>
 
@@ -3612,7 +3642,7 @@ All 1 tests passed.
       A slice is a pointer and a length. The difference between an array and
       a slice is that the array's length is part of the type and known at
       compile-time, whereas the slice's length is known at runtime.
-      Both can be accessed with the `len` field.
+      Both can be accessed with the <code>len</code> field.
       </p>
       <figure><figcaption class="zig-cap"><cite class="file">test_basic_slices.zig</cite></figcaption><pre><code><span class="tok-kw">const</span> expect = <span class="tok-builtin">@import</span>(<span class="tok-str">&quot;std&quot;</span>).testing.expect;
 <span class="tok-kw">const</span> expectEqualSlices = <span class="tok-builtin">@import</span>(<span class="tok-str">&quot;std&quot;</span>).testing.expectEqualSlices;
@@ -3658,26 +3688,36 @@ All 1 tests passed.
 
     <span class="tok-comment">// Note that `slice.ptr` does not invoke safety checking, while `&amp;slice[0]`</span>
     <span class="tok-comment">// asserts that the slice has len &gt; 0.</span>
+
+    <span class="tok-comment">// Empty slices can be created like this:</span>
+    <span class="tok-kw">const</span> empty1 = &amp;[<span class="tok-number">0</span>]<span class="tok-type">u8</span>{};
+    <span class="tok-comment">// If the type is known you can use this short hand:</span>
+    <span class="tok-kw">const</span> empty2: []<span class="tok-type">u8</span> = &amp;.{};
+    <span class="tok-kw">try</span> expect(empty1.len == <span class="tok-number">0</span>);
+    <span class="tok-kw">try</span> expect(empty2.len == <span class="tok-number">0</span>);
+
+    <span class="tok-comment">// A zero-length initialization can always be used to create an empty slice, even if the slice is mutable.</span>
+    <span class="tok-comment">// This is because the pointed-to data is zero bits long, so its immutability is irrelevant.</span>
 }</code></pre></figure><figure><figcaption class="shell-cap">Shell</figcaption><pre><samp>$ <kbd>zig test test_basic_slices.zig</kbd>
-1/1 test_basic_slices.test.basic slices...thread 3240826 panic: index out of bounds: index 10, len 4
-/home/ci/actions-runner/_work/zig-bootstrap/zig/doc/langref/test_basic_slices.zig:41:10: 0x103f765 in test.basic slices (test)
+1/1 test_basic_slices.test.basic slices...thread 3324849 panic: index out of bounds: index 10, len 4
+/home/ci/actions-runner/_work/zig-bootstrap/zig/doc/langref/test_basic_slices.zig:41:10: 0x1043779 in test.basic slices (test)
     slice[10] += 1;
          ^
-/home/ci/actions-runner/_work/zig-bootstrap/out/host/lib/zig/compiler/test_runner.zig:157:25: 0x104c549 in mainTerminal (test)
+/home/ci/actions-runner/_work/zig-bootstrap/out/host/lib/zig/compiler/test_runner.zig:208:25: 0x10dc82c in mainTerminal (test)
         if (test_fn.func()) |_| {
                         ^
-/home/ci/actions-runner/_work/zig-bootstrap/out/host/lib/zig/compiler/test_runner.zig:37:28: 0x1041f1b in main (test)
+/home/ci/actions-runner/_work/zig-bootstrap/out/host/lib/zig/compiler/test_runner.zig:57:28: 0x10d4a80 in main (test)
         return mainTerminal();
                            ^
-/home/ci/actions-runner/_work/zig-bootstrap/out/host/lib/zig/std/start.zig:514:22: 0x103fc59 in posixCallMainAndExit (test)
+/home/ci/actions-runner/_work/zig-bootstrap/out/host/lib/zig/std/start.zig:611:22: 0x10d3fd6 in posixCallMainAndExit (test)
             root.main();
                      ^
-/home/ci/actions-runner/_work/zig-bootstrap/out/host/lib/zig/std/start.zig:266:5: 0x103f7c1 in _start (test)
+/home/ci/actions-runner/_work/zig-bootstrap/out/host/lib/zig/std/start.zig:250:5: 0x10d3bff in _start (test)
     asm volatile (switch (native_arch) {
     ^
 ???:?:?: 0x0 in ??? (???)
 error: the following test command crashed:
-/home/ci/actions-runner/_work/zig-bootstrap/out/zig-local-cache/o/e490cea9647a85f97724cb2508464ee6/test
+/home/ci/actions-runner/_work/zig-bootstrap/out/zig-local-cache/o/11064db4de4c9070218d2d200c14ef43/test --seed=0x4c8d61f7
 </samp></pre></figure>
 
       <p>This is one reason we prefer slices to pointers.</p>
@@ -3805,25 +3845,25 @@ All 1 tests passed.
 
     _ = slice;
 }</code></pre></figure><figure><figcaption class="shell-cap">Shell</figcaption><pre><samp>$ <kbd>zig test test_sentinel_mismatch.zig</kbd>
-1/1 test_sentinel_mismatch.test.sentinel mismatch...thread 3242808 panic: sentinel mismatch: expected 0, found 1
-/home/ci/actions-runner/_work/zig-bootstrap/zig/doc/langref/test_sentinel_mismatch.zig:13:24: 0x103cd16 in test.sentinel mismatch (test)
+1/1 test_sentinel_mismatch.test.sentinel mismatch...thread 3327904 panic: sentinel mismatch: expected 0, found 1
+/home/ci/actions-runner/_work/zig-bootstrap/zig/doc/langref/test_sentinel_mismatch.zig:13:24: 0x1040826 in test.sentinel mismatch (test)
     const slice = array[0..runtime_length :0];
                        ^
-/home/ci/actions-runner/_work/zig-bootstrap/out/host/lib/zig/compiler/test_runner.zig:157:25: 0x10487d9 in mainTerminal (test)
+/home/ci/actions-runner/_work/zig-bootstrap/out/host/lib/zig/compiler/test_runner.zig:208:25: 0x10d8e4c in mainTerminal (test)
         if (test_fn.func()) |_| {
                         ^
-/home/ci/actions-runner/_work/zig-bootstrap/out/host/lib/zig/compiler/test_runner.zig:37:28: 0x103e8bb in main (test)
+/home/ci/actions-runner/_work/zig-bootstrap/out/host/lib/zig/compiler/test_runner.zig:57:28: 0x10d10a0 in main (test)
         return mainTerminal();
                            ^
-/home/ci/actions-runner/_work/zig-bootstrap/out/host/lib/zig/std/start.zig:514:22: 0x103d2f9 in posixCallMainAndExit (test)
+/home/ci/actions-runner/_work/zig-bootstrap/out/host/lib/zig/std/start.zig:611:22: 0x10d05f6 in posixCallMainAndExit (test)
             root.main();
                      ^
-/home/ci/actions-runner/_work/zig-bootstrap/out/host/lib/zig/std/start.zig:266:5: 0x103ce61 in _start (test)
+/home/ci/actions-runner/_work/zig-bootstrap/out/host/lib/zig/std/start.zig:250:5: 0x10d021f in _start (test)
     asm volatile (switch (native_arch) {
     ^
 ???:?:?: 0x0 in ??? (???)
 error: the following test command crashed:
-/home/ci/actions-runner/_work/zig-bootstrap/out/zig-local-cache/o/c3579e3805d35cb67f9d8012235984f8/test
+/home/ci/actions-runner/_work/zig-bootstrap/out/zig-local-cache/o/cb0937564695dad6f696c5b23a9cbacd/test --seed=0xbe94184
 </samp></pre></figure>
 
       <p>See also:</p><ul>
@@ -4008,6 +4048,8 @@ All 4 tests passed.
 All 1 tests passed.
 </samp></pre></figure>
 
+      <h4 id="Faulty-Default-Field-Values"><a href="#toc-Faulty-Default-Field-Values">Faulty Default Field Values</a> <a class="hdr" href="#Faulty-Default-Field-Values">§</a></h4>
+
       <p>
       Default field values are only appropriate when the data invariants of a struct
       cannot be violated by omitting that field from an initialization.
@@ -4040,20 +4082,20 @@ All 1 tests passed.
 <span class="tok-kw">const</span> std = <span class="tok-builtin">@import</span>(<span class="tok-str">&quot;std&quot;</span>);
 <span class="tok-kw">const</span> assert = std.debug.assert;</code></pre></figure><figure><figcaption class="shell-cap">Shell</figcaption><pre><samp>$ <kbd>zig build-exe bad_default_value.zig</kbd>
 $ <kbd>./bad_default_value</kbd>
-thread 3240156 panic: reached unreachable code
-/home/ci/actions-runner/_work/zig-bootstrap/out/host/lib/zig/std/debug.zig:412:14: 0x10378bd in assert (bad_default_value)
+thread 3328933 panic: reached unreachable code
+/home/ci/actions-runner/_work/zig-bootstrap/out/host/lib/zig/std/debug.zig:404:14: 0x1039acd in assert (bad_default_value)
     if (!ok) unreachable; // assertion failure
              ^
-/home/ci/actions-runner/_work/zig-bootstrap/zig/doc/langref/bad_default_value.zig:8:15: 0x1034da9 in categorize (bad_default_value)
+/home/ci/actions-runner/_work/zig-bootstrap/zig/doc/langref/bad_default_value.zig:8:15: 0x1038299 in categorize (bad_default_value)
         assert(t.maximum &gt;= t.minimum);
               ^
-/home/ci/actions-runner/_work/zig-bootstrap/zig/doc/langref/bad_default_value.zig:19:42: 0x1034cda in main (bad_default_value)
+/home/ci/actions-runner/_work/zig-bootstrap/zig/doc/langref/bad_default_value.zig:19:42: 0x10381ca in main (bad_default_value)
     const category = threshold.categorize(0.90);
                                          ^
-/home/ci/actions-runner/_work/zig-bootstrap/out/host/lib/zig/std/start.zig:524:37: 0x1034bf5 in posixCallMainAndExit (bad_default_value)
+/home/ci/actions-runner/_work/zig-bootstrap/out/host/lib/zig/std/start.zig:620:37: 0x10380e2 in posixCallMainAndExit (bad_default_value)
             const result = root.main() catch |err| {
                                     ^
-/home/ci/actions-runner/_work/zig-bootstrap/out/host/lib/zig/std/start.zig:266:5: 0x1034711 in _start (bad_default_value)
+/home/ci/actions-runner/_work/zig-bootstrap/out/host/lib/zig/std/start.zig:250:5: 0x1037cbf in _start (bad_default_value)
     asm volatile (switch (native_arch) {
     ^
 ???:?:?: 0x0 in ??? (???)
@@ -4082,6 +4124,7 @@ thread 3240156 panic: reached unreachable code
       <p>If a struct value requires a runtime-known value in order to be initialized
       without violating data invariants, then use an initialization method that accepts
       those runtime values, and populates the remaining fields.</p>
+      
       
 
       <h3 id="extern-struct"><a href="#toc-extern-struct">extern struct</a> <a class="hdr" href="#extern-struct">§</a></h3>
@@ -4378,7 +4421,7 @@ All 1 tests passed.
 }</code></pre></figure><figure><figcaption class="shell-cap">Shell</figcaption><pre><samp>$ <kbd>zig build-exe struct_name.zig</kbd>
 $ <kbd>./struct_name</kbd>
 variable: struct_name.main.Foo
-anonymous: struct_name.main__struct_3331
+anonymous: struct_name.main__struct_2599
 function: struct_name.List(i32)
 </samp></pre></figure>
 
@@ -4581,13 +4624,13 @@ All 1 tests passed.
     four,
 };
 <span class="tok-kw">test</span> <span class="tok-str">&quot;std.meta.Tag&quot;</span> {
-    <span class="tok-kw">try</span> expect(<span class="tok-builtin">@typeInfo</span>(Small).Enum.tag_type == <span class="tok-type">u2</span>);
+    <span class="tok-kw">try</span> expect(<span class="tok-builtin">@typeInfo</span>(Small).@&quot;enum&quot;.tag_type == <span class="tok-type">u2</span>);
 }
 
 <span class="tok-comment">// @typeInfo tells us the field count and the fields names:</span>
 <span class="tok-kw">test</span> <span class="tok-str">&quot;@typeInfo&quot;</span> {
-    <span class="tok-kw">try</span> expect(<span class="tok-builtin">@typeInfo</span>(Small).Enum.fields.len == <span class="tok-number">4</span>);
-    <span class="tok-kw">try</span> expect(mem.eql(<span class="tok-type">u8</span>, <span class="tok-builtin">@typeInfo</span>(Small).Enum.fields[<span class="tok-number">1</span>].name, <span class="tok-str">&quot;two&quot;</span>));
+    <span class="tok-kw">try</span> expect(<span class="tok-builtin">@typeInfo</span>(Small).@&quot;enum&quot;.fields.len == <span class="tok-number">4</span>);
+    <span class="tok-kw">try</span> expect(mem.eql(<span class="tok-type">u8</span>, <span class="tok-builtin">@typeInfo</span>(Small).@&quot;enum&quot;.fields[<span class="tok-number">1</span>].name, <span class="tok-str">&quot;two&quot;</span>));
 }
 
 <span class="tok-comment">// @tagName gives a [:0]const u8 representation of an enum value:</span>
@@ -4629,6 +4672,10 @@ All 8 tests passed.
 </span><span class="sgr-1m">doc/langref/enum_export_error.zig:1:13: </span><span class="sgr-36m">note: </span><span class="sgr-1m">enum declared here
 </span>const Foo = enum { a, b, c };
             <span class="sgr-32m">^~~~~~~~~~~~~~~~
+</span><span class="sgr-2m">referenced by:
+    root: /home/ci/actions-runner/_work/zig-bootstrap/out/host/lib/zig/std/start.zig:3:22
+    comptime: /home/ci/actions-runner/_work/zig-bootstrap/out/host/lib/zig/std/start.zig:28:9
+    2 reference(s) hidden; use '-freference-trace=4' to see all references
 </span>
 </samp></pre></figure>
 
@@ -4747,25 +4794,25 @@ All 1 tests passed.
     <span class="tok-kw">var</span> payload = Payload{ .int = <span class="tok-number">1234</span> };
     payload.float = <span class="tok-number">12.34</span>;
 }</code></pre></figure><figure><figcaption class="shell-cap">Shell</figcaption><pre><samp>$ <kbd>zig test test_wrong_union_access.zig</kbd>
-1/1 test_wrong_union_access.test.simple union...thread 3246125 panic: access of union field 'float' while field 'int' is active
-/home/ci/actions-runner/_work/zig-bootstrap/zig/doc/langref/test_wrong_union_access.zig:8:12: 0x103cc47 in test.simple union (test)
+1/1 test_wrong_union_access.test.simple union...thread 3327728 panic: access of union field 'float' while field 'int' is active
+/home/ci/actions-runner/_work/zig-bootstrap/zig/doc/langref/test_wrong_union_access.zig:8:12: 0x1040827 in test.simple union (test)
     payload.float = 12.34;
            ^
-/home/ci/actions-runner/_work/zig-bootstrap/out/host/lib/zig/compiler/test_runner.zig:157:25: 0x1047d69 in mainTerminal (test)
+/home/ci/actions-runner/_work/zig-bootstrap/out/host/lib/zig/compiler/test_runner.zig:208:25: 0x10d8fac in mainTerminal (test)
         if (test_fn.func()) |_| {
                         ^
-/home/ci/actions-runner/_work/zig-bootstrap/out/host/lib/zig/compiler/test_runner.zig:37:28: 0x103de4b in main (test)
+/home/ci/actions-runner/_work/zig-bootstrap/out/host/lib/zig/compiler/test_runner.zig:57:28: 0x10d1200 in main (test)
         return mainTerminal();
                            ^
-/home/ci/actions-runner/_work/zig-bootstrap/out/host/lib/zig/std/start.zig:514:22: 0x103d1d9 in posixCallMainAndExit (test)
+/home/ci/actions-runner/_work/zig-bootstrap/out/host/lib/zig/std/start.zig:611:22: 0x10d0756 in posixCallMainAndExit (test)
             root.main();
                      ^
-/home/ci/actions-runner/_work/zig-bootstrap/out/host/lib/zig/std/start.zig:266:5: 0x103cd41 in _start (test)
+/home/ci/actions-runner/_work/zig-bootstrap/out/host/lib/zig/std/start.zig:250:5: 0x10d037f in _start (test)
     asm volatile (switch (native_arch) {
     ^
 ???:?:?: 0x0 in ??? (???)
 error: the following test command crashed:
-/home/ci/actions-runner/_work/zig-bootstrap/out/zig-local-cache/o/040a3adbba460a210cf873219a35853c/test
+/home/ci/actions-runner/_work/zig-bootstrap/out/zig-local-cache/o/5e8041c1048a17e7be7adde4ba8eb58b/test --seed=0x1f938f96
 </samp></pre></figure>
 
       <p>You can activate another field by assigning the entire union:</p>
@@ -4818,8 +4865,8 @@ All 1 tests passed.
     <span class="tok-kw">try</span> expect(<span class="tok-builtin">@as</span>(ComplexTypeTag, c) == ComplexTypeTag.ok);
 
     <span class="tok-kw">switch</span> (c) {
-        ComplexTypeTag.ok =&gt; |value| <span class="tok-kw">try</span> expect(value == <span class="tok-number">42</span>),
-        ComplexTypeTag.not_ok =&gt; <span class="tok-kw">unreachable</span>,
+        .ok =&gt; |value| <span class="tok-kw">try</span> expect(value == <span class="tok-number">42</span>),
+        .not_ok =&gt; <span class="tok-kw">unreachable</span>,
     }
 }
 
@@ -4884,11 +4931,13 @@ All 1 tests passed.
 };
 
 <span class="tok-kw">test</span> <span class="tok-str">&quot;union method&quot;</span> {
-    <span class="tok-kw">var</span> v1 = Variant{ .int = <span class="tok-number">1</span> };
-    <span class="tok-kw">var</span> v2 = Variant{ .boolean = <span class="tok-null">false</span> };
+    <span class="tok-kw">var</span> v1: Variant = .{ .int = <span class="tok-number">1</span> };
+    <span class="tok-kw">var</span> v2: Variant = .{ .boolean = <span class="tok-null">false</span> };
+    <span class="tok-kw">var</span> v3: Variant = .none;
 
     <span class="tok-kw">try</span> expect(v1.truthy());
     <span class="tok-kw">try</span> expect(!v2.truthy());
+    <span class="tok-kw">try</span> expect(!v3.truthy());
 }</code></pre></figure><figure><figcaption class="shell-cap">Shell</figcaption><pre><samp>$ <kbd>zig test test_union_method.zig</kbd>
 1/1 test_union_method.test.union method...OK
 All 1 tests passed.
@@ -4998,9 +5047,6 @@ All 1 tests passed.
 </span><span class="sgr-1m">doc/langref/test_opaque.zig:4:18: </span><span class="sgr-36m">note: </span><span class="sgr-1m">parameter type declared here
 </span>extern fn bar(d: *Derp) void;
                  <span class="sgr-32m">^~~~~
-</span><span class="sgr-2m">referenced by:
-    test.call foo: doc/langref/test_opaque.zig:10:5
-    remaining reference traces hidden; use '-freference-trace' to see all reference traces
 </span>
 </samp></pre></figure>
 
@@ -5300,6 +5346,144 @@ All 1 tests passed.
 
       
 
+      <h3 id="Labeled-switch"><a href="#toc-Labeled-switch">Labeled switch</a> <a class="hdr" href="#Labeled-switch">§</a></h3>
+
+      <p>
+      When a switch statement is labeled, it can be referenced from a
+      <code><span class="tok-kw">break</span></code> or <code><span class="tok-kw">continue</span></code>.
+      <code><span class="tok-kw">break</span></code> will return a value from the <code><span class="tok-kw">switch</span></code>.
+      </p>
+      <p>
+      A <code><span class="tok-kw">continue</span></code> targeting a switch must have an
+      operand. When executed, it will jump to the matching prong, as if the
+      <code><span class="tok-kw">switch</span></code> were executed again with the <code><span class="tok-kw">continue</span></code>'s operand replacing the initial switch value.
+      </p>
+
+      <figure><figcaption class="zig-cap"><cite class="file">test_switch_continue.zig</cite></figcaption><pre><code><span class="tok-kw">const</span> std = <span class="tok-builtin">@import</span>(<span class="tok-str">&quot;std&quot;</span>);
+
+<span class="tok-kw">test</span> <span class="tok-str">&quot;switch continue&quot;</span> {
+    sw: <span class="tok-kw">switch</span> (<span class="tok-builtin">@as</span>(<span class="tok-type">i32</span>, <span class="tok-number">5</span>)) {
+        <span class="tok-number">5</span> =&gt; <span class="tok-kw">continue</span> :sw <span class="tok-number">4</span>,
+
+        <span class="tok-comment">// `continue` can occur multiple times within a single switch prong.</span>
+        <span class="tok-number">2</span>...<span class="tok-number">4</span> =&gt; |v| {
+            <span class="tok-kw">if</span> (v &gt; <span class="tok-number">3</span>) {
+                <span class="tok-kw">continue</span> :sw <span class="tok-number">2</span>;
+            } <span class="tok-kw">else</span> <span class="tok-kw">if</span> (v == <span class="tok-number">3</span>) {
+
+                <span class="tok-comment">// `break` can target labeled loops.</span>
+                <span class="tok-kw">break</span> :sw;
+            }
+
+            <span class="tok-kw">continue</span> :sw <span class="tok-number">1</span>;
+        },
+
+        <span class="tok-number">1</span> =&gt; <span class="tok-kw">return</span>,
+
+        <span class="tok-kw">else</span> =&gt; <span class="tok-kw">unreachable</span>,
+    }
+}</code></pre></figure><figure><figcaption class="shell-cap">Shell</figcaption><pre><samp>$ <kbd>zig test test_switch_continue.zig</kbd>
+1/1 test_switch_continue.test.switch continue...OK
+All 1 tests passed.
+</samp></pre></figure>
+
+      <p>
+      Semantically, this is equivalent to the following loop:
+      </p>
+      <figure><figcaption class="zig-cap"><cite class="file">test_switch_continue_equivalent.zig</cite></figcaption><pre><code><span class="tok-kw">const</span> std = <span class="tok-builtin">@import</span>(<span class="tok-str">&quot;std&quot;</span>);
+
+<span class="tok-kw">test</span> <span class="tok-str">&quot;switch continue, equivalent loop&quot;</span> {
+    <span class="tok-kw">var</span> sw: <span class="tok-type">i32</span> = <span class="tok-number">5</span>;
+    <span class="tok-kw">while</span> (<span class="tok-null">true</span>) {
+        <span class="tok-kw">switch</span> (sw) {
+            <span class="tok-number">5</span> =&gt; {
+                sw = <span class="tok-number">4</span>;
+                <span class="tok-kw">continue</span>;
+            },
+            <span class="tok-number">2</span>...<span class="tok-number">4</span> =&gt; |v| {
+                <span class="tok-kw">if</span> (v &gt; <span class="tok-number">3</span>) {
+                    sw = <span class="tok-number">2</span>;
+                    <span class="tok-kw">continue</span>;
+                } <span class="tok-kw">else</span> <span class="tok-kw">if</span> (v == <span class="tok-number">3</span>) {
+                    <span class="tok-kw">break</span>;
+                }
+
+                sw = <span class="tok-number">1</span>;
+                <span class="tok-kw">continue</span>;
+            },
+            <span class="tok-number">1</span> =&gt; <span class="tok-kw">return</span>,
+            <span class="tok-kw">else</span> =&gt; <span class="tok-kw">unreachable</span>,
+        }
+    }
+}</code></pre></figure><figure><figcaption class="shell-cap">Shell</figcaption><pre><samp>$ <kbd>zig test test_switch_continue_equivalent.zig</kbd>
+1/1 test_switch_continue_equivalent.test.switch continue, equivalent loop...OK
+All 1 tests passed.
+</samp></pre></figure>
+
+      <p>
+      This can improve clarity of (for example) state machines, where the syntax <code><span class="tok-kw">continue</span> :sw .next_state</code> is unambiguous, explicit, and immediately understandable.
+      </p>
+      <p>
+      However, the motivating example is a switch on each element of an array, where using a single switch can improve clarity and performance:
+      </p>
+      <figure><figcaption class="zig-cap"><cite class="file">test_switch_dispatch_loop.zig</cite></figcaption><pre><code><span class="tok-kw">const</span> std = <span class="tok-builtin">@import</span>(<span class="tok-str">&quot;std&quot;</span>);
+<span class="tok-kw">const</span> expectEqual = std.testing.expectEqual;
+
+<span class="tok-kw">const</span> Instruction = <span class="tok-kw">enum</span> {
+    add,
+    mul,
+    end,
+};
+
+<span class="tok-kw">fn</span> <span class="tok-fn">evaluate</span>(initial_stack: []<span class="tok-kw">const</span> <span class="tok-type">i32</span>, code: []<span class="tok-kw">const</span> Instruction) !<span class="tok-type">i32</span> {
+    <span class="tok-kw">var</span> stack = <span class="tok-kw">try</span> std.BoundedArray(<span class="tok-type">i32</span>, <span class="tok-number">8</span>).fromSlice(initial_stack);
+    <span class="tok-kw">var</span> ip: <span class="tok-type">usize</span> = <span class="tok-number">0</span>;
+
+    <span class="tok-kw">return</span> vm: <span class="tok-kw">switch</span> (code[ip]) {
+        <span class="tok-comment">// Because all code after `continue` is unreachable, this branch does</span>
+        <span class="tok-comment">// not provide a result.</span>
+        .add =&gt; {
+            <span class="tok-kw">try</span> stack.append(stack.pop() + stack.pop());
+
+            ip += <span class="tok-number">1</span>;
+            <span class="tok-kw">continue</span> :vm code[ip];
+        },
+        .mul =&gt; {
+            <span class="tok-kw">try</span> stack.append(stack.pop() * stack.pop());
+
+            ip += <span class="tok-number">1</span>;
+            <span class="tok-kw">continue</span> :vm code[ip];
+        },
+        .end =&gt; stack.pop(),
+    };
+}
+
+<span class="tok-kw">test</span> <span class="tok-str">&quot;evaluate&quot;</span> {
+    <span class="tok-kw">const</span> result = <span class="tok-kw">try</span> evaluate(&amp;.{ <span class="tok-number">7</span>, <span class="tok-number">2</span>, -<span class="tok-number">3</span> }, &amp;.{ .mul, .add, .end });
+    <span class="tok-kw">try</span> expectEqual(<span class="tok-number">1</span>, result);
+}</code></pre></figure><figure><figcaption class="shell-cap">Shell</figcaption><pre><samp>$ <kbd>zig test test_switch_dispatch_loop.zig</kbd>
+1/1 test_switch_dispatch_loop.test.evaluate...OK
+All 1 tests passed.
+</samp></pre></figure>
+
+      <p>
+      If the operand to <code><span class="tok-kw">continue</span></code> is
+      <a href="#comptime">comptime</a>-known, then it can be lowered to an unconditional branch
+      to the relevant case. Such a branch is perfectly predicted, and hence
+      typically very fast to execute.
+      </p>
+
+      <p>
+      If the operand is runtime-known, each <code><span class="tok-kw">continue</span></code> can
+      embed a conditional branch inline (ideally through a jump table), which
+      allows a CPU to predict its target independently of any other prong. A
+      loop-based lowering would force every branch through the same dispatch
+      point, hindering branch prediction.
+      </p>
+
+
+      
+
       <h3 id="Inline-Switch-Prongs"><a href="#toc-Inline-Switch-Prongs">Inline Switch Prongs</a> <a class="hdr" href="#Inline-Switch-Prongs">§</a></h3>
 
       <p>
@@ -5312,11 +5496,11 @@ All 1 tests passed.
 <span class="tok-kw">const</span> expectError = std.testing.expectError;
 
 <span class="tok-kw">fn</span> <span class="tok-fn">isFieldOptional</span>(<span class="tok-kw">comptime</span> T: <span class="tok-type">type</span>, field_index: <span class="tok-type">usize</span>) !<span class="tok-type">bool</span> {
-    <span class="tok-kw">const</span> fields = <span class="tok-builtin">@typeInfo</span>(T).Struct.fields;
+    <span class="tok-kw">const</span> fields = <span class="tok-builtin">@typeInfo</span>(T).@&quot;struct&quot;.fields;
     <span class="tok-kw">return</span> <span class="tok-kw">switch</span> (field_index) {
         <span class="tok-comment">// This prong is analyzed twice with `idx` being a</span>
         <span class="tok-comment">// comptime-known value each time.</span>
-        <span class="tok-kw">inline</span> <span class="tok-number">0</span>, <span class="tok-number">1</span> =&gt; |idx| <span class="tok-builtin">@typeInfo</span>(fields[idx].<span class="tok-type">type</span>) == .Optional,
+        <span class="tok-kw">inline</span> <span class="tok-number">0</span>, <span class="tok-number">1</span> =&gt; |idx| <span class="tok-builtin">@typeInfo</span>(fields[idx].<span class="tok-type">type</span>) == .optional,
         <span class="tok-kw">else</span> =&gt; <span class="tok-kw">return</span> <span class="tok-kw">error</span>.IndexOutOfBounds,
     };
 }
@@ -5347,9 +5531,9 @@ All 1 tests passed.
 
       <p>The <code><span class="tok-kw">inline</span></code> keyword may also be combined with ranges:</p>
       <figure><figcaption class="zig-cap"><cite class="file">inline_prong_range.zig</cite></figcaption><pre><code><span class="tok-kw">fn</span> <span class="tok-fn">isFieldOptional</span>(<span class="tok-kw">comptime</span> T: <span class="tok-type">type</span>, field_index: <span class="tok-type">usize</span>) !<span class="tok-type">bool</span> {
-    <span class="tok-kw">const</span> fields = <span class="tok-builtin">@typeInfo</span>(T).Struct.fields;
+    <span class="tok-kw">const</span> fields = <span class="tok-builtin">@typeInfo</span>(T).@&quot;struct&quot;.fields;
     <span class="tok-kw">return</span> <span class="tok-kw">switch</span> (field_index) {
-        <span class="tok-kw">inline</span> <span class="tok-number">0</span>...fields.len - <span class="tok-number">1</span> =&gt; |idx| <span class="tok-builtin">@typeInfo</span>(fields[idx].<span class="tok-type">type</span>) == .Optional,
+        <span class="tok-kw">inline</span> <span class="tok-number">0</span>...fields.len - <span class="tok-number">1</span> =&gt; |idx| <span class="tok-builtin">@typeInfo</span>(fields[idx].<span class="tok-type">type</span>) == .optional,
         <span class="tok-kw">else</span> =&gt; <span class="tok-kw">return</span> <span class="tok-kw">error</span>.IndexOutOfBounds,
     };
 }</code></pre></figure>
@@ -5377,8 +5561,8 @@ All 1 tests passed.
 };
 
 <span class="tok-kw">fn</span> <span class="tok-fn">withFor</span>(any: AnySlice) <span class="tok-type">usize</span> {
-    <span class="tok-kw">const</span> Tag = <span class="tok-builtin">@typeInfo</span>(AnySlice).Union.tag_type.?;
-    <span class="tok-kw">inline</span> <span class="tok-kw">for</span> (<span class="tok-builtin">@typeInfo</span>(Tag).Enum.fields) |field| {
+    <span class="tok-kw">const</span> Tag = <span class="tok-builtin">@typeInfo</span>(AnySlice).@&quot;union&quot;.tag_type.?;
+    <span class="tok-kw">inline</span> <span class="tok-kw">for</span> (<span class="tok-builtin">@typeInfo</span>(Tag).@&quot;enum&quot;.fields) |field| {
         <span class="tok-comment">// With `inline for` the function gets generated as</span>
         <span class="tok-comment">// a series of `if` statements relying on the optimizer</span>
         <span class="tok-comment">// to convert it to a switch.</span>
@@ -6206,28 +6390,28 @@ All 1 tests passed.
 <span class="tok-kw">test</span> <span class="tok-str">&quot;this will fail&quot;</span> {
     assert(<span class="tok-null">false</span>);
 }</code></pre></figure><figure><figcaption class="shell-cap">Shell</figcaption><pre><samp>$ <kbd>zig test test_assertion_failure.zig</kbd>
-1/1 test_assertion_failure.test.this will fail...thread 3242445 panic: reached unreachable code
-/home/ci/actions-runner/_work/zig-bootstrap/zig/doc/langref/test_assertion_failure.zig:3:14: 0x103cb9d in assert (test)
+1/1 test_assertion_failure.test.this will fail...thread 3322921 panic: reached unreachable code
+/home/ci/actions-runner/_work/zig-bootstrap/zig/doc/langref/test_assertion_failure.zig:3:14: 0x104079d in assert (test)
     if (!ok) unreachable; // assertion failure
              ^
-/home/ci/actions-runner/_work/zig-bootstrap/zig/doc/langref/test_assertion_failure.zig:8:11: 0x103cb5a in test.this will fail (test)
+/home/ci/actions-runner/_work/zig-bootstrap/zig/doc/langref/test_assertion_failure.zig:8:11: 0x104075a in test.this will fail (test)
     assert(false);
           ^
-/home/ci/actions-runner/_work/zig-bootstrap/out/host/lib/zig/compiler/test_runner.zig:157:25: 0x10476d9 in mainTerminal (test)
+/home/ci/actions-runner/_work/zig-bootstrap/out/host/lib/zig/compiler/test_runner.zig:208:25: 0x10d8dbc in mainTerminal (test)
         if (test_fn.func()) |_| {
                         ^
-/home/ci/actions-runner/_work/zig-bootstrap/out/host/lib/zig/compiler/test_runner.zig:37:28: 0x103d9bb in main (test)
+/home/ci/actions-runner/_work/zig-bootstrap/out/host/lib/zig/compiler/test_runner.zig:57:28: 0x10d1010 in main (test)
         return mainTerminal();
                            ^
-/home/ci/actions-runner/_work/zig-bootstrap/out/host/lib/zig/std/start.zig:514:22: 0x103d049 in posixCallMainAndExit (test)
+/home/ci/actions-runner/_work/zig-bootstrap/out/host/lib/zig/std/start.zig:611:22: 0x10d0566 in posixCallMainAndExit (test)
             root.main();
                      ^
-/home/ci/actions-runner/_work/zig-bootstrap/out/host/lib/zig/std/start.zig:266:5: 0x103cbb1 in _start (test)
+/home/ci/actions-runner/_work/zig-bootstrap/out/host/lib/zig/std/start.zig:250:5: 0x10d018f in _start (test)
     asm volatile (switch (native_arch) {
     ^
 ???:?:?: 0x0 in ??? (???)
 error: the following test command crashed:
-/home/ci/actions-runner/_work/zig-bootstrap/out/zig-local-cache/o/0b1293437f7de331ed738231adf7111c/test
+/home/ci/actions-runner/_work/zig-bootstrap/out/zig-local-cache/o/bcdd9eb7eb6dfa8cb85ffe45d0caed5b/test --seed=0x765aba21
 </samp></pre></figure>
 
       
@@ -6341,9 +6525,9 @@ All 1 tests passed.
 <span class="tok-kw">extern</span> <span class="tok-str">&quot;kernel32&quot;</span> <span class="tok-kw">fn</span> <span class="tok-fn">ExitProcess</span>(exit_code: <span class="tok-type">u32</span>) <span class="tok-kw">callconv</span>(WINAPI) <span class="tok-type">noreturn</span>;
 <span class="tok-kw">extern</span> <span class="tok-str">&quot;c&quot;</span> <span class="tok-kw">fn</span> <span class="tok-fn">atan2</span>(a: <span class="tok-type">f64</span>, b: <span class="tok-type">f64</span>) <span class="tok-type">f64</span>;
 
-<span class="tok-comment">// The @setCold builtin tells the optimizer that a function is rarely called.</span>
+<span class="tok-comment">// The @branchHint builtin can be used to tell the optimizer that a function is rarely called (&quot;cold&quot;).</span>
 <span class="tok-kw">fn</span> <span class="tok-fn">abort</span>() <span class="tok-type">noreturn</span> {
-    <span class="tok-builtin">@setCold</span>(<span class="tok-null">true</span>);
+    <span class="tok-builtin">@branchHint</span>(.cold);
     <span class="tok-kw">while</span> (<span class="tok-null">true</span>) {}
 }
 
@@ -6496,10 +6680,10 @@ All 1 tests passed.
 <span class="tok-kw">const</span> testing = std.testing;
 
 <span class="tok-kw">test</span> <span class="tok-str">&quot;fn reflection&quot;</span> {
-    <span class="tok-kw">try</span> testing.expect(<span class="tok-builtin">@typeInfo</span>(<span class="tok-builtin">@TypeOf</span>(testing.expect)).Fn.params[<span class="tok-number">0</span>].<span class="tok-type">type</span>.? == <span class="tok-type">bool</span>);
-    <span class="tok-kw">try</span> testing.expect(<span class="tok-builtin">@typeInfo</span>(<span class="tok-builtin">@TypeOf</span>(testing.tmpDir)).Fn.return_type.? == testing.TmpDir);
+    <span class="tok-kw">try</span> testing.expect(<span class="tok-builtin">@typeInfo</span>(<span class="tok-builtin">@TypeOf</span>(testing.expect)).@&quot;fn&quot;.params[<span class="tok-number">0</span>].<span class="tok-type">type</span>.? == <span class="tok-type">bool</span>);
+    <span class="tok-kw">try</span> testing.expect(<span class="tok-builtin">@typeInfo</span>(<span class="tok-builtin">@TypeOf</span>(testing.tmpDir)).@&quot;fn&quot;.return_type.? == testing.TmpDir);
 
-    <span class="tok-kw">try</span> testing.expect(<span class="tok-builtin">@typeInfo</span>(<span class="tok-builtin">@TypeOf</span>(math.Log2Int)).Fn.is_generic);
+    <span class="tok-kw">try</span> testing.expect(<span class="tok-builtin">@typeInfo</span>(<span class="tok-builtin">@TypeOf</span>(math.Log2Int)).@&quot;fn&quot;.is_generic);
 }</code></pre></figure><figure><figcaption class="shell-cap">Shell</figcaption><pre><samp>$ <kbd>zig test test_fn_reflection.zig</kbd>
 1/1 test_fn_reflection.test.fn reflection...OK
 All 1 tests passed.
@@ -6577,9 +6761,6 @@ All 1 tests passed.
 </span><span class="sgr-1m">doc/langref/test_coerce_error_superset_to_subset.zig:15:28: </span><span class="sgr-36m">note: </span><span class="sgr-1m">function return type declared here
 </span>fn foo(err: FileOpenError) AllocationError {
                            <span class="sgr-32m">^~~~~~~~~~~~~~~
-</span><span class="sgr-2m">referenced by:
-    test.coerce superset to subset: doc/langref/test_coerce_error_superset_to_subset.zig:12:5
-    remaining reference traces hidden; use '-freference-trace' to see all reference traces
 </span>
 </samp></pre></figure>
 
@@ -6831,6 +7012,29 @@ All 1 tests passed.
       the verbosity and cognitive overhead of trying to make sure every exit path
       is covered. The deallocation code is always directly following the allocation code.
       </p>
+      <p>
+      The <code><span class="tok-kw">errdefer</span></code> statement can optionally capture the error:
+      </p>
+      <figure><figcaption class="zig-cap"><cite class="file">test_errdefer_capture.zig</cite></figcaption><pre><code><span class="tok-kw">const</span> std = <span class="tok-builtin">@import</span>(<span class="tok-str">&quot;std&quot;</span>);
+
+<span class="tok-kw">fn</span> <span class="tok-fn">captureError</span>(captured: *?<span class="tok-type">anyerror</span>) !<span class="tok-type">void</span> {
+    <span class="tok-kw">errdefer</span> |err| {
+        captured.* = err;
+    }
+    <span class="tok-kw">return</span> <span class="tok-kw">error</span>.GeneralFailure;
+}
+
+<span class="tok-kw">test</span> <span class="tok-str">&quot;errdefer capture&quot;</span> {
+    <span class="tok-kw">var</span> captured: ?<span class="tok-type">anyerror</span> = <span class="tok-null">null</span>;
+
+    <span class="tok-kw">if</span> (captureError(&amp;captured)) <span class="tok-kw">unreachable</span> <span class="tok-kw">else</span> |err| {
+        <span class="tok-kw">try</span> std.testing.expectEqual(<span class="tok-kw">error</span>.GeneralFailure, captured.?);
+        <span class="tok-kw">try</span> std.testing.expectEqual(<span class="tok-kw">error</span>.GeneralFailure, err);
+    }
+}</code></pre></figure><figure><figcaption class="shell-cap">Shell</figcaption><pre><samp>$ <kbd>zig test test_errdefer_capture.zig</kbd>
+1/1 test_errdefer_capture.test.errdefer capture...OK
+All 1 tests passed.
+</samp></pre></figure>
       
       <h4 id="Common-errdefer-Slip-Ups"><a href="#toc-Common-errdefer-Slip-Ups">Common errdefer Slip-Ups</a> <a class="hdr" href="#Common-errdefer-Slip-Ups">§</a></h4>
 
@@ -6879,26 +7083,26 @@ All 1 tests passed.
     <span class="tok-kw">try</span> std.testing.expectError(<span class="tok-kw">error</span>.InvalidParam, createFoo(std.testing.allocator, <span class="tok-number">2468</span>));
 }</code></pre></figure><figure><figcaption class="shell-cap">Shell</figcaption><pre><samp>$ <kbd>zig test test_errdefer_slip_ups.zig</kbd>
 1/1 test_errdefer_slip_ups.test.createFoo...OK
-[gpa] (err): memory address 0x7f1b5b0e8000 leaked:
-/home/ci/actions-runner/_work/zig-bootstrap/zig/doc/langref/test_errdefer_slip_ups.zig:9:28: 0x103d1af in tryToAllocateFoo (test)
+[gpa] (err): memory address 0x7fa349742000 leaked:
+/home/ci/actions-runner/_work/zig-bootstrap/zig/doc/langref/test_errdefer_slip_ups.zig:9:28: 0x1040b3f in tryToAllocateFoo (test)
     return allocator.create(Foo);
                            ^
-/home/ci/actions-runner/_work/zig-bootstrap/zig/doc/langref/test_errdefer_slip_ups.zig:22:39: 0x103d3c5 in createFoo (test)
+/home/ci/actions-runner/_work/zig-bootstrap/zig/doc/langref/test_errdefer_slip_ups.zig:22:39: 0x1040ce5 in createFoo (test)
         var foo = try tryToAllocateFoo(allocator);
                                       ^
-/home/ci/actions-runner/_work/zig-bootstrap/zig/doc/langref/test_errdefer_slip_ups.zig:39:62: 0x103d60d in test.createFoo (test)
+/home/ci/actions-runner/_work/zig-bootstrap/zig/doc/langref/test_errdefer_slip_ups.zig:39:62: 0x1040f2d in test.createFoo (test)
     try std.testing.expectError(error.InvalidParam, createFoo(std.testing.allocator, 2468));
                                                              ^
-/home/ci/actions-runner/_work/zig-bootstrap/out/host/lib/zig/compiler/test_runner.zig:157:25: 0x104cfa9 in mainTerminal (test)
+/home/ci/actions-runner/_work/zig-bootstrap/out/host/lib/zig/compiler/test_runner.zig:208:25: 0x10e6ddc in mainTerminal (test)
         if (test_fn.func()) |_| {
                         ^
-/home/ci/actions-runner/_work/zig-bootstrap/out/host/lib/zig/compiler/test_runner.zig:37:28: 0x10431db in main (test)
+/home/ci/actions-runner/_work/zig-bootstrap/out/host/lib/zig/compiler/test_runner.zig:57:28: 0x10e0ce0 in main (test)
         return mainTerminal();
                            ^
-/home/ci/actions-runner/_work/zig-bootstrap/out/host/lib/zig/std/start.zig:514:22: 0x103f7d9 in posixCallMainAndExit (test)
+/home/ci/actions-runner/_work/zig-bootstrap/out/host/lib/zig/std/start.zig:611:22: 0x10e0236 in posixCallMainAndExit (test)
             root.main();
                      ^
-/home/ci/actions-runner/_work/zig-bootstrap/out/host/lib/zig/std/start.zig:266:5: 0x103f341 in _start (test)
+/home/ci/actions-runner/_work/zig-bootstrap/out/host/lib/zig/std/start.zig:250:5: 0x10dfe5f in _start (test)
     asm volatile (switch (native_arch) {
     ^
 
@@ -6906,7 +7110,7 @@ All 1 tests passed.
 1 errors were logged.
 1 tests leaked memory.
 error: the following test command failed with exit code 1:
-/home/ci/actions-runner/_work/zig-bootstrap/out/zig-local-cache/o/ba400c0ec2f37198f5b6cf9019c0c54a/test
+/home/ci/actions-runner/_work/zig-bootstrap/out/zig-local-cache/o/0c7b130e4f8471892a8abe44e28322ac/test --seed=0xc4af4162
 </samp></pre></figure>
 
       <p>
@@ -6992,63 +7196,63 @@ All 1 tests passed.
     <span class="tok-kw">try</span> std.testing.expectError(<span class="tok-kw">error</span>.TooManyFoos, genFoos(std.testing.allocator, <span class="tok-number">5</span>));
 }</code></pre></figure><figure><figcaption class="shell-cap">Shell</figcaption><pre><samp>$ <kbd>zig test test_errdefer_loop_leak.zig</kbd>
 1/1 test_errdefer_loop_leak.test.genFoos...OK
-[gpa] (err): memory address 0x7f42177cc000 leaked:
-/home/ci/actions-runner/_work/zig-bootstrap/zig/doc/langref/test_errdefer_loop_leak.zig:15:40: 0x103d5a6 in genFoos (test)
+[gpa] (err): memory address 0x7ff4857f0000 leaked:
+/home/ci/actions-runner/_work/zig-bootstrap/zig/doc/langref/test_errdefer_loop_leak.zig:15:40: 0x1040f36 in genFoos (test)
         foo.data = try allocator.create(u32);
                                        ^
-/home/ci/actions-runner/_work/zig-bootstrap/zig/doc/langref/test_errdefer_loop_leak.zig:29:59: 0x103dedd in test.genFoos (test)
+/home/ci/actions-runner/_work/zig-bootstrap/zig/doc/langref/test_errdefer_loop_leak.zig:29:59: 0x10417fd in test.genFoos (test)
     try std.testing.expectError(error.TooManyFoos, genFoos(std.testing.allocator, 5));
                                                           ^
-/home/ci/actions-runner/_work/zig-bootstrap/out/host/lib/zig/compiler/test_runner.zig:157:25: 0x104dd39 in mainTerminal (test)
+/home/ci/actions-runner/_work/zig-bootstrap/out/host/lib/zig/compiler/test_runner.zig:208:25: 0x10e7d8c in mainTerminal (test)
         if (test_fn.func()) |_| {
                         ^
-/home/ci/actions-runner/_work/zig-bootstrap/out/host/lib/zig/compiler/test_runner.zig:37:28: 0x1043c9b in main (test)
+/home/ci/actions-runner/_work/zig-bootstrap/out/host/lib/zig/compiler/test_runner.zig:57:28: 0x10e1c90 in main (test)
         return mainTerminal();
                            ^
-/home/ci/actions-runner/_work/zig-bootstrap/out/host/lib/zig/std/start.zig:514:22: 0x10400a9 in posixCallMainAndExit (test)
+/home/ci/actions-runner/_work/zig-bootstrap/out/host/lib/zig/std/start.zig:611:22: 0x10e11e6 in posixCallMainAndExit (test)
             root.main();
                      ^
-/home/ci/actions-runner/_work/zig-bootstrap/out/host/lib/zig/std/start.zig:266:5: 0x103fc11 in _start (test)
+/home/ci/actions-runner/_work/zig-bootstrap/out/host/lib/zig/std/start.zig:250:5: 0x10e0e0f in _start (test)
     asm volatile (switch (native_arch) {
     ^
 
-[gpa] (err): memory address 0x7f42177cc004 leaked:
-/home/ci/actions-runner/_work/zig-bootstrap/zig/doc/langref/test_errdefer_loop_leak.zig:15:40: 0x103d5a6 in genFoos (test)
+[gpa] (err): memory address 0x7ff4857f0004 leaked:
+/home/ci/actions-runner/_work/zig-bootstrap/zig/doc/langref/test_errdefer_loop_leak.zig:15:40: 0x1040f36 in genFoos (test)
         foo.data = try allocator.create(u32);
                                        ^
-/home/ci/actions-runner/_work/zig-bootstrap/zig/doc/langref/test_errdefer_loop_leak.zig:29:59: 0x103dedd in test.genFoos (test)
+/home/ci/actions-runner/_work/zig-bootstrap/zig/doc/langref/test_errdefer_loop_leak.zig:29:59: 0x10417fd in test.genFoos (test)
     try std.testing.expectError(error.TooManyFoos, genFoos(std.testing.allocator, 5));
                                                           ^
-/home/ci/actions-runner/_work/zig-bootstrap/out/host/lib/zig/compiler/test_runner.zig:157:25: 0x104dd39 in mainTerminal (test)
+/home/ci/actions-runner/_work/zig-bootstrap/out/host/lib/zig/compiler/test_runner.zig:208:25: 0x10e7d8c in mainTerminal (test)
         if (test_fn.func()) |_| {
                         ^
-/home/ci/actions-runner/_work/zig-bootstrap/out/host/lib/zig/compiler/test_runner.zig:37:28: 0x1043c9b in main (test)
+/home/ci/actions-runner/_work/zig-bootstrap/out/host/lib/zig/compiler/test_runner.zig:57:28: 0x10e1c90 in main (test)
         return mainTerminal();
                            ^
-/home/ci/actions-runner/_work/zig-bootstrap/out/host/lib/zig/std/start.zig:514:22: 0x10400a9 in posixCallMainAndExit (test)
+/home/ci/actions-runner/_work/zig-bootstrap/out/host/lib/zig/std/start.zig:611:22: 0x10e11e6 in posixCallMainAndExit (test)
             root.main();
                      ^
-/home/ci/actions-runner/_work/zig-bootstrap/out/host/lib/zig/std/start.zig:266:5: 0x103fc11 in _start (test)
+/home/ci/actions-runner/_work/zig-bootstrap/out/host/lib/zig/std/start.zig:250:5: 0x10e0e0f in _start (test)
     asm volatile (switch (native_arch) {
     ^
 
-[gpa] (err): memory address 0x7f42177cc008 leaked:
-/home/ci/actions-runner/_work/zig-bootstrap/zig/doc/langref/test_errdefer_loop_leak.zig:15:40: 0x103d5a6 in genFoos (test)
+[gpa] (err): memory address 0x7ff4857f0008 leaked:
+/home/ci/actions-runner/_work/zig-bootstrap/zig/doc/langref/test_errdefer_loop_leak.zig:15:40: 0x1040f36 in genFoos (test)
         foo.data = try allocator.create(u32);
                                        ^
-/home/ci/actions-runner/_work/zig-bootstrap/zig/doc/langref/test_errdefer_loop_leak.zig:29:59: 0x103dedd in test.genFoos (test)
+/home/ci/actions-runner/_work/zig-bootstrap/zig/doc/langref/test_errdefer_loop_leak.zig:29:59: 0x10417fd in test.genFoos (test)
     try std.testing.expectError(error.TooManyFoos, genFoos(std.testing.allocator, 5));
                                                           ^
-/home/ci/actions-runner/_work/zig-bootstrap/out/host/lib/zig/compiler/test_runner.zig:157:25: 0x104dd39 in mainTerminal (test)
+/home/ci/actions-runner/_work/zig-bootstrap/out/host/lib/zig/compiler/test_runner.zig:208:25: 0x10e7d8c in mainTerminal (test)
         if (test_fn.func()) |_| {
                         ^
-/home/ci/actions-runner/_work/zig-bootstrap/out/host/lib/zig/compiler/test_runner.zig:37:28: 0x1043c9b in main (test)
+/home/ci/actions-runner/_work/zig-bootstrap/out/host/lib/zig/compiler/test_runner.zig:57:28: 0x10e1c90 in main (test)
         return mainTerminal();
                            ^
-/home/ci/actions-runner/_work/zig-bootstrap/out/host/lib/zig/std/start.zig:514:22: 0x10400a9 in posixCallMainAndExit (test)
+/home/ci/actions-runner/_work/zig-bootstrap/out/host/lib/zig/std/start.zig:611:22: 0x10e11e6 in posixCallMainAndExit (test)
             root.main();
                      ^
-/home/ci/actions-runner/_work/zig-bootstrap/out/host/lib/zig/std/start.zig:266:5: 0x103fc11 in _start (test)
+/home/ci/actions-runner/_work/zig-bootstrap/out/host/lib/zig/std/start.zig:250:5: 0x10e0e0f in _start (test)
     asm volatile (switch (native_arch) {
     ^
 
@@ -7056,7 +7260,7 @@ All 1 tests passed.
 3 errors were logged.
 1 tests leaked memory.
 error: the following test command failed with exit code 1:
-/home/ci/actions-runner/_work/zig-bootstrap/out/zig-local-cache/o/e5fd22546599110ec33d1b078afd0795/test
+/home/ci/actions-runner/_work/zig-bootstrap/out/zig-local-cache/o/7dda82a3d1a11726756135da163af8a2/test --seed=0x14a1d7af
 </samp></pre></figure>
 
       <p>
@@ -7138,10 +7342,10 @@ All 1 tests passed.
     foo = <span class="tok-kw">error</span>.SomeError;
 
     <span class="tok-comment">// Use compile-time reflection to access the payload type of an error union:</span>
-    <span class="tok-kw">try</span> <span class="tok-kw">comptime</span> expect(<span class="tok-builtin">@typeInfo</span>(<span class="tok-builtin">@TypeOf</span>(foo)).ErrorUnion.payload == <span class="tok-type">i32</span>);
+    <span class="tok-kw">try</span> <span class="tok-kw">comptime</span> expect(<span class="tok-builtin">@typeInfo</span>(<span class="tok-builtin">@TypeOf</span>(foo)).error_union.payload == <span class="tok-type">i32</span>);
 
     <span class="tok-comment">// Use compile-time reflection to access the error set type of an error union:</span>
-    <span class="tok-kw">try</span> <span class="tok-kw">comptime</span> expect(<span class="tok-builtin">@typeInfo</span>(<span class="tok-builtin">@TypeOf</span>(foo)).ErrorUnion.error_set == <span class="tok-type">anyerror</span>);
+    <span class="tok-kw">try</span> <span class="tok-kw">comptime</span> expect(<span class="tok-builtin">@typeInfo</span>(<span class="tok-builtin">@TypeOf</span>(foo)).error_union.error_set == <span class="tok-type">anyerror</span>);
 }</code></pre></figure><figure><figcaption class="shell-cap">Shell</figcaption><pre><samp>$ <kbd>zig test test_error_union.zig</kbd>
 1/1 test_error_union.test.error union...OK
 All 1 tests passed.
@@ -7290,25 +7494,25 @@ All 1 tests passed.
 }</code></pre></figure><figure><figcaption class="shell-cap">Shell</figcaption><pre><samp>$ <kbd>zig build-exe error_return_trace.zig</kbd>
 $ <kbd>./error_return_trace</kbd>
 error: PermissionDenied
-/home/ci/actions-runner/_work/zig-bootstrap/zig/doc/langref/error_return_trace.zig:34:5: 0x1034cc8 in bang1 (error_return_trace)
+/home/ci/actions-runner/_work/zig-bootstrap/zig/doc/langref/error_return_trace.zig:34:5: 0x10381e8 in bang1 (error_return_trace)
     return error.FileNotFound;
     ^
-/home/ci/actions-runner/_work/zig-bootstrap/zig/doc/langref/error_return_trace.zig:22:5: 0x1034dd3 in baz (error_return_trace)
+/home/ci/actions-runner/_work/zig-bootstrap/zig/doc/langref/error_return_trace.zig:22:5: 0x1038283 in baz (error_return_trace)
     try bang1();
     ^
-/home/ci/actions-runner/_work/zig-bootstrap/zig/doc/langref/error_return_trace.zig:38:5: 0x1034df8 in bang2 (error_return_trace)
+/home/ci/actions-runner/_work/zig-bootstrap/zig/doc/langref/error_return_trace.zig:38:5: 0x10382a8 in bang2 (error_return_trace)
     return error.PermissionDenied;
     ^
-/home/ci/actions-runner/_work/zig-bootstrap/zig/doc/langref/error_return_trace.zig:30:5: 0x1034e63 in hello (error_return_trace)
+/home/ci/actions-runner/_work/zig-bootstrap/zig/doc/langref/error_return_trace.zig:30:5: 0x1038313 in hello (error_return_trace)
     try bang2();
     ^
-/home/ci/actions-runner/_work/zig-bootstrap/zig/doc/langref/error_return_trace.zig:17:31: 0x1034f1a in bar (error_return_trace)
+/home/ci/actions-runner/_work/zig-bootstrap/zig/doc/langref/error_return_trace.zig:17:31: 0x10383cc in bar (error_return_trace)
         error.FileNotFound =&gt; try hello(),
                               ^
-/home/ci/actions-runner/_work/zig-bootstrap/zig/doc/langref/error_return_trace.zig:7:9: 0x1035000 in foo (error_return_trace)
+/home/ci/actions-runner/_work/zig-bootstrap/zig/doc/langref/error_return_trace.zig:7:9: 0x1038930 in foo (error_return_trace)
         try bar();
         ^
-/home/ci/actions-runner/_work/zig-bootstrap/zig/doc/langref/error_return_trace.zig:2:5: 0x1035058 in main (error_return_trace)
+/home/ci/actions-runner/_work/zig-bootstrap/zig/doc/langref/error_return_trace.zig:2:5: 0x1038988 in main (error_return_trace)
     try foo(12);
     ^
 </samp></pre></figure>
@@ -7361,26 +7565,26 @@ error: PermissionDenied
     <span class="tok-builtin">@panic</span>(<span class="tok-str">&quot;PermissionDenied&quot;</span>);
 }</code></pre></figure><figure><figcaption class="shell-cap">Shell</figcaption><pre><samp>$ <kbd>zig build-exe stack_trace.zig</kbd>
 $ <kbd>./stack_trace</kbd>
-thread 3241931 panic: PermissionDenied
-/home/ci/actions-runner/_work/zig-bootstrap/zig/doc/langref/stack_trace.zig:38:5: 0x10391e0 in bang2 (stack_trace)
+thread 3324299 panic: PermissionDenied
+/home/ci/actions-runner/_work/zig-bootstrap/zig/doc/langref/stack_trace.zig:38:5: 0x103b090 in bang2 (stack_trace)
     @panic(&quot;PermissionDenied&quot;);
     ^
-/home/ci/actions-runner/_work/zig-bootstrap/zig/doc/langref/stack_trace.zig:30:10: 0x1068a38 in hello (stack_trace)
+/home/ci/actions-runner/_work/zig-bootstrap/zig/doc/langref/stack_trace.zig:30:10: 0x1058ec8 in hello (stack_trace)
     bang2();
          ^
-/home/ci/actions-runner/_work/zig-bootstrap/zig/doc/langref/stack_trace.zig:17:14: 0x10391bc in bar (stack_trace)
+/home/ci/actions-runner/_work/zig-bootstrap/zig/doc/langref/stack_trace.zig:17:14: 0x103b06c in bar (stack_trace)
         hello();
              ^
-/home/ci/actions-runner/_work/zig-bootstrap/zig/doc/langref/stack_trace.zig:7:12: 0x10370cc in foo (stack_trace)
+/home/ci/actions-runner/_work/zig-bootstrap/zig/doc/langref/stack_trace.zig:7:12: 0x103979c in foo (stack_trace)
         bar();
            ^
-/home/ci/actions-runner/_work/zig-bootstrap/zig/doc/langref/stack_trace.zig:2:8: 0x103504d in main (stack_trace)
+/home/ci/actions-runner/_work/zig-bootstrap/zig/doc/langref/stack_trace.zig:2:8: 0x10383dd in main (stack_trace)
     foo(12);
        ^
-/home/ci/actions-runner/_work/zig-bootstrap/out/host/lib/zig/std/start.zig:514:22: 0x10348f9 in posixCallMainAndExit (stack_trace)
+/home/ci/actions-runner/_work/zig-bootstrap/out/host/lib/zig/std/start.zig:611:22: 0x1037e06 in posixCallMainAndExit (stack_trace)
             root.main();
                      ^
-/home/ci/actions-runner/_work/zig-bootstrap/out/host/lib/zig/std/start.zig:266:5: 0x1034461 in _start (stack_trace)
+/home/ci/actions-runner/_work/zig-bootstrap/out/host/lib/zig/std/start.zig:250:5: 0x1037a2f in _start (stack_trace)
     asm volatile (switch (native_arch) {
     ^
 ???:?:?: 0x0 in ??? (???)
@@ -7572,7 +7776,7 @@ struct Foo *do_a_thing(void) {
     foo = <span class="tok-number">1234</span>;
 
     <span class="tok-comment">// Use compile-time reflection to access the child type of the optional:</span>
-    <span class="tok-kw">try</span> <span class="tok-kw">comptime</span> expect(<span class="tok-builtin">@typeInfo</span>(<span class="tok-builtin">@TypeOf</span>(foo)).Optional.child == <span class="tok-type">i32</span>);
+    <span class="tok-kw">try</span> <span class="tok-kw">comptime</span> expect(<span class="tok-builtin">@typeInfo</span>(<span class="tok-builtin">@TypeOf</span>(foo)).optional.child == <span class="tok-type">i32</span>);
 }</code></pre></figure><figure><figcaption class="shell-cap">Shell</figcaption><pre><samp>$ <kbd>zig test test_optional_type.zig</kbd>
 1/1 test_optional_type.test.optional type...OK
 All 1 tests passed.
@@ -7697,12 +7901,12 @@ All 1 tests passed.
 <span class="tok-kw">const</span> expect = std.testing.expect;
 <span class="tok-kw">const</span> mem = std.mem;
 
-<span class="tok-kw">test</span> <span class="tok-str">&quot;cast *[1][*]const u8 to [*]const ?[*]const u8&quot;</span> {
-    <span class="tok-kw">const</span> window_name = [<span class="tok-number">1</span>][*]<span class="tok-kw">const</span> <span class="tok-type">u8</span>{<span class="tok-str">&quot;window name&quot;</span>};
-    <span class="tok-kw">const</span> x: [*]<span class="tok-kw">const</span> ?[*]<span class="tok-kw">const</span> <span class="tok-type">u8</span> = &amp;window_name;
-    <span class="tok-kw">try</span> expect(mem.eql(<span class="tok-type">u8</span>, std.mem.sliceTo(<span class="tok-builtin">@as</span>([*:<span class="tok-number">0</span>]<span class="tok-kw">const</span> <span class="tok-type">u8</span>, <span class="tok-builtin">@ptrCast</span>(x[<span class="tok-number">0</span>].?)), <span class="tok-number">0</span>), <span class="tok-str">&quot;window name&quot;</span>));
+<span class="tok-kw">test</span> <span class="tok-str">&quot;cast *[1][*:0]const u8 to []const ?[*:0]const u8&quot;</span> {
+    <span class="tok-kw">const</span> window_name = [<span class="tok-number">1</span>][*:<span class="tok-number">0</span>]<span class="tok-kw">const</span> <span class="tok-type">u8</span>{<span class="tok-str">&quot;window name&quot;</span>};
+    <span class="tok-kw">const</span> x: []<span class="tok-kw">const</span> ?[*:<span class="tok-number">0</span>]<span class="tok-kw">const</span> <span class="tok-type">u8</span> = &amp;window_name;
+    <span class="tok-kw">try</span> expect(mem.eql(<span class="tok-type">u8</span>, mem.span(x[<span class="tok-number">0</span>].?), <span class="tok-str">&quot;window name&quot;</span>));
 }</code></pre></figure><figure><figcaption class="shell-cap">Shell</figcaption><pre><samp>$ <kbd>zig test test_pointer_coerce_const_optional.zig</kbd>
-1/1 test_pointer_coerce_const_optional.test.cast *[1][*]const u8 to [*]const ?[*]const u8...OK
+1/1 test_pointer_coerce_const_optional.test.cast *[1][*:0]const u8 to []const ?[*:0]const u8...OK
 All 1 tests passed.
 </samp></pre></figure>
 
@@ -8003,12 +8207,12 @@ All 1 tests passed.
 <span class="tok-kw">const</span> expect = std.testing.expect;
 
 <span class="tok-kw">const</span> Tuple = <span class="tok-kw">struct</span> { <span class="tok-type">u8</span>, <span class="tok-type">u8</span> };
-<span class="tok-kw">test</span> <span class="tok-str">&quot;coercion from homogenous tuple to array&quot;</span> {
+<span class="tok-kw">test</span> <span class="tok-str">&quot;coercion from homogeneous tuple to array&quot;</span> {
     <span class="tok-kw">const</span> tuple: Tuple = .{ <span class="tok-number">5</span>, <span class="tok-number">6</span> };
     <span class="tok-kw">const</span> array: [<span class="tok-number">2</span>]<span class="tok-type">u8</span> = tuple;
     _ = array;
 }</code></pre></figure><figure><figcaption class="shell-cap">Shell</figcaption><pre><samp>$ <kbd>zig test test_coerce_tuples_arrays.zig</kbd>
-1/1 test_coerce_tuples_arrays.test.coercion from homogenous tuple to array...OK
+1/1 test_coerce_tuples_arrays.test.coercion from homogeneous tuple to array...OK
 All 1 tests passed.
 </samp></pre></figure>
 
@@ -8313,7 +8517,7 @@ All 2 tests passed.
       <p>
       As a motivating example, consider the statement <code><span class="tok-kw">const</span> x: <span class="tok-type">u32</span> = <span class="tok-number">42</span>;</code>. The type
       annotation here provides a result type of <code><span class="tok-type">u32</span></code> to the initialization expression
-      <code><span class="tok-number">42</span></code>, instructing the compiler to coerce this integer (initally of type
+      <code><span class="tok-number">42</span></code>, instructing the compiler to coerce this integer (initially of type
       <code><span class="tok-type">comptime_int</span></code>) to this type. We will see more examples shortly.
       </p>
       <p>
@@ -8484,15 +8688,15 @@ All 1 tests passed.
     <span class="tok-kw">try</span> expect(arr[<span class="tok-number">1</span>] == <span class="tok-number">1</span>); <span class="tok-comment">// fails</span>
 }</code></pre></figure><figure><figcaption class="shell-cap">Shell</figcaption><pre><samp>$ <kbd>zig test result_location_interfering_with_swap.zig</kbd>
 1/1 result_location_interfering_with_swap.test.attempt to swap array elements with array initializer...FAIL (TestUnexpectedResult)
-/home/ci/actions-runner/_work/zig-bootstrap/out/host/lib/zig/std/testing.zig:540:14: 0x103cbef in expect (test)
+/home/ci/actions-runner/_work/zig-bootstrap/out/host/lib/zig/std/testing.zig:546:14: 0x104079f in expect (test)
     if (!ok) return error.TestUnexpectedResult;
              ^
-/home/ci/actions-runner/_work/zig-bootstrap/zig/doc/langref/result_location_interfering_with_swap.zig:10:5: 0x103cd55 in test.attempt to swap array elements with array initializer (test)
+/home/ci/actions-runner/_work/zig-bootstrap/zig/doc/langref/result_location_interfering_with_swap.zig:10:5: 0x1040895 in test.attempt to swap array elements with array initializer (test)
     try expect(arr[1] == 1); // fails
     ^
 0 passed; 0 skipped; 1 failed.
 error: the following test command failed with exit code 1:
-/home/ci/actions-runner/_work/zig-bootstrap/out/zig-local-cache/o/95b5de774204cb2b3597167d07cdfd97/test
+/home/ci/actions-runner/_work/zig-bootstrap/out/zig-local-cache/o/08dcbf07a72e16e4d8a6457d7434db1a/test --seed=0x7b354ff3
 </samp></pre></figure>
 
       <p>
@@ -8673,9 +8877,6 @@ All 1 tests passed.
 </span>    const result = max(if (condition) f32 else u64, 1234, 5678);
                            <span class="sgr-32m">^~~~~~~~~
 </span><span class="sgr-1m">doc/langref/test_unresolved_comptime_value.zig:8:28: </span><span class="sgr-36m">note: </span><span class="sgr-1m">condition in comptime branch must be comptime-known
-</span><span class="sgr-2m">referenced by:
-    test.try to pass a runtime type: doc/langref/test_unresolved_comptime_value.zig:5:5
-    remaining reference traces hidden; use '-freference-trace' to see all reference traces
 </span>
 </samp></pre></figure>
 
@@ -8699,9 +8900,6 @@ All 1 tests passed.
 <span class="sgr-1m">doc/langref/test_comptime_mismatched_type.zig:2:18: </span><span class="sgr-31m">error: </span><span class="sgr-1m">operator &gt; not allowed for type 'bool'
 </span>    return if (a &gt; b) a else b;
                <span class="sgr-32m">~~^~~
-</span><span class="sgr-2m">referenced by:
-    test.try to compare bools: doc/langref/test_comptime_mismatched_type.zig:5:12
-    remaining reference traces hidden; use '-freference-trace' to see all reference traces
 </span>
 </samp></pre></figure>
 
@@ -8976,7 +9174,7 @@ All 1 tests passed.
 <span class="tok-kw">test</span> <span class="tok-str">&quot;fibonacci&quot;</span> {
     <span class="tok-kw">try</span> <span class="tok-kw">comptime</span> assert(fibonacci(<span class="tok-number">7</span>) == <span class="tok-number">99999</span>);
 }</code></pre></figure><figure><figcaption class="shell-cap">Shell</figcaption><pre><samp>$ <kbd>zig test test_fibonacci_comptime_unreachable.zig</kbd>
-<span class="sgr-1m">/home/ci/actions-runner/_work/zig-bootstrap/out/host/lib/zig/std/debug.zig:412:14: </span><span class="sgr-31m">error: </span><span class="sgr-1m">reached unreachable code
+<span class="sgr-1m">/home/ci/actions-runner/_work/zig-bootstrap/out/host/lib/zig/std/debug.zig:404:14: </span><span class="sgr-31m">error: </span><span class="sgr-1m">reached unreachable code
 </span>    if (!ok) unreachable; // assertion failure
              <span class="sgr-32m">^~~~~~~~~~~
 </span><span class="sgr-1m">doc/langref/test_fibonacci_comptime_unreachable.zig:9:24: </span><span class="sgr-36m">note: </span><span class="sgr-1m">called from here
@@ -9224,13 +9422,13 @@ here is a string: 'foobar' here is a number: 1234
       <figure><figcaption class="zig-cap"><cite class="file">poc_printValue_fn.zig</cite></figcaption><pre><code><span class="tok-kw">const</span> Writer = <span class="tok-kw">struct</span> {
     <span class="tok-kw">pub</span> <span class="tok-kw">fn</span> <span class="tok-fn">printValue</span>(self: *Writer, value: <span class="tok-kw">anytype</span>) !<span class="tok-type">void</span> {
         <span class="tok-kw">switch</span> (<span class="tok-builtin">@typeInfo</span>(<span class="tok-builtin">@TypeOf</span>(value))) {
-            .Int =&gt; {
+            .int =&gt; {
                 <span class="tok-kw">return</span> self.writeInt(value);
             },
-            .Float =&gt; {
+            .float =&gt; {
                 <span class="tok-kw">return</span> self.writeFloat(value);
             },
-            .Pointer =&gt; {
+            .pointer =&gt; {
                 <span class="tok-kw">return</span> self.write(value);
             },
             <span class="tok-kw">else</span> =&gt; {
@@ -9268,14 +9466,10 @@ here is a string: 'foobar' here is a number: 1234
         a_number,
     });
 }</code></pre></figure><figure><figcaption class="shell-cap">Shell</figcaption><pre><samp>$ <kbd>zig test test_print_too_many_args.zig</kbd>
-<span class="sgr-1m">/home/ci/actions-runner/_work/zig-bootstrap/out/host/lib/zig/std/fmt.zig:203:18: </span><span class="sgr-31m">error: </span><span class="sgr-1m">unused argument in 'here is a string: '{s}' here is a number: {}
+<span class="sgr-1m">/home/ci/actions-runner/_work/zig-bootstrap/out/host/lib/zig/std/fmt.zig:206:18: </span><span class="sgr-31m">error: </span><span class="sgr-1m">unused argument in 'here is a string: '{s}' here is a number: {}
                                                                                         '
 </span>            1 =&gt; @compileError(&quot;unused argument in '&quot; ++ fmt ++ &quot;'&quot;),
                  <span class="sgr-32m">^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-</span><span class="sgr-2m">referenced by:
-    print__anon_2377: /home/ci/actions-runner/_work/zig-bootstrap/out/host/lib/zig/std/io/Writer.zig:24:26
-    print: /home/ci/actions-runner/_work/zig-bootstrap/out/host/lib/zig/std/io.zig:324:47
-    remaining reference traces hidden; use '-freference-trace' to see all reference traces
 </span>
 </samp></pre></figure>
 
@@ -9377,8 +9571,8 @@ hello world
     <span class="tok-comment">// the below code, this is not used. A literal `%` can be</span>
     <span class="tok-comment">// obtained by escaping it with a double percent: `%%`.</span>
     <span class="tok-comment">// Often multiline string syntax comes in handy here.</span>
-        <span class="tok-str">\\syscall
-</span>        <span class="tok-comment">// Next is the output. It is possible in the future Zig will</span>
+        <span class="tok-str">\\syscall</span>
+        <span class="tok-comment">// Next is the output. It is possible in the future Zig will</span>
         <span class="tok-comment">// support multiple outputs, depending on how</span>
         <span class="tok-comment">// https://github.com/ziglang/zig/issues/215 is resolved.</span>
         <span class="tok-comment">// It is allowed for there to be no outputs, in which case</span>
@@ -9495,12 +9689,12 @@ hello world
 
 <span class="tok-kw">comptime</span> {
     <span class="tok-kw">asm</span> (
-        <span class="tok-str">\\.global my_func;
-</span>        <span class="tok-str">\\.type my_func, @function;
-</span>        <span class="tok-str">\\my_func:
-</span>        <span class="tok-str">\\  lea (%rdi,%rsi,1),%eax
-</span>        <span class="tok-str">\\  retq
-</span>    );
+        <span class="tok-str">\\.global my_func;</span>
+        <span class="tok-str">\\.type my_func, @function;</span>
+        <span class="tok-str">\\my_func:</span>
+        <span class="tok-str">\\  lea (%rdi,%rsi,1),%eax</span>
+        <span class="tok-str">\\  retq</span>
+    );
 }
 
 <span class="tok-kw">extern</span> <span class="tok-kw">fn</span> <span class="tok-fn">my_func</span>(a: <span class="tok-type">i32</span>, b: <span class="tok-type">i32</span>) <span class="tok-type">i32</span>;
@@ -9690,7 +9884,7 @@ All 1 tests passed.
       Asserts that <code><span class="tok-builtin">@sizeOf</span>(<span class="tok-builtin">@TypeOf</span>(value)) == <span class="tok-builtin">@sizeOf</span>(DestType)</code>.
       </p>
       <p>
-      Asserts that <code><span class="tok-builtin">@typeInfo</span>(DestType) != .Pointer</code>. Use <code><span class="tok-builtin">@ptrCast</span></code> or <code><span class="tok-builtin">@ptrFromInt</span></code> if you need this.
+      Asserts that <code><span class="tok-builtin">@typeInfo</span>(DestType) != .pointer</code>. Use <code><span class="tok-builtin">@ptrCast</span></code> or <code><span class="tok-builtin">@ptrFromInt</span></code> if you need this.
       </p>
       <p>
       Can be used for these things for example:
@@ -9738,6 +9932,14 @@ All 1 tests passed.
 <li><a href="#typeInfo">@typeInfo</a></li>
 </ul>
 
+      
+
+      <h3 id="branchHint"><a href="#toc-branchHint">@branchHint</a> <a class="hdr" href="#branchHint">§</a></h3>
+
+      <pre><code><span class="tok-builtin">@branchHint</span>(hint: BranchHint) <span class="tok-type">void</span></code></pre>
+      <p>Hints to the optimizer how likely a given branch of control flow is to be reached.</p>
+      <p><code>BranchHint</code> can be found with <code><span class="tok-builtin">@import</span>(<span class="tok-str">&quot;std&quot;</span>).builtin.BranchHint</code>.</p>
+      <p>This function is only valid as the first statement in a control flow branch, or the first statement in a function.</p>
       
 
       <h3 id="breakpoint"><a href="#toc-breakpoint">@breakpoint</a> <a class="hdr" href="#breakpoint">§</a></h3>
@@ -10001,7 +10203,7 @@ All 1 tests passed.
       <code>T</code> must be a pointer, a <code><span class="tok-type">bool</span></code>, a float,
       an integer or an enum.
       </p>
-      <p><code><span class="tok-builtin">@typeInfo</span>(<span class="tok-builtin">@TypeOf</span>(ptr)).Pointer.alignment</code> must be <code>&gt;= <span class="tok-builtin">@sizeOf</span>(T).</code></p>
+      <p><code><span class="tok-builtin">@typeInfo</span>(<span class="tok-builtin">@TypeOf</span>(ptr)).pointer.alignment</code> must be <code>&gt;= <span class="tok-builtin">@sizeOf</span>(T).</code></p>
       <p><code>AtomicOrder</code> can be found with <code><span class="tok-builtin">@import</span>(<span class="tok-str">&quot;std&quot;</span>).builtin.AtomicOrder</code>.</p>
       <p>See also:</p><ul>
 <li><a href="#atomicStore">@atomicStore</a></li>
@@ -10039,7 +10241,7 @@ All 1 tests passed.
       <code>T</code> must be a pointer, a <code><span class="tok-type">bool</span></code>, a float,
       an integer or an enum.
       </p>
-      <p><code><span class="tok-builtin">@typeInfo</span>(<span class="tok-builtin">@TypeOf</span>(ptr)).Pointer.alignment</code> must be <code>&gt;= <span class="tok-builtin">@sizeOf</span>(T).</code></p>
+      <p><code><span class="tok-builtin">@typeInfo</span>(<span class="tok-builtin">@TypeOf</span>(ptr)).pointer.alignment</code> must be <code>&gt;= <span class="tok-builtin">@sizeOf</span>(T).</code></p>
       <p><code>AtomicOrder</code> can be found with <code><span class="tok-builtin">@import</span>(<span class="tok-str">&quot;std&quot;</span>).builtin.AtomicOrder</code>.</p>
       <p>See also:</p><ul>
 <li><a href="#atomicStore">@atomicStore</a></li>
@@ -10238,7 +10440,7 @@ Compile Log Output:
       <p>
       Floored division. Rounds toward negative infinity. For unsigned integers it is
       the same as <code>numerator / denominator</code>. Caller guarantees <code>denominator != <span class="tok-number">0</span></code> and
-              <code>!(<span class="tok-builtin">@typeInfo</span>(T) == .Int <span class="tok-kw">and</span> T.is_signed <span class="tok-kw">and</span> numerator == std.math.minInt(T) <span class="tok-kw">and</span> denominator == -<span class="tok-number">1</span>)</code>.
+              <code>!(<span class="tok-builtin">@typeInfo</span>(T) == .int <span class="tok-kw">and</span> T.is_signed <span class="tok-kw">and</span> numerator == std.math.minInt(T) <span class="tok-kw">and</span> denominator == -<span class="tok-number">1</span>)</code>.
       </p>
       <ul>
           <li><code><span class="tok-builtin">@divFloor</span>(-<span class="tok-number">5</span>, <span class="tok-number">3</span>) == -<span class="tok-number">2</span></code></li>
@@ -10257,7 +10459,7 @@ Compile Log Output:
       <p>
       Truncated division. Rounds toward zero. For unsigned integers it is
       the same as <code>numerator / denominator</code>. Caller guarantees <code>denominator != <span class="tok-number">0</span></code> and
-              <code>!(<span class="tok-builtin">@typeInfo</span>(T) == .Int <span class="tok-kw">and</span> T.is_signed <span class="tok-kw">and</span> numerator == std.math.minInt(T) <span class="tok-kw">and</span> denominator == -<span class="tok-number">1</span>)</code>.
+              <code>!(<span class="tok-builtin">@typeInfo</span>(T) == .int <span class="tok-kw">and</span> T.is_signed <span class="tok-kw">and</span> numerator == std.math.minInt(T) <span class="tok-kw">and</span> denominator == -<span class="tok-number">1</span>)</code>.
       </p>
       <ul>
           <li><code><span class="tok-builtin">@divTrunc</span>(-<span class="tok-number">5</span>, <span class="tok-number">3</span>) == -<span class="tok-number">1</span></code></li>
@@ -10297,8 +10499,11 @@ Compile Log Output:
       Converts an integer into an <a href="#enum">enum</a> value. The return type is the inferred result type.
       </p>
       <p>
-      Attempting to convert an integer which represents no value in the chosen enum type invokes
+      Attempting to convert an integer with no corresponding value in the enum invokes 
       safety-checked <a href="#Undefined-Behavior">Undefined Behavior</a>.
+      Note that a <a href="#Non-exhaustive-enum">non-exhaustive enum</a> has corresponding values for all
+      integers in the enum's integer tag type: the <code>_</code> value represents all 
+      the remaining unnamed integers in the enum's tag type.
       </p>
       <p>See also:</p><ul>
 <li><a href="#intFromEnum">@intFromEnum</a></li>
@@ -10362,27 +10567,17 @@ Compile Log Output:
 
       <h3 id="export"><a href="#toc-export">@export</a> <a class="hdr" href="#export">§</a></h3>
 
-      <pre><code><span class="tok-builtin">@export</span>(declaration, <span class="tok-kw">comptime</span> options: std.builtin.ExportOptions) <span class="tok-type">void</span></code></pre>
-      <p>
-      Creates a symbol in the output object file.
-      </p>
-      <p>
-      <code>declaration</code> must be one of two things:
-      </p>
-      <ul>
-        <li>An identifier (<code>x</code>) identifying a <a href="#Functions">function</a> or a
-          <a href="#Container-Level-Variables">variable</a>.</li>
-        <li>Field access (<code>x.y</code>) looking up a <a href="#Functions">function</a> or a
-          <a href="#Container-Level-Variables">variable</a>.</li>
-      </ul>
+      <pre><code><span class="tok-builtin">@export</span>(<span class="tok-kw">comptime</span> ptr: *<span class="tok-kw">const</span> <span class="tok-type">anyopaque</span>, <span class="tok-kw">comptime</span> options: std.builtin.ExportOptions) <span class="tok-type">void</span></code></pre>
+      <p>Creates a symbol in the output object file which refers to the target of <code>ptr</code>.</p>
+      <p><code>ptr</code> must point to a global variable or a comptime-known constant.</p>
       <p>
       This builtin can be called from a <a href="#comptime">comptime</a> block to conditionally export symbols.
-      When <code>declaration</code> is a function with the C calling convention and
-      <code>options.linkage</code> is <code>Strong</code>, this is equivalent to
+      When <code>ptr</code> points to a function with the C calling convention and
+      <code>options.linkage</code> is <code>.Strong</code>, this is equivalent to
       the <code><span class="tok-kw">export</span></code> keyword used on a function:
       </p>
       <figure><figcaption class="zig-cap"><cite class="file">export_builtin.zig</cite></figcaption><pre><code><span class="tok-kw">comptime</span> {
-    <span class="tok-builtin">@export</span>(internalName, .{ .name = <span class="tok-str">&quot;foo&quot;</span>, .linkage = .strong });
+    <span class="tok-builtin">@export</span>(&amp;internalName, .{ .name = <span class="tok-str">&quot;foo&quot;</span>, .linkage = .strong });
 }
 
 <span class="tok-kw">fn</span> <span class="tok-fn">internalName</span>() <span class="tok-kw">callconv</span>(.C) <span class="tok-type">void</span> {}</code></pre></figure><figure><figcaption class="shell-cap">Shell</figcaption><pre><samp>$ <kbd>zig build-obj export_builtin.zig</kbd>
@@ -10645,25 +10840,25 @@ All 1 tests passed.
     <span class="tok-kw">const</span> b: <span class="tok-type">u8</span> = <span class="tok-builtin">@intCast</span>(a);
     _ = b;
 }</code></pre></figure><figure><figcaption class="shell-cap">Shell</figcaption><pre><samp>$ <kbd>zig test test_intCast_builtin.zig</kbd>
-1/1 test_intCast_builtin.test.integer cast panic...thread 3241443 panic: integer cast truncated bits
-/home/ci/actions-runner/_work/zig-bootstrap/zig/doc/langref/test_intCast_builtin.zig:4:19: 0x103cc3b in test.integer cast panic (test)
+1/1 test_intCast_builtin.test.integer cast panic...thread 3324061 panic: integer cast truncated bits
+/home/ci/actions-runner/_work/zig-bootstrap/zig/doc/langref/test_intCast_builtin.zig:4:19: 0x104077b in test.integer cast panic (test)
     const b: u8 = @intCast(a);
                   ^
-/home/ci/actions-runner/_work/zig-bootstrap/out/host/lib/zig/compiler/test_runner.zig:157:25: 0x1047f99 in mainTerminal (test)
+/home/ci/actions-runner/_work/zig-bootstrap/out/host/lib/zig/compiler/test_runner.zig:208:25: 0x10d8d9c in mainTerminal (test)
         if (test_fn.func()) |_| {
                         ^
-/home/ci/actions-runner/_work/zig-bootstrap/out/host/lib/zig/compiler/test_runner.zig:37:28: 0x103e01b in main (test)
+/home/ci/actions-runner/_work/zig-bootstrap/out/host/lib/zig/compiler/test_runner.zig:57:28: 0x10d0ff0 in main (test)
         return mainTerminal();
                            ^
-/home/ci/actions-runner/_work/zig-bootstrap/out/host/lib/zig/std/start.zig:514:22: 0x103d159 in posixCallMainAndExit (test)
+/home/ci/actions-runner/_work/zig-bootstrap/out/host/lib/zig/std/start.zig:611:22: 0x10d0546 in posixCallMainAndExit (test)
             root.main();
                      ^
-/home/ci/actions-runner/_work/zig-bootstrap/out/host/lib/zig/std/start.zig:266:5: 0x103ccc1 in _start (test)
+/home/ci/actions-runner/_work/zig-bootstrap/out/host/lib/zig/std/start.zig:250:5: 0x10d016f in _start (test)
     asm volatile (switch (native_arch) {
     ^
 ???:?:?: 0x0 in ??? (???)
 error: the following test command crashed:
-/home/ci/actions-runner/_work/zig-bootstrap/out/zig-local-cache/o/3c2c9597c295caf6e70b41d1894144f0/test
+/home/ci/actions-runner/_work/zig-bootstrap/out/zig-local-cache/o/4ef3a5c19d9eece00d1cebabc8b8a56e/test --seed=0xc145153f
 </samp></pre></figure>
 
       <p>
@@ -10794,7 +10989,7 @@ error: the following test command crashed:
       It may have any alignment, and it may have any element type.</p>
       <p><code>elem</code> is coerced to the element type of <code>dest</code>.</p>
       <p>For securely zeroing out sensitive contents from memory, you should use
-      <code>std.crypto.utils.secureZero</code></p>
+      <code>std.crypto.secureZero</code></p>
       
 
       <h3 id="min"><a href="#toc-min">@min</a> <a class="hdr" href="#min">§</a></h3>
@@ -11046,16 +11241,6 @@ error: the following test command crashed:
       </p>
       
 
-      <h3 id="setCold"><a href="#toc-setCold">@setCold</a> <a class="hdr" href="#setCold">§</a></h3>
-
-      <pre><code><span class="tok-builtin">@setCold</span>(<span class="tok-kw">comptime</span> is_cold: <span class="tok-type">bool</span>) <span class="tok-type">void</span></code></pre>
-      <p>
-      Tells the optimizer that the current function is (or is not) rarely called.
-
-      This function is only valid within function scope.
-      </p>
-      
-
       <h3 id="setEvalBranchQuota"><a href="#toc-setEvalBranchQuota">@setEvalBranchQuota</a> <a class="hdr" href="#setEvalBranchQuota">§</a></h3>
 
       <pre><code><span class="tok-builtin">@setEvalBranchQuota</span>(<span class="tok-kw">comptime</span> new_quota: <span class="tok-type">u32</span>) <span class="tok-type">void</span></code></pre>
@@ -11161,22 +11346,22 @@ All 1 tests passed.
         }
     }
 }</code></pre></figure><figure><figcaption class="shell-cap">Shell</figcaption><pre><samp>$ <kbd>zig test test_setRuntimeSafety_builtin.zig -OReleaseFast</kbd>
-1/1 test_setRuntimeSafety_builtin.test.@setRuntimeSafety...thread 3246194 panic: integer overflow
-/home/ci/actions-runner/_work/zig-bootstrap/zig/doc/langref/test_setRuntimeSafety_builtin.zig:11:11: 0x100a474 in test.@setRuntimeSafety (test)
+1/1 test_setRuntimeSafety_builtin.test.@setRuntimeSafety...thread 3329334 panic: integer overflow
+/home/ci/actions-runner/_work/zig-bootstrap/zig/doc/langref/test_setRuntimeSafety_builtin.zig:11:11: 0x100ac14 in test.@setRuntimeSafety (test)
         x += 1;
           ^
-/home/ci/actions-runner/_work/zig-bootstrap/out/host/lib/zig/compiler/test_runner.zig:157:25: 0x100bc40 in main (test)
+/home/ci/actions-runner/_work/zig-bootstrap/out/host/lib/zig/compiler/test_runner.zig:208:25: 0x102facc in main (test)
         if (test_fn.func()) |_| {
                         ^
-/home/ci/actions-runner/_work/zig-bootstrap/out/host/lib/zig/std/start.zig:514:22: 0x100a564 in posixCallMainAndExit (test)
+/home/ci/actions-runner/_work/zig-bootstrap/out/host/lib/zig/std/start.zig:611:22: 0x102e44b in posixCallMainAndExit (test)
             root.main();
                      ^
-/home/ci/actions-runner/_work/zig-bootstrap/out/host/lib/zig/std/start.zig:266:5: 0x100a491 in _start (test)
+/home/ci/actions-runner/_work/zig-bootstrap/out/host/lib/zig/std/start.zig:250:5: 0x102e14d in _start (test)
     asm volatile (switch (native_arch) {
     ^
 ???:?:?: 0x0 in ??? (???)
 error: the following test command crashed:
-/home/ci/actions-runner/_work/zig-bootstrap/out/zig-local-cache/o/2fad1ee4466e44b667617c75838b0541/test
+/home/ci/actions-runner/_work/zig-bootstrap/out/zig-local-cache/o/0a2e97521cffa5577df6532f248ca256/test --seed=0x328fc3c2
 </samp></pre></figure>
 
       <p>Note: it is <a href="https://github.com/ziglang/zig/issues/978">planned</a> to replace
@@ -11194,8 +11379,8 @@ error: the following test command crashed:
       any bits that disagree with the resultant sign bit are shifted out.
       </p>
       <p>
-      The type of <code>shift_amt</code> is an unsigned integer with <code>log2(<span class="tok-builtin">@typeInfo</span>(T).Int.bits)</code> bits.
-              This is because <code>shift_amt &gt;= <span class="tok-builtin">@typeInfo</span>(T).Int.bits</code> is undefined behavior.
+      The type of <code>shift_amt</code> is an unsigned integer with <code>log2(<span class="tok-builtin">@typeInfo</span>(T).int.bits)</code> bits.
+              This is because <code>shift_amt &gt;= <span class="tok-builtin">@typeInfo</span>(T).int.bits</code> is undefined behavior.
       </p>
       <p>
       <code><span class="tok-type">comptime_int</span></code> is modeled as an integer with an infinite number of bits,
@@ -11216,8 +11401,8 @@ error: the following test command crashed:
       Performs <code>a &lt;&lt; b</code> and returns a tuple with the result and a possible overflow bit.
       </p>
       <p>
-      The type of <code>shift_amt</code> is an unsigned integer with <code>log2(<span class="tok-builtin">@typeInfo</span>(<span class="tok-builtin">@TypeOf</span>(a)).Int.bits)</code> bits.
-              This is because <code>shift_amt &gt;= <span class="tok-builtin">@typeInfo</span>(<span class="tok-builtin">@TypeOf</span>(a)).Int.bits</code> is undefined behavior.
+      The type of <code>shift_amt</code> is an unsigned integer with <code>log2(<span class="tok-builtin">@typeInfo</span>(<span class="tok-builtin">@TypeOf</span>(a)).int.bits)</code> bits.
+              This is because <code>shift_amt &gt;= <span class="tok-builtin">@typeInfo</span>(<span class="tok-builtin">@TypeOf</span>(a)).int.bits</code> is undefined behavior.
       </p>
       <p>See also:</p><ul>
 <li><a href="#shlExact">@shlExact</a></li>
@@ -11234,8 +11419,8 @@ error: the following test command crashed:
       that the shift will not shift any 1 bits out.
       </p>
       <p>
-      The type of <code>shift_amt</code> is an unsigned integer with <code>log2(<span class="tok-builtin">@typeInfo</span>(T).Int.bits)</code> bits.
-              This is because <code>shift_amt &gt;= <span class="tok-builtin">@typeInfo</span>(T).Int.bits</code> is undefined behavior.
+      The type of <code>shift_amt</code> is an unsigned integer with <code>log2(<span class="tok-builtin">@typeInfo</span>(T).int.bits)</code> bits.
+              This is because <code>shift_amt &gt;= <span class="tok-builtin">@typeInfo</span>(T).int.bits</code> is undefined behavior.
       </p>
       <p>See also:</p><ul>
 <li><a href="#shlExact">@shlExact</a></li>
@@ -11318,7 +11503,7 @@ All 1 tests passed.
       This size may contain padding bytes. If there were two consecutive T in memory, the padding would be the offset
       in bytes between element at index 0 and the element at index 1. For <a href="#Integers">integer</a>,
       consider whether you want to use <code><span class="tok-builtin">@sizeOf</span>(T)</code> or
-      <code><span class="tok-builtin">@typeInfo</span>(T).Int.bits</code>.
+      <code><span class="tok-builtin">@typeInfo</span>(T).int.bits</code>.
       </p>
       <p>
       This function measures the size at runtime. For types that are disallowed at runtime, such as
@@ -11590,9 +11775,21 @@ All 1 tests passed.
 
       <pre><code><span class="tok-builtin">@round</span>(value: <span class="tok-kw">anytype</span>) <span class="tok-builtin">@TypeOf</span>(value)</code></pre>
       <p>
-      Rounds the given floating point number to an integer, away from zero. Uses a dedicated hardware instruction
-      when available.
+      Rounds the given floating point number to the nearest integer. If two integers are equally close, rounds away from zero.
+      Uses a dedicated hardware instruction when available.
       </p>
+      <figure><figcaption class="zig-cap"><cite class="file">test_round_builtin.zig</cite></figcaption><pre><code><span class="tok-kw">const</span> expect = <span class="tok-builtin">@import</span>(<span class="tok-str">&quot;std&quot;</span>).testing.expect;
+
+<span class="tok-kw">test</span> <span class="tok-str">&quot;@round&quot;</span> {
+    <span class="tok-kw">try</span> expect(<span class="tok-builtin">@round</span>(<span class="tok-number">1.4</span>) == <span class="tok-number">1</span>);
+    <span class="tok-kw">try</span> expect(<span class="tok-builtin">@round</span>(<span class="tok-number">1.5</span>) == <span class="tok-number">2</span>);
+    <span class="tok-kw">try</span> expect(<span class="tok-builtin">@round</span>(-<span class="tok-number">1.4</span>) == -<span class="tok-number">1</span>);
+    <span class="tok-kw">try</span> expect(<span class="tok-builtin">@round</span>(-<span class="tok-number">2.5</span>) == -<span class="tok-number">3</span>);
+}</code></pre></figure><figure><figcaption class="shell-cap">Shell</figcaption><pre><samp>$ <kbd>zig test test_round_builtin.zig</kbd>
+1/1 test_round_builtin.test.@round...OK
+All 1 tests passed.
+</samp></pre></figure>
+
       <p>
       Supports <a href="#Floats">Floats</a> and <a href="#Vectors">Vectors</a> of floats.
       </p>
@@ -11968,25 +12165,25 @@ All 1 tests passed.
       <figure><figcaption class="zig-cap"><cite class="file">test_undefined_behavior.zig</cite></figcaption><pre><code><span class="tok-kw">test</span> <span class="tok-str">&quot;safety check&quot;</span> {
     <span class="tok-kw">unreachable</span>;
 }</code></pre></figure><figure><figcaption class="shell-cap">Shell</figcaption><pre><samp>$ <kbd>zig test test_undefined_behavior.zig</kbd>
-1/1 test_undefined_behavior.test.safety check...thread 3244692 panic: reached unreachable code
-/home/ci/actions-runner/_work/zig-bootstrap/zig/doc/langref/test_undefined_behavior.zig:2:5: 0x103cc10 in test.safety check (test)
+1/1 test_undefined_behavior.test.safety check...thread 3328562 panic: reached unreachable code
+/home/ci/actions-runner/_work/zig-bootstrap/zig/doc/langref/test_undefined_behavior.zig:2:5: 0x1040740 in test.safety check (test)
     unreachable;
     ^
-/home/ci/actions-runner/_work/zig-bootstrap/out/host/lib/zig/compiler/test_runner.zig:157:25: 0x1047f79 in mainTerminal (test)
+/home/ci/actions-runner/_work/zig-bootstrap/out/host/lib/zig/compiler/test_runner.zig:208:25: 0x10d8d6c in mainTerminal (test)
         if (test_fn.func()) |_| {
                         ^
-/home/ci/actions-runner/_work/zig-bootstrap/out/host/lib/zig/compiler/test_runner.zig:37:28: 0x103dffb in main (test)
+/home/ci/actions-runner/_work/zig-bootstrap/out/host/lib/zig/compiler/test_runner.zig:57:28: 0x10d0fc0 in main (test)
         return mainTerminal();
                            ^
-/home/ci/actions-runner/_work/zig-bootstrap/out/host/lib/zig/std/start.zig:514:22: 0x103d139 in posixCallMainAndExit (test)
+/home/ci/actions-runner/_work/zig-bootstrap/out/host/lib/zig/std/start.zig:611:22: 0x10d0516 in posixCallMainAndExit (test)
             root.main();
                      ^
-/home/ci/actions-runner/_work/zig-bootstrap/out/host/lib/zig/std/start.zig:266:5: 0x103cca1 in _start (test)
+/home/ci/actions-runner/_work/zig-bootstrap/out/host/lib/zig/std/start.zig:250:5: 0x10d013f in _start (test)
     asm volatile (switch (native_arch) {
     ^
 ???:?:?: 0x0 in ??? (???)
 error: the following test command crashed:
-/home/ci/actions-runner/_work/zig-bootstrap/out/zig-local-cache/o/b2550649076ce580d080989997a07b7d/test
+/home/ci/actions-runner/_work/zig-bootstrap/out/zig-local-cache/o/fcbd09e7bd603d75caf17f0d879c56d0/test --seed=0xe2d7ac06
 </samp></pre></figure>
 
       <h3 id="Reaching-Unreachable-Code"><a href="#toc-Reaching-Unreachable-Code">Reaching Unreachable Code</a> <a class="hdr" href="#Reaching-Unreachable-Code">§</a></h3>
@@ -12014,17 +12211,17 @@ error: the following test command crashed:
     std.debug.assert(<span class="tok-null">false</span>);
 }</code></pre></figure><figure><figcaption class="shell-cap">Shell</figcaption><pre><samp>$ <kbd>zig build-exe runtime_reaching_unreachable.zig</kbd>
 $ <kbd>./runtime_reaching_unreachable</kbd>
-thread 3242570 panic: reached unreachable code
-/home/ci/actions-runner/_work/zig-bootstrap/out/host/lib/zig/std/debug.zig:412:14: 0x1036b8d in assert (runtime_reaching_unreachable)
+thread 3323440 panic: reached unreachable code
+/home/ci/actions-runner/_work/zig-bootstrap/out/host/lib/zig/std/debug.zig:404:14: 0x1038e1d in assert (runtime_reaching_unreachable)
     if (!ok) unreachable; // assertion failure
              ^
-/home/ci/actions-runner/_work/zig-bootstrap/zig/doc/langref/runtime_reaching_unreachable.zig:4:21: 0x1034f2a in main (runtime_reaching_unreachable)
+/home/ci/actions-runner/_work/zig-bootstrap/zig/doc/langref/runtime_reaching_unreachable.zig:4:21: 0x10382ca in main (runtime_reaching_unreachable)
     std.debug.assert(false);
                     ^
-/home/ci/actions-runner/_work/zig-bootstrap/out/host/lib/zig/std/start.zig:514:22: 0x10347d9 in posixCallMainAndExit (runtime_reaching_unreachable)
+/home/ci/actions-runner/_work/zig-bootstrap/out/host/lib/zig/std/start.zig:611:22: 0x1037cf6 in posixCallMainAndExit (runtime_reaching_unreachable)
             root.main();
                      ^
-/home/ci/actions-runner/_work/zig-bootstrap/out/host/lib/zig/std/start.zig:266:5: 0x1034341 in _start (runtime_reaching_unreachable)
+/home/ci/actions-runner/_work/zig-bootstrap/out/host/lib/zig/std/start.zig:250:5: 0x103791f in _start (runtime_reaching_unreachable)
     asm volatile (switch (native_arch) {
     ^
 ???:?:?: 0x0 in ??? (???)
@@ -12056,17 +12253,17 @@ thread 3242570 panic: reached unreachable code
     <span class="tok-kw">return</span> x[<span class="tok-number">5</span>];
 }</code></pre></figure><figure><figcaption class="shell-cap">Shell</figcaption><pre><samp>$ <kbd>zig build-exe runtime_index_out_of_bounds.zig</kbd>
 $ <kbd>./runtime_index_out_of_bounds</kbd>
-thread 3241284 panic: index out of bounds: index 5, len 5
-/home/ci/actions-runner/_work/zig-bootstrap/zig/doc/langref/runtime_index_out_of_bounds.zig:7:13: 0x1037019 in foo (runtime_index_out_of_bounds)
+thread 3329059 panic: index out of bounds: index 5, len 5
+/home/ci/actions-runner/_work/zig-bootstrap/zig/doc/langref/runtime_index_out_of_bounds.zig:7:13: 0x10396f9 in foo (runtime_index_out_of_bounds)
     return x[5];
             ^
-/home/ci/actions-runner/_work/zig-bootstrap/zig/doc/langref/runtime_index_out_of_bounds.zig:2:18: 0x1034f66 in main (runtime_index_out_of_bounds)
+/home/ci/actions-runner/_work/zig-bootstrap/zig/doc/langref/runtime_index_out_of_bounds.zig:2:18: 0x1038306 in main (runtime_index_out_of_bounds)
     const x = foo(&quot;hello&quot;);
                  ^
-/home/ci/actions-runner/_work/zig-bootstrap/out/host/lib/zig/std/start.zig:514:22: 0x1034809 in posixCallMainAndExit (runtime_index_out_of_bounds)
+/home/ci/actions-runner/_work/zig-bootstrap/out/host/lib/zig/std/start.zig:611:22: 0x1037d26 in posixCallMainAndExit (runtime_index_out_of_bounds)
             root.main();
                      ^
-/home/ci/actions-runner/_work/zig-bootstrap/out/host/lib/zig/std/start.zig:266:5: 0x1034371 in _start (runtime_index_out_of_bounds)
+/home/ci/actions-runner/_work/zig-bootstrap/out/host/lib/zig/std/start.zig:250:5: 0x103794f in _start (runtime_index_out_of_bounds)
     asm volatile (switch (native_arch) {
     ^
 ???:?:?: 0x0 in ??? (???)
@@ -12098,14 +12295,14 @@ thread 3241284 panic: index out of bounds: index 5, len 5
     std.debug.print(<span class="tok-str">&quot;value: {}\n&quot;</span>, .{unsigned});
 }</code></pre></figure><figure><figcaption class="shell-cap">Shell</figcaption><pre><samp>$ <kbd>zig build-exe runtime_invalid_cast.zig</kbd>
 $ <kbd>./runtime_invalid_cast</kbd>
-thread 3242681 panic: attempt to cast negative value to unsigned integer
-/home/ci/actions-runner/_work/zig-bootstrap/zig/doc/langref/runtime_invalid_cast.zig:6:27: 0x10350a2 in main (runtime_invalid_cast)
+thread 3329310 panic: attempt to cast negative value to unsigned integer
+/home/ci/actions-runner/_work/zig-bootstrap/zig/doc/langref/runtime_invalid_cast.zig:6:27: 0x1038452 in main (runtime_invalid_cast)
     const unsigned: u32 = @intCast(value);
                           ^
-/home/ci/actions-runner/_work/zig-bootstrap/out/host/lib/zig/std/start.zig:514:22: 0x1034909 in posixCallMainAndExit (runtime_invalid_cast)
+/home/ci/actions-runner/_work/zig-bootstrap/out/host/lib/zig/std/start.zig:611:22: 0x1037e36 in posixCallMainAndExit (runtime_invalid_cast)
             root.main();
                      ^
-/home/ci/actions-runner/_work/zig-bootstrap/out/host/lib/zig/std/start.zig:266:5: 0x1034471 in _start (runtime_invalid_cast)
+/home/ci/actions-runner/_work/zig-bootstrap/out/host/lib/zig/std/start.zig:250:5: 0x1037a5f in _start (runtime_invalid_cast)
     asm volatile (switch (native_arch) {
     ^
 ???:?:?: 0x0 in ??? (???)
@@ -12140,14 +12337,14 @@ thread 3242681 panic: attempt to cast negative value to unsigned integer
     std.debug.print(<span class="tok-str">&quot;value: {}\n&quot;</span>, .{byte});
 }</code></pre></figure><figure><figcaption class="shell-cap">Shell</figcaption><pre><samp>$ <kbd>zig build-exe runtime_invalid_cast_truncate.zig</kbd>
 $ <kbd>./runtime_invalid_cast_truncate</kbd>
-thread 3243483 panic: integer cast truncated bits
-/home/ci/actions-runner/_work/zig-bootstrap/zig/doc/langref/runtime_invalid_cast_truncate.zig:6:22: 0x1035135 in main (runtime_invalid_cast_truncate)
+thread 3325826 panic: integer cast truncated bits
+/home/ci/actions-runner/_work/zig-bootstrap/zig/doc/langref/runtime_invalid_cast_truncate.zig:6:22: 0x10384e5 in main (runtime_invalid_cast_truncate)
     const byte: u8 = @intCast(spartan_count);
                      ^
-/home/ci/actions-runner/_work/zig-bootstrap/out/host/lib/zig/std/start.zig:514:22: 0x1034999 in posixCallMainAndExit (runtime_invalid_cast_truncate)
+/home/ci/actions-runner/_work/zig-bootstrap/out/host/lib/zig/std/start.zig:611:22: 0x1037ec6 in posixCallMainAndExit (runtime_invalid_cast_truncate)
             root.main();
                      ^
-/home/ci/actions-runner/_work/zig-bootstrap/out/host/lib/zig/std/start.zig:266:5: 0x1034501 in _start (runtime_invalid_cast_truncate)
+/home/ci/actions-runner/_work/zig-bootstrap/out/host/lib/zig/std/start.zig:250:5: 0x1037aef in _start (runtime_invalid_cast_truncate)
     asm volatile (switch (native_arch) {
     ^
 ???:?:?: 0x0 in ??? (???)
@@ -12193,14 +12390,14 @@ thread 3243483 panic: integer cast truncated bits
     std.debug.print(<span class="tok-str">&quot;value: {}\n&quot;</span>, .{byte});
 }</code></pre></figure><figure><figcaption class="shell-cap">Shell</figcaption><pre><samp>$ <kbd>zig build-exe runtime_overflow.zig</kbd>
 $ <kbd>./runtime_overflow</kbd>
-thread 3238794 panic: integer overflow
-/home/ci/actions-runner/_work/zig-bootstrap/zig/doc/langref/runtime_overflow.zig:5:10: 0x103511e in main (runtime_overflow)
+thread 3322237 panic: integer overflow
+/home/ci/actions-runner/_work/zig-bootstrap/zig/doc/langref/runtime_overflow.zig:5:10: 0x10384ae in main (runtime_overflow)
     byte += 1;
          ^
-/home/ci/actions-runner/_work/zig-bootstrap/out/host/lib/zig/std/start.zig:514:22: 0x1034999 in posixCallMainAndExit (runtime_overflow)
+/home/ci/actions-runner/_work/zig-bootstrap/out/host/lib/zig/std/start.zig:611:22: 0x1037ea6 in posixCallMainAndExit (runtime_overflow)
             root.main();
                      ^
-/home/ci/actions-runner/_work/zig-bootstrap/out/host/lib/zig/std/start.zig:266:5: 0x1034501 in _start (runtime_overflow)
+/home/ci/actions-runner/_work/zig-bootstrap/out/host/lib/zig/std/start.zig:250:5: 0x1037acf in _start (runtime_overflow)
     asm volatile (switch (native_arch) {
     ^
 ???:?:?: 0x0 in ??? (???)
@@ -12236,10 +12433,10 @@ thread 3238794 panic: integer overflow
 $ <kbd>./math_add</kbd>
 unable to add one: Overflow
 error: Overflow
-/home/ci/actions-runner/_work/zig-bootstrap/out/host/lib/zig/std/math.zig:565:21: 0x1035165 in add__anon_2592 (math_add)
+/home/ci/actions-runner/_work/zig-bootstrap/out/host/lib/zig/std/math.zig:565:21: 0x1038495 in add__anon_1680 (math_add)
     if (ov[1] != 0) return error.Overflow;
                     ^
-/home/ci/actions-runner/_work/zig-bootstrap/zig/doc/langref/math_add.zig:8:9: 0x1035103 in main (math_add)
+/home/ci/actions-runner/_work/zig-bootstrap/zig/doc/langref/math_add.zig:8:9: 0x1038433 in main (math_add)
         return err;
         ^
 </samp></pre></figure>
@@ -12328,14 +12525,14 @@ All 1 tests passed.
     std.debug.print(<span class="tok-str">&quot;value: {}\n&quot;</span>, .{y});
 }</code></pre></figure><figure><figcaption class="shell-cap">Shell</figcaption><pre><samp>$ <kbd>zig build-exe runtime_shlExact_overflow.zig</kbd>
 $ <kbd>./runtime_shlExact_overflow</kbd>
-thread 3241554 panic: left shift overflowed bits
-/home/ci/actions-runner/_work/zig-bootstrap/zig/doc/langref/runtime_shlExact_overflow.zig:6:5: 0x103515d in main (runtime_shlExact_overflow)
+thread 3323055 panic: left shift overflowed bits
+/home/ci/actions-runner/_work/zig-bootstrap/zig/doc/langref/runtime_shlExact_overflow.zig:6:5: 0x103850d in main (runtime_shlExact_overflow)
     const y = @shlExact(x, 2);
     ^
-/home/ci/actions-runner/_work/zig-bootstrap/out/host/lib/zig/std/start.zig:514:22: 0x10349b9 in posixCallMainAndExit (runtime_shlExact_overflow)
+/home/ci/actions-runner/_work/zig-bootstrap/out/host/lib/zig/std/start.zig:611:22: 0x1037ee6 in posixCallMainAndExit (runtime_shlExact_overflow)
             root.main();
                      ^
-/home/ci/actions-runner/_work/zig-bootstrap/out/host/lib/zig/std/start.zig:266:5: 0x1034521 in _start (runtime_shlExact_overflow)
+/home/ci/actions-runner/_work/zig-bootstrap/out/host/lib/zig/std/start.zig:250:5: 0x1037b0f in _start (runtime_shlExact_overflow)
     asm volatile (switch (native_arch) {
     ^
 ???:?:?: 0x0 in ??? (???)
@@ -12366,14 +12563,14 @@ thread 3241554 panic: left shift overflowed bits
     std.debug.print(<span class="tok-str">&quot;value: {}\n&quot;</span>, .{y});
 }</code></pre></figure><figure><figcaption class="shell-cap">Shell</figcaption><pre><samp>$ <kbd>zig build-exe runtime_shrExact_overflow.zig</kbd>
 $ <kbd>./runtime_shrExact_overflow</kbd>
-thread 3243647 panic: right shift overflowed bits
-/home/ci/actions-runner/_work/zig-bootstrap/zig/doc/langref/runtime_shrExact_overflow.zig:6:5: 0x1035159 in main (runtime_shrExact_overflow)
+thread 3322265 panic: right shift overflowed bits
+/home/ci/actions-runner/_work/zig-bootstrap/zig/doc/langref/runtime_shrExact_overflow.zig:6:5: 0x1038509 in main (runtime_shrExact_overflow)
     const y = @shrExact(x, 2);
     ^
-/home/ci/actions-runner/_work/zig-bootstrap/out/host/lib/zig/std/start.zig:514:22: 0x10349b9 in posixCallMainAndExit (runtime_shrExact_overflow)
+/home/ci/actions-runner/_work/zig-bootstrap/out/host/lib/zig/std/start.zig:611:22: 0x1037ee6 in posixCallMainAndExit (runtime_shrExact_overflow)
             root.main();
                      ^
-/home/ci/actions-runner/_work/zig-bootstrap/out/host/lib/zig/std/start.zig:266:5: 0x1034521 in _start (runtime_shrExact_overflow)
+/home/ci/actions-runner/_work/zig-bootstrap/out/host/lib/zig/std/start.zig:250:5: 0x1037b0f in _start (runtime_shrExact_overflow)
     asm volatile (switch (native_arch) {
     ^
 ???:?:?: 0x0 in ??? (???)
@@ -12407,14 +12604,14 @@ thread 3243647 panic: right shift overflowed bits
     std.debug.print(<span class="tok-str">&quot;value: {}\n&quot;</span>, .{c});
 }</code></pre></figure><figure><figcaption class="shell-cap">Shell</figcaption><pre><samp>$ <kbd>zig build-exe runtime_division_by_zero.zig</kbd>
 $ <kbd>./runtime_division_by_zero</kbd>
-thread 3246111 panic: division by zero
-/home/ci/actions-runner/_work/zig-bootstrap/zig/doc/langref/runtime_division_by_zero.zig:7:17: 0x10350b6 in main (runtime_division_by_zero)
+thread 3325985 panic: division by zero
+/home/ci/actions-runner/_work/zig-bootstrap/zig/doc/langref/runtime_division_by_zero.zig:7:17: 0x1038466 in main (runtime_division_by_zero)
     const c = a / b;
                 ^
-/home/ci/actions-runner/_work/zig-bootstrap/out/host/lib/zig/std/start.zig:514:22: 0x1034909 in posixCallMainAndExit (runtime_division_by_zero)
+/home/ci/actions-runner/_work/zig-bootstrap/out/host/lib/zig/std/start.zig:611:22: 0x1037e36 in posixCallMainAndExit (runtime_division_by_zero)
             root.main();
                      ^
-/home/ci/actions-runner/_work/zig-bootstrap/out/host/lib/zig/std/start.zig:266:5: 0x1034471 in _start (runtime_division_by_zero)
+/home/ci/actions-runner/_work/zig-bootstrap/out/host/lib/zig/std/start.zig:250:5: 0x1037a5f in _start (runtime_division_by_zero)
     asm volatile (switch (native_arch) {
     ^
 ???:?:?: 0x0 in ??? (???)
@@ -12448,14 +12645,14 @@ thread 3246111 panic: division by zero
     std.debug.print(<span class="tok-str">&quot;value: {}\n&quot;</span>, .{c});
 }</code></pre></figure><figure><figcaption class="shell-cap">Shell</figcaption><pre><samp>$ <kbd>zig build-exe runtime_remainder_division_by_zero.zig</kbd>
 $ <kbd>./runtime_remainder_division_by_zero</kbd>
-thread 3241776 panic: division by zero
-/home/ci/actions-runner/_work/zig-bootstrap/zig/doc/langref/runtime_remainder_division_by_zero.zig:7:17: 0x10350b6 in main (runtime_remainder_division_by_zero)
+thread 3328647 panic: division by zero
+/home/ci/actions-runner/_work/zig-bootstrap/zig/doc/langref/runtime_remainder_division_by_zero.zig:7:17: 0x1038466 in main (runtime_remainder_division_by_zero)
     const c = a % b;
                 ^
-/home/ci/actions-runner/_work/zig-bootstrap/out/host/lib/zig/std/start.zig:514:22: 0x1034909 in posixCallMainAndExit (runtime_remainder_division_by_zero)
+/home/ci/actions-runner/_work/zig-bootstrap/out/host/lib/zig/std/start.zig:611:22: 0x1037e36 in posixCallMainAndExit (runtime_remainder_division_by_zero)
             root.main();
                      ^
-/home/ci/actions-runner/_work/zig-bootstrap/out/host/lib/zig/std/start.zig:266:5: 0x1034471 in _start (runtime_remainder_division_by_zero)
+/home/ci/actions-runner/_work/zig-bootstrap/out/host/lib/zig/std/start.zig:250:5: 0x1037a5f in _start (runtime_remainder_division_by_zero)
     asm volatile (switch (native_arch) {
     ^
 ???:?:?: 0x0 in ??? (???)
@@ -12489,14 +12686,14 @@ thread 3241776 panic: division by zero
     std.debug.print(<span class="tok-str">&quot;value: {}\n&quot;</span>, .{c});
 }</code></pre></figure><figure><figcaption class="shell-cap">Shell</figcaption><pre><samp>$ <kbd>zig build-exe runtime_divExact_remainder.zig</kbd>
 $ <kbd>./runtime_divExact_remainder</kbd>
-thread 3243146 panic: exact division produced remainder
-/home/ci/actions-runner/_work/zig-bootstrap/zig/doc/langref/runtime_divExact_remainder.zig:7:15: 0x103510b in main (runtime_divExact_remainder)
+thread 3324485 panic: exact division produced remainder
+/home/ci/actions-runner/_work/zig-bootstrap/zig/doc/langref/runtime_divExact_remainder.zig:7:15: 0x103849b in main (runtime_divExact_remainder)
     const c = @divExact(a, b);
               ^
-/home/ci/actions-runner/_work/zig-bootstrap/out/host/lib/zig/std/start.zig:514:22: 0x1034929 in posixCallMainAndExit (runtime_divExact_remainder)
+/home/ci/actions-runner/_work/zig-bootstrap/out/host/lib/zig/std/start.zig:611:22: 0x1037e36 in posixCallMainAndExit (runtime_divExact_remainder)
             root.main();
                      ^
-/home/ci/actions-runner/_work/zig-bootstrap/out/host/lib/zig/std/start.zig:266:5: 0x1034491 in _start (runtime_divExact_remainder)
+/home/ci/actions-runner/_work/zig-bootstrap/out/host/lib/zig/std/start.zig:250:5: 0x1037a5f in _start (runtime_divExact_remainder)
     asm volatile (switch (native_arch) {
     ^
 ???:?:?: 0x0 in ??? (???)
@@ -12528,14 +12725,14 @@ thread 3243146 panic: exact division produced remainder
     std.debug.print(<span class="tok-str">&quot;value: {}\n&quot;</span>, .{number});
 }</code></pre></figure><figure><figcaption class="shell-cap">Shell</figcaption><pre><samp>$ <kbd>zig build-exe runtime_unwrap_null.zig</kbd>
 $ <kbd>./runtime_unwrap_null</kbd>
-thread 3240158 panic: attempt to use null value
-/home/ci/actions-runner/_work/zig-bootstrap/zig/doc/langref/runtime_unwrap_null.zig:6:35: 0x1035132 in main (runtime_unwrap_null)
+thread 3324745 panic: attempt to use null value
+/home/ci/actions-runner/_work/zig-bootstrap/zig/doc/langref/runtime_unwrap_null.zig:6:35: 0x10384d2 in main (runtime_unwrap_null)
     const number = optional_number.?;
                                   ^
-/home/ci/actions-runner/_work/zig-bootstrap/out/host/lib/zig/std/start.zig:514:22: 0x1034999 in posixCallMainAndExit (runtime_unwrap_null)
+/home/ci/actions-runner/_work/zig-bootstrap/out/host/lib/zig/std/start.zig:611:22: 0x1037eb6 in posixCallMainAndExit (runtime_unwrap_null)
             root.main();
                      ^
-/home/ci/actions-runner/_work/zig-bootstrap/out/host/lib/zig/std/start.zig:266:5: 0x1034501 in _start (runtime_unwrap_null)
+/home/ci/actions-runner/_work/zig-bootstrap/out/host/lib/zig/std/start.zig:250:5: 0x1037adf in _start (runtime_unwrap_null)
     asm volatile (switch (native_arch) {
     ^
 ???:?:?: 0x0 in ??? (???)
@@ -12595,17 +12792,17 @@ it's null
     <span class="tok-kw">return</span> <span class="tok-kw">error</span>.UnableToReturnNumber;
 }</code></pre></figure><figure><figcaption class="shell-cap">Shell</figcaption><pre><samp>$ <kbd>zig build-exe runtime_unwrap_error.zig</kbd>
 $ <kbd>./runtime_unwrap_error</kbd>
-thread 3243254 panic: attempt to unwrap error: UnableToReturnNumber
-/home/ci/actions-runner/_work/zig-bootstrap/zig/doc/langref/runtime_unwrap_error.zig:9:5: 0x103722f in getNumberOrFail (runtime_unwrap_error)
+thread 3327770 panic: attempt to unwrap error: UnableToReturnNumber
+/home/ci/actions-runner/_work/zig-bootstrap/zig/doc/langref/runtime_unwrap_error.zig:9:5: 0x103991f in getNumberOrFail (runtime_unwrap_error)
     return error.UnableToReturnNumber;
     ^
-/home/ci/actions-runner/_work/zig-bootstrap/zig/doc/langref/runtime_unwrap_error.zig:4:44: 0x10351a1 in main (runtime_unwrap_error)
+/home/ci/actions-runner/_work/zig-bootstrap/zig/doc/langref/runtime_unwrap_error.zig:4:44: 0x1038551 in main (runtime_unwrap_error)
     const number = getNumberOrFail() catch unreachable;
                                            ^
-/home/ci/actions-runner/_work/zig-bootstrap/out/host/lib/zig/std/start.zig:514:22: 0x10349e9 in posixCallMainAndExit (runtime_unwrap_error)
+/home/ci/actions-runner/_work/zig-bootstrap/out/host/lib/zig/std/start.zig:611:22: 0x1037f16 in posixCallMainAndExit (runtime_unwrap_error)
             root.main();
                      ^
-/home/ci/actions-runner/_work/zig-bootstrap/out/host/lib/zig/std/start.zig:266:5: 0x1034551 in _start (runtime_unwrap_error)
+/home/ci/actions-runner/_work/zig-bootstrap/out/host/lib/zig/std/start.zig:250:5: 0x1037b3f in _start (runtime_unwrap_error)
     asm volatile (switch (native_arch) {
     ^
 ???:?:?: 0x0 in ??? (???)
@@ -12664,14 +12861,14 @@ got error: UnableToReturnNumber
     std.debug.print(<span class="tok-str">&quot;value: {}\n&quot;</span>, .{invalid_err});
 }</code></pre></figure><figure><figcaption class="shell-cap">Shell</figcaption><pre><samp>$ <kbd>zig build-exe runtime_invalid_error_code.zig</kbd>
 $ <kbd>./runtime_invalid_error_code</kbd>
-thread 3245139 panic: invalid error code
-/home/ci/actions-runner/_work/zig-bootstrap/zig/doc/langref/runtime_invalid_error_code.zig:7:5: 0x1035130 in main (runtime_invalid_error_code)
+thread 3326939 panic: invalid error code
+/home/ci/actions-runner/_work/zig-bootstrap/zig/doc/langref/runtime_invalid_error_code.zig:7:5: 0x10384e0 in main (runtime_invalid_error_code)
     const invalid_err = @errorFromInt(number);
     ^
-/home/ci/actions-runner/_work/zig-bootstrap/out/host/lib/zig/std/start.zig:514:22: 0x1034979 in posixCallMainAndExit (runtime_invalid_error_code)
+/home/ci/actions-runner/_work/zig-bootstrap/out/host/lib/zig/std/start.zig:611:22: 0x1037ea6 in posixCallMainAndExit (runtime_invalid_error_code)
             root.main();
                      ^
-/home/ci/actions-runner/_work/zig-bootstrap/out/host/lib/zig/std/start.zig:266:5: 0x10344e1 in _start (runtime_invalid_error_code)
+/home/ci/actions-runner/_work/zig-bootstrap/out/host/lib/zig/std/start.zig:250:5: 0x1037acf in _start (runtime_invalid_error_code)
     asm volatile (switch (native_arch) {
     ^
 ???:?:?: 0x0 in ??? (???)
@@ -12717,14 +12914,14 @@ thread 3245139 panic: invalid error code
     std.debug.print(<span class="tok-str">&quot;value: {s}\n&quot;</span>, .{<span class="tok-builtin">@tagName</span>(b)});
 }</code></pre></figure><figure><figcaption class="shell-cap">Shell</figcaption><pre><samp>$ <kbd>zig build-exe runtime_invalid_enum_cast.zig</kbd>
 $ <kbd>./runtime_invalid_enum_cast</kbd>
-thread 3240854 panic: invalid enum value
-/home/ci/actions-runner/_work/zig-bootstrap/zig/doc/langref/runtime_invalid_enum_cast.zig:12:20: 0x1035127 in main (runtime_invalid_enum_cast)
+thread 3328762 panic: invalid enum value
+/home/ci/actions-runner/_work/zig-bootstrap/zig/doc/langref/runtime_invalid_enum_cast.zig:12:20: 0x10384b7 in main (runtime_invalid_enum_cast)
     const b: Foo = @enumFromInt(a);
                    ^
-/home/ci/actions-runner/_work/zig-bootstrap/out/host/lib/zig/std/start.zig:514:22: 0x1034989 in posixCallMainAndExit (runtime_invalid_enum_cast)
+/home/ci/actions-runner/_work/zig-bootstrap/out/host/lib/zig/std/start.zig:611:22: 0x1037e96 in posixCallMainAndExit (runtime_invalid_enum_cast)
             root.main();
                      ^
-/home/ci/actions-runner/_work/zig-bootstrap/out/host/lib/zig/std/start.zig:266:5: 0x10344f1 in _start (runtime_invalid_enum_cast)
+/home/ci/actions-runner/_work/zig-bootstrap/out/host/lib/zig/std/start.zig:250:5: 0x1037abf in _start (runtime_invalid_enum_cast)
     asm volatile (switch (native_arch) {
     ^
 ???:?:?: 0x0 in ??? (???)
@@ -12772,17 +12969,17 @@ thread 3240854 panic: invalid enum value
     std.debug.print(<span class="tok-str">&quot;value: {}\n&quot;</span>, .{x});
 }</code></pre></figure><figure><figcaption class="shell-cap">Shell</figcaption><pre><samp>$ <kbd>zig build-exe runtime_invalid_error_set_cast.zig</kbd>
 $ <kbd>./runtime_invalid_error_set_cast</kbd>
-thread 3244832 panic: invalid error code
-/home/ci/actions-runner/_work/zig-bootstrap/zig/doc/langref/runtime_invalid_error_set_cast.zig:15:21: 0x10371c7 in foo (runtime_invalid_error_set_cast)
+thread 3324255 panic: invalid error code
+/home/ci/actions-runner/_work/zig-bootstrap/zig/doc/langref/runtime_invalid_error_set_cast.zig:15:21: 0x10398d1 in foo (runtime_invalid_error_set_cast)
     const x: Set2 = @errorCast(set1);
                     ^
-/home/ci/actions-runner/_work/zig-bootstrap/zig/doc/langref/runtime_invalid_error_set_cast.zig:12:8: 0x10350ed in main (runtime_invalid_error_set_cast)
+/home/ci/actions-runner/_work/zig-bootstrap/zig/doc/langref/runtime_invalid_error_set_cast.zig:12:8: 0x10384bd in main (runtime_invalid_error_set_cast)
     foo(Set1.B);
        ^
-/home/ci/actions-runner/_work/zig-bootstrap/out/host/lib/zig/std/start.zig:514:22: 0x1034999 in posixCallMainAndExit (runtime_invalid_error_set_cast)
+/home/ci/actions-runner/_work/zig-bootstrap/out/host/lib/zig/std/start.zig:611:22: 0x1037ee6 in posixCallMainAndExit (runtime_invalid_error_set_cast)
             root.main();
                      ^
-/home/ci/actions-runner/_work/zig-bootstrap/out/host/lib/zig/std/start.zig:266:5: 0x1034501 in _start (runtime_invalid_error_set_cast)
+/home/ci/actions-runner/_work/zig-bootstrap/out/host/lib/zig/std/start.zig:250:5: 0x1037b0f in _start (runtime_invalid_error_set_cast)
     asm volatile (switch (native_arch) {
     ^
 ???:?:?: 0x0 in ??? (???)
@@ -12818,17 +13015,17 @@ thread 3244832 panic: invalid error code
     <span class="tok-kw">return</span> int_slice[<span class="tok-number">0</span>];
 }</code></pre></figure><figure><figcaption class="shell-cap">Shell</figcaption><pre><samp>$ <kbd>zig build-exe runtime_incorrect_pointer_alignment.zig</kbd>
 $ <kbd>./runtime_incorrect_pointer_alignment</kbd>
-thread 3242250 panic: incorrect alignment
-/home/ci/actions-runner/_work/zig-bootstrap/zig/doc/langref/runtime_incorrect_pointer_alignment.zig:9:64: 0x1034dda in foo (runtime_incorrect_pointer_alignment)
+thread 3322856 panic: incorrect alignment
+/home/ci/actions-runner/_work/zig-bootstrap/zig/doc/langref/runtime_incorrect_pointer_alignment.zig:9:64: 0x10382da in foo (runtime_incorrect_pointer_alignment)
     const int_slice = mem.bytesAsSlice(u32, @as([]align(4) u8, @alignCast(slice4)));
                                                                ^
-/home/ci/actions-runner/_work/zig-bootstrap/zig/doc/langref/runtime_incorrect_pointer_alignment.zig:5:12: 0x1034c97 in main (runtime_incorrect_pointer_alignment)
+/home/ci/actions-runner/_work/zig-bootstrap/zig/doc/langref/runtime_incorrect_pointer_alignment.zig:5:12: 0x1038197 in main (runtime_incorrect_pointer_alignment)
     if (foo(bytes) != 0x11111111) return error.Wrong;
            ^
-/home/ci/actions-runner/_work/zig-bootstrap/out/host/lib/zig/std/start.zig:524:37: 0x1034b95 in posixCallMainAndExit (runtime_incorrect_pointer_alignment)
+/home/ci/actions-runner/_work/zig-bootstrap/out/host/lib/zig/std/start.zig:620:37: 0x1038092 in posixCallMainAndExit (runtime_incorrect_pointer_alignment)
             const result = root.main() catch |err| {
                                     ^
-/home/ci/actions-runner/_work/zig-bootstrap/out/host/lib/zig/std/start.zig:266:5: 0x10346b1 in _start (runtime_incorrect_pointer_alignment)
+/home/ci/actions-runner/_work/zig-bootstrap/out/host/lib/zig/std/start.zig:250:5: 0x1037c6f in _start (runtime_incorrect_pointer_alignment)
     asm volatile (switch (native_arch) {
     ^
 ???:?:?: 0x0 in ??? (???)
@@ -12875,17 +13072,17 @@ thread 3242250 panic: incorrect alignment
     std.debug.print(<span class="tok-str">&quot;value: {}\n&quot;</span>, .{f.float});
 }</code></pre></figure><figure><figcaption class="shell-cap">Shell</figcaption><pre><samp>$ <kbd>zig build-exe runtime_wrong_union_field_access.zig</kbd>
 $ <kbd>./runtime_wrong_union_field_access</kbd>
-thread 3240797 panic: access of union field 'float' while field 'int' is active
-/home/ci/actions-runner/_work/zig-bootstrap/zig/doc/langref/runtime_wrong_union_field_access.zig:14:6: 0x103cb50 in bar (runtime_wrong_union_field_access)
+thread 3325710 panic: access of union field 'float' while field 'int' is active
+/home/ci/actions-runner/_work/zig-bootstrap/zig/doc/langref/runtime_wrong_union_field_access.zig:14:6: 0x103f250 in bar (runtime_wrong_union_field_access)
     f.float = 12.34;
      ^
-/home/ci/actions-runner/_work/zig-bootstrap/zig/doc/langref/runtime_wrong_union_field_access.zig:10:8: 0x103aa8c in main (runtime_wrong_union_field_access)
+/home/ci/actions-runner/_work/zig-bootstrap/zig/doc/langref/runtime_wrong_union_field_access.zig:10:8: 0x103de4c in main (runtime_wrong_union_field_access)
     bar(&amp;f);
        ^
-/home/ci/actions-runner/_work/zig-bootstrap/out/host/lib/zig/std/start.zig:514:22: 0x103a329 in posixCallMainAndExit (runtime_wrong_union_field_access)
+/home/ci/actions-runner/_work/zig-bootstrap/out/host/lib/zig/std/start.zig:611:22: 0x103d866 in posixCallMainAndExit (runtime_wrong_union_field_access)
             root.main();
                      ^
-/home/ci/actions-runner/_work/zig-bootstrap/out/host/lib/zig/std/start.zig:266:5: 0x1039e91 in _start (runtime_wrong_union_field_access)
+/home/ci/actions-runner/_work/zig-bootstrap/out/host/lib/zig/std/start.zig:250:5: 0x103d48f in _start (runtime_wrong_union_field_access)
     asm volatile (switch (native_arch) {
     ^
 ???:?:?: 0x0 in ??? (???)
@@ -12976,14 +13173,14 @@ value: 1.234e1
     _ = int;
 }</code></pre></figure><figure><figcaption class="shell-cap">Shell</figcaption><pre><samp>$ <kbd>zig build-exe runtime_out_of_bounds_float_to_integer_cast.zig</kbd>
 $ <kbd>./runtime_out_of_bounds_float_to_integer_cast</kbd>
-thread 3242208 panic: integer part of floating point value out of bounds
-/home/ci/actions-runner/_work/zig-bootstrap/zig/doc/langref/runtime_out_of_bounds_float_to_integer_cast.zig:4:22: 0x1034fc9 in main (runtime_out_of_bounds_float_to_integer_cast)
+thread 3323515 panic: integer part of floating point value out of bounds
+/home/ci/actions-runner/_work/zig-bootstrap/zig/doc/langref/runtime_out_of_bounds_float_to_integer_cast.zig:4:22: 0x1038379 in main (runtime_out_of_bounds_float_to_integer_cast)
     const int: i32 = @intFromFloat(float);
                      ^
-/home/ci/actions-runner/_work/zig-bootstrap/out/host/lib/zig/std/start.zig:514:22: 0x1034809 in posixCallMainAndExit (runtime_out_of_bounds_float_to_integer_cast)
+/home/ci/actions-runner/_work/zig-bootstrap/out/host/lib/zig/std/start.zig:611:22: 0x1037d36 in posixCallMainAndExit (runtime_out_of_bounds_float_to_integer_cast)
             root.main();
                      ^
-/home/ci/actions-runner/_work/zig-bootstrap/out/host/lib/zig/std/start.zig:266:5: 0x1034371 in _start (runtime_out_of_bounds_float_to_integer_cast)
+/home/ci/actions-runner/_work/zig-bootstrap/out/host/lib/zig/std/start.zig:250:5: 0x103795f in _start (runtime_out_of_bounds_float_to_integer_cast)
     asm volatile (switch (native_arch) {
     ^
 ???:?:?: 0x0 in ??? (???)
@@ -13019,14 +13216,14 @@ thread 3242208 panic: integer part of floating point value out of bounds
     _ = ptr;
 }</code></pre></figure><figure><figcaption class="shell-cap">Shell</figcaption><pre><samp>$ <kbd>zig build-exe runtime_invalid_null_pointer_cast.zig</kbd>
 $ <kbd>./runtime_invalid_null_pointer_cast</kbd>
-thread 3242923 panic: cast causes pointer to be null
-/home/ci/actions-runner/_work/zig-bootstrap/zig/doc/langref/runtime_invalid_null_pointer_cast.zig:4:23: 0x1034f7c in main (runtime_invalid_null_pointer_cast)
+thread 3321703 panic: cast causes pointer to be null
+/home/ci/actions-runner/_work/zig-bootstrap/zig/doc/langref/runtime_invalid_null_pointer_cast.zig:4:23: 0x103830c in main (runtime_invalid_null_pointer_cast)
     const ptr: *i32 = @ptrCast(opt_ptr);
                       ^
-/home/ci/actions-runner/_work/zig-bootstrap/out/host/lib/zig/std/start.zig:514:22: 0x10347e9 in posixCallMainAndExit (runtime_invalid_null_pointer_cast)
+/home/ci/actions-runner/_work/zig-bootstrap/out/host/lib/zig/std/start.zig:611:22: 0x1037cf6 in posixCallMainAndExit (runtime_invalid_null_pointer_cast)
             root.main();
                      ^
-/home/ci/actions-runner/_work/zig-bootstrap/out/host/lib/zig/std/start.zig:266:5: 0x1034351 in _start (runtime_invalid_null_pointer_cast)
+/home/ci/actions-runner/_work/zig-bootstrap/out/host/lib/zig/std/start.zig:250:5: 0x103791f in _start (runtime_invalid_null_pointer_cast)
     asm volatile (switch (native_arch) {
     ^
 ???:?:?: 0x0 in ??? (???)
@@ -13124,7 +13321,7 @@ All 1 tests passed.
     std.debug.print(<span class="tok-str">&quot;ptr={*}\n&quot;</span>, .{ptr});
 }</code></pre></figure><figure><figcaption class="shell-cap">Shell</figcaption><pre><samp>$ <kbd>zig build-exe cli_allocation.zig</kbd>
 $ <kbd>./cli_allocation</kbd>
-ptr=i32@7fb8fdec5010
+ptr=i32@7fee67928010
 </samp></pre></figure>
 
               When using this kind of allocator, there is no need to free anything manually. Everything
@@ -13336,7 +13533,7 @@ All 1 tests passed.
 <span class="tok-comment">/// Zig version. When writing code that supports multiple versions of Zig, prefer</span>
 <span class="tok-comment">/// feature detection (i.e. with `@hasDecl` or `@hasField`) over version checks.</span>
 <span class="tok-kw">pub</span> <span class="tok-kw">const</span> zig_version = std.SemanticVersion.parse(zig_version_string) <span class="tok-kw">catch</span> <span class="tok-kw">unreachable</span>;
-<span class="tok-kw">pub</span> <span class="tok-kw">const</span> zig_version_string = <span class="tok-str">&quot;0.13.0&quot;</span>;
+<span class="tok-kw">pub</span> <span class="tok-kw">const</span> zig_version_string = <span class="tok-str">&quot;0.14.0-dev.1710+8ee52f99c&quot;</span>;
 <span class="tok-kw">pub</span> <span class="tok-kw">const</span> zig_backend = std.builtin.CompilerBackend.stage2_llvm;
 
 <span class="tok-kw">pub</span> <span class="tok-kw">const</span> output_mode = std.builtin.OutputMode.Exe;
@@ -13367,6 +13564,7 @@ All 1 tests passed.
         .f16c,
         .fast_15bytenop,
         .fast_bextr,
+        .fast_imm16,
         .fast_lzcnt,
         .fast_movbe,
         .fast_scalar_fsqrt,
@@ -13376,6 +13574,7 @@ All 1 tests passed.
         .fma,
         .fsgsbase,
         .fxsr,
+        .idivq_to_divl,
         .lzcnt,
         .mmx,
         .movbe,
@@ -13444,6 +13643,7 @@ All 1 tests passed.
 <span class="tok-kw">pub</span> <span class="tok-kw">const</span> have_error_return_tracing = <span class="tok-null">true</span>;
 <span class="tok-kw">pub</span> <span class="tok-kw">const</span> valgrind_support = <span class="tok-null">true</span>;
 <span class="tok-kw">pub</span> <span class="tok-kw">const</span> sanitize_thread = <span class="tok-null">false</span>;
+<span class="tok-kw">pub</span> <span class="tok-kw">const</span> fuzz = <span class="tok-null">false</span>;
 <span class="tok-kw">pub</span> <span class="tok-kw">const</span> position_independent_code = <span class="tok-null">false</span>;
 <span class="tok-kw">pub</span> <span class="tok-kw">const</span> position_independent_executable = <span class="tok-null">false</span>;
 <span class="tok-kw">pub</span> <span class="tok-kw">const</span> strip_debug_info = <span class="tok-null">false</span>;
@@ -13686,9 +13886,8 @@ pub extern fn do_something(foo: enum_FOO) c_int;
 <span class="tok-kw">pub</span> <span class="tok-kw">fn</span> <span class="tok-fn">main</span>() <span class="tok-type">void</span> {
     _ = c;
 }</code></pre></figure><figure><figcaption class="shell-cap">Shell</figcaption><pre><samp>$ <kbd>zig build-exe verbose_cimport_flag.zig -lc --verbose-cimport</kbd>
-info(compilation): C import source: /home/ci/actions-runner/_work/zig-bootstrap/out/zig-local-cache/o/298d36f4176a16777fc9004a51a23af1/cimport.h
-info(compilation): C import .d file: /home/ci/actions-runner/_work/zig-bootstrap/out/zig-local-cache/o/298d36f4176a16777fc9004a51a23af1/cimport.h.d
-info(compilation): C import output: /home/ci/actions-runner/_work/zig-bootstrap/out/zig-local-cache/o/b8d0d6f3fe6609709487475501d01e7f/cimport.zig
+info(compilation): C import source: /home/ci/actions-runner/_work/zig-bootstrap/out/zig-local-cache/o/b1dfc46a48e0e8916523fc9931f2ba20/cimport.h
+info(compilation): C import .d file: /home/ci/actions-runner/_work/zig-bootstrap/out/zig-local-cache/o/b1dfc46a48e0e8916523fc9931f2ba20/cimport.h.d
 $ <kbd>./verbose_cimport_flag</kbd>
 </samp></pre></figure>
 
@@ -13824,7 +14023,7 @@ int foo(void) {
 
 <span class="tok-kw">test</span> <span class="tok-str">&quot;variadic function&quot;</span> {
     <span class="tok-kw">try</span> testing.expect(printf(<span class="tok-str">&quot;Hello, world!\n&quot;</span>) == <span class="tok-number">14</span>);
-    <span class="tok-kw">try</span> testing.expect(<span class="tok-builtin">@typeInfo</span>(<span class="tok-builtin">@TypeOf</span>(printf)).Fn.is_var_args);
+    <span class="tok-kw">try</span> testing.expect(<span class="tok-builtin">@typeInfo</span>(<span class="tok-builtin">@TypeOf</span>(printf)).@&quot;fn&quot;.is_var_args);
 }</code></pre></figure><figure><figcaption class="shell-cap">Shell</figcaption><pre><samp>$ <kbd>zig test test_variadic_function.zig -lc</kbd>
 1/1 test_variadic_function.test.variadic function...OK
 All 1 tests passed.
@@ -14027,7 +14226,7 @@ The result is 3
       <figure><figcaption class="zig-cap"><cite class="file">wasi_args.zig</cite></figcaption><pre><code><span class="tok-kw">const</span> std = <span class="tok-builtin">@import</span>(<span class="tok-str">&quot;std&quot;</span>);
 
 <span class="tok-kw">pub</span> <span class="tok-kw">fn</span> <span class="tok-fn">main</span>() !<span class="tok-type">void</span> {
-    <span class="tok-kw">var</span> general_purpose_allocator = std.heap.GeneralPurposeAllocator(.{}){};
+    <span class="tok-kw">var</span> general_purpose_allocator: std.heap.GeneralPurposeAllocator(.{}) = .init;
     <span class="tok-kw">const</span> gpa = general_purpose_allocator.allocator();
     <span class="tok-kw">const</span> args = <span class="tok-kw">try</span> std.process.argsAlloc(gpa);
     <span class="tok-kw">defer</span> std.process.argsFree(gpa, args);
@@ -14049,7 +14248,7 @@ The result is 3
 <span class="tok-kw">const</span> fs = std.fs;
 
 <span class="tok-kw">pub</span> <span class="tok-kw">fn</span> <span class="tok-fn">main</span>() !<span class="tok-type">void</span> {
-    <span class="tok-kw">var</span> general_purpose_allocator = std.heap.GeneralPurposeAllocator(.{}){};
+    <span class="tok-kw">var</span> general_purpose_allocator: std.heap.GeneralPurposeAllocator(.{}) = .init;
     <span class="tok-kw">const</span> gpa = general_purpose_allocator.allocator();
 
     <span class="tok-kw">var</span> arena_instance = std.heap.ArenaAllocator.init(gpa);
@@ -14121,7 +14320,7 @@ coding style.
         <li>utils, misc, or somebody's initials</li>
       </ul>
       <p>Everything is a value, all types are data, everything is context, all logic manages state.
-      Nothing is communicated by using a word that applies to all types.</p> 
+      Nothing is communicated by using a word that applies to all types.</p>
       <p>Temptation to use "utilities", "miscellaneous", or somebody's initials
       is a failure to categorize, or more commonly, overcategorization. Such
       declarations can live at the root of a module that needs them with no
@@ -14255,10 +14454,10 @@ redundant_fqn.json.JsonValue
 
 <span class="tok-comment">// The word XML loses its casing when used in Zig identifiers.</span>
 <span class="tok-kw">const</span> xml_document =
-    <span class="tok-str">\\&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
-</span>    <span class="tok-str">\\&lt;document&gt;
-</span>    <span class="tok-str">\\&lt;/document&gt;
-</span>;
+    <span class="tok-str">\\&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;</span>
+    <span class="tok-str">\\&lt;document&gt;</span>
+    <span class="tok-str">\\&lt;/document&gt;</span>
+;
 <span class="tok-kw">const</span> XmlParser = <span class="tok-kw">struct</span> {
     field: <span class="tok-type">i32</span>,
 };
